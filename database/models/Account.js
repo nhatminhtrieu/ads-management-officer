@@ -13,7 +13,11 @@ const AccountSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    created: { 
+    createdBy: {
+        type: String,
+        required: true
+    },
+    createdAt: { 
         type: Date, 
         default: Date.now 
     },

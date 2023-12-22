@@ -10,7 +10,7 @@ export default class AccountRepository {
         return await newEntity.save();
     }
 
-    async getByEmail(email) {
-        return await this.model.findOne({ email: email });
+    async findByEntity(entity) {
+        return await this.model.findOne(entity);
     }
 }

@@ -6,8 +6,14 @@ export default class AccountService {
         this.repository = new AccountRepository()
     }
 
+    async createAccount(account) {
+        const salt = await bcrypt.genSalt(10)
+        account.password = await bcrypt.hash(account.password, salt)
+        await this.repository.add(account)
+    }
+
     async verifyAccount(email, password) {
-        const account = await this.repository.getByEmail(email)
+        const account = await this.repository.findByEntity({email})
         if (!account) {
             return null
         }

@@ -24,7 +24,6 @@ app.set('views', './views');
 app.set('trust proxy', 1) // trust first proxy
 
 app.use(cors());
-app.use("/static", express.static('static'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -33,16 +32,18 @@ app.use(session({
   saveUninitialized: true,
   cookie: {}
 }));
-app.use("/static", express.static("static"));
+
 
 app.use(function (req, res, next) {
   if (typeof req.session.isAuthenticated === 'undefined') {
     req.session.isAuthenticated = false;
+    res.redirect('/account/login');
+  } else {
+    next();
   }
-  next();
 });
 
-
+app.use("/static", auth, express.static("static"));
 app.get("/", auth, (req, res) => {
   res.redirect("/static/html/map.html");
 });

@@ -21,4 +21,10 @@ router.post("/delete", async (req, res) => {
     res.json(result);
 });
 
+router.post("/update", async (req, res) => {
+    const { oldName, newName } = req.body;
+    const result = await boardTypesService.updateAdsType({oldName, newName});
+    res.json(result);
+});
+
 export default router;

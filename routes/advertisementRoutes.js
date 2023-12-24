@@ -2,6 +2,7 @@
 import express from "express";
 const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
+import AdsTypesService from "../services/AdsTypesService.js";
 
 router.get("/locations", async (req, res) => {
 	const service = new AdvertisementService();
@@ -35,8 +36,15 @@ router.get("/create-request", (req, res) => {
 	res.render("vwAds/createRequests", { layout: "ads" });
 });
 
-router.get("/type-ad", (req, res) => {
-	res.render("vwAds/typeAds", { layout: "ads" });
+router.get("/type-ad", async (req, res) => {
+	const service = new AdsTypesService();
+	const list = await service.getAllAdsTypes();
+	res.render("vwAds/typeAds", {
+		layout: "ads",
+		list,
+	}
+);
+
 });
 
 export default router;

@@ -22,4 +22,8 @@ export default class BoardTypesService {
     async deleteAdsType(type){
         return await this.repository.delete(type);
     }
+
+    async updateAdsType({oldName, newName}){
+        return await this.repository.update({oldName, newName});
+    }
 }

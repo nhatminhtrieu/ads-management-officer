@@ -12,6 +12,9 @@ import CreateFirstAccount from "./database/CreateFirstAccount.js";
 import routesMdw from "./middleware/routes.js";
 import auth from "./middleware/auth.js";
 
+import Handlebars from 'handlebars';
+import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
+
 const app = express();
 const port = process.env.PORT;
 app.engine(
@@ -19,8 +22,13 @@ app.engine(
 	engine({
 		extname: "hbs",
 		defaultLayout: "main.hbs",
+		handlebars: allowInsecurePrototypeAccess(Handlebars),
 		helpers: {
 			section: hbs_sections(),
+
+			inc (value) {
+				return parseInt(value) + 1;
+			},
 		},
 	})
 );

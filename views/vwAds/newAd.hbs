@@ -3,6 +3,7 @@
 		rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
 	/>
+	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 {{/section}}
 
 {{#section "js"}}
@@ -12,41 +13,9 @@
 	<script>
 		$("#startContract").datetimepicker({ timepicker: false, format: 'd/m/Y', mask: true });
 		$("#endContract").datetimepicker({ timepicker: false, format: 'd/m/Y', mask: true });
-		let step = 1;
-		const maxStep = 3;
-		$('#step-count').html(step);
-		function increase(){
-			$(`#step-${step}`).addClass("d-none");
-			step = step + 1;
-			if (step == +maxStep) {
-				$("#btn-next").attr('disabled',"true");
-				$("#btn-next").addClass("d-none");
-				$("#btn-submit").removeClass("d-none");
-			}
-			if ($("#btn-back").attr('disabled')){
-				$("#btn-back").removeAttr('disabled');
-			}
-			$(`#step-${step}`).removeClass("d-none");
-			$('#step-count').html(step);
-		} 
-		function decrease(){
-			$(`#step-${step}`).addClass("d-none");
-			step = step - 1;
-			if (step == 1) {
-				$("#btn-back").attr('disabled',"true");
-			}
-			if ($("#btn-next").attr('disabled')){
-				$("#btn-next").removeClass("d-none");
-				$("#btn-submit").addClass("d-none");
-				$("#btn-next").removeAttr('disabled');
-			}
-			$(`#step-${step}`).removeClass("d-none");
-			$('#step-count').html(step);
-		} 
-		$("#btn-back").on("click", decrease);
-		$("#btn-next").on("click", increase);
 	</script>
-
+	<script type="module" src="/static/js/vwAds/stepperForm.js"></script>
+	<script type="module" src="/static/js/vwAds/loadMap.js"></script>
 {{/section}}
 <div class="d-flex justify-content-between">
 	<h4 id="step-name">Tạo bảng quảng cáo</h4>
@@ -71,11 +40,12 @@
 			<label class="form-label" for="size">Kích thước
 				<span class="text-danger">*</span></label>
 			<input
-				type="password"
+				type="text"
 				id="size"
 				class="form-control border-2"
 				placeholder="2.5m x 10m"
 				name="size"
+				value="2m"
 			/>
 		</div>
 
@@ -96,21 +66,22 @@
 		</div>
 	</div>
 	<div class="d-flex flex-column d-none" id="step-2" style="gap: 1rem">
-		<div class="text-success">
+		{{! <div class="text-success">
 			Chèn map vào
-		</div>
+		</div> }}
+		<div id="map" style="height:300px; width:100%"></div>
 
 		<!-- Điểm đặt quảng cáo input -->
 		<div class="form-outline">
 			<label class="form-label" for="address">Điểm đặt quảng cáo</label>
-			<textarea
+			<input
+				type="text"
 				id="address"
 				class="form-control border-2 bg-white"
-				placeholder="Đồng Khởi - Nguyễn Du (Sở Văn hóa và Thể thao)"
-				name="size"
-				rows="3"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ"
+				name="address"
 				disabled
-			></textarea>
+			/>
 		</div>
 
 		<!-- Khu vực điểm đặt quảng cáo input -->
@@ -120,8 +91,8 @@
 				type="text"
 				id="area"
 				class="form-control border-2 bg-white"
-				placeholder="Phường Bến Nghé, Quận 1"
-				name="size"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ"
+				name="area"
 				disabled
 			/>
 		</div>

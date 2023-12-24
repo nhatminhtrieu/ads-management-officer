@@ -1,8 +1,8 @@
-import BoardTypesModel from '../models/BoardTypes.js';
+import AdsTypes from '../models/AdsTypes.js';
 
-export default class BoardTypesRepository {
+export default class AdsTypesRepository {
     constructor() {
-        this.model = BoardTypesModel;
+        this.model = AdsTypes;
     }
 
     async add(entity) {

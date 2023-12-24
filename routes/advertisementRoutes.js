@@ -20,7 +20,23 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/manage", (req, res) => {
-	res.render("vwAds/ads");
+	res.render("vwAds/ads", { layout: "ads" });
+});
+
+router.get("/ad-location", (req, res) => {
+	res.render("vwAds/locations", { layout: "ads" });
+});
+
+router.get("/edit-request", (req, res) => {
+	res.render("vwAds/editRequests", { layout: "ads" });
+});
+
+router.get("/create-request", (req, res) => {
+	res.render("vwAds/createRequests", { layout: "ads" });
+});
+
+router.get("/type-ad", (req, res) => {
+	res.render("vwAds/typeAds", { layout: "ads" });
 });
 
 export default router;

@@ -12,8 +12,8 @@ export default class AccountService {
         await this.repository.add(account)
     }
 
-    async verifyAccount(email, password) {
-        const account = await this.repository.findByEntity({email})
+    async verifyAccount(username, password) {
+        const account = await this.repository.findByEntity({username})
         if (!account) {
             return null
         }
@@ -45,5 +45,15 @@ export default class AccountService {
         }
 
         return !isExist;
+    }
+
+    async findByUsername(username) {
+        return await this.repository.findByEntity({username})
+    }
+
+    async updatePassword(username, password) {
+        const salt = await bcrypt.genSalt(10)
+        password = await bcrypt.hash(password, salt)
+        await this.repository.patch(username, password)
     }
 }

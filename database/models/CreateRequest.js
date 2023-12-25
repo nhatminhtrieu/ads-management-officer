@@ -38,6 +38,11 @@ const CreateRequestSchema = new mongoose.Schema(
 			type: Date,
 			required: true,
 		},
+		createdBy: {
+			type: Schema.Types.ObjectId,
+			ref: "Account",
+			required: true,
+		},
 	},
 	{
 		versionKey: false,

@@ -1,9 +1,12 @@
 import mongoose from "mongoose"
 
 const AccountSchema = new mongoose.Schema({
-    fullName: {
+    username: {
         type:String,
         required: true
+    },
+    fullname: {
+        type:String,
     },
     email: {
         type:String,
@@ -13,24 +16,31 @@ const AccountSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    createdBy: {
+    provider: {
         type: String,
+        default: 'department', // department, facebook, google
         required: true
     },
-    createdAt: { 
+    createdat: { 
         type: Date, 
         default: Date.now 
     },
-    phoneNumber: {
+    phone: {
         type: String,
     },
-    birthDate: {
+    dob: {
         type: Date,
+    },
+    fav_list: {
+        type: Array,
+    },
+    area:{
+        type: String,
     },
     role: { 
         type: Number, 
+        default: 3,
         required: true,
-        default: 1 
     } // 1: ward officials, 2: District officials, 3: Department of Culture and Sports officials
 }, {
     versionKey: false

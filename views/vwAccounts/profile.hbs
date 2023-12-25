@@ -12,9 +12,11 @@
 				<a class="list-group-item list-group-item-action" href="javascript:;">
 					Liên kết
 				</a>
-				<a class="list-group-item list-group-item-action text-danger" href="javascript:;">
-					Đăng xuất
-				</a>
+				<form id="frmLogout" method="post" action="/account/logout">
+					<a class="list-group-item list-group-item-action text-danger" href="javascript:$('#frmLogout').submit()">
+						Đăng xuất
+					</a>
+				</form>
 			</ul>
 		</div>
 		<div class="col-9 border-left border-2 p-4">

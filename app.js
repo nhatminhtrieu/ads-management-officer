@@ -3,6 +3,7 @@ import cors from "cors";
 import { engine } from "express-handlebars";
 import hbs_sections from "express-handlebars-sections";
 import session from "express-session";
+import passport from "passport";
 
 import Connection from "./database/Connection.js";
 import routesMdw from "./middleware/routes.js";
@@ -41,6 +42,9 @@ app.use(function (req, res, next) {
 		req.session.isAuthenticated = false;
 		res.redirect("/account/login");
 	} else {
+		if (req.session.authUser) {
+			res.locals.authUser = req.session.authUser;
+		}
 		next();
 	}
 });

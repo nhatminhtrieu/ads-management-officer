@@ -5,6 +5,8 @@ import HomeRouter from "../routes/homeRoutes.js";
 import AccountRouter from "../routes/accountRoutes.js";
 import AdminRouter from "../routes/adminRoutes.js";
 import ReportRouter from "../routes/reportRoutes.js";
+import AdsTypeRouter from "../routes/adsTypesRoutes.js";
+import ReportTypeRouter from "../routes/reportTypesRoutes.js";
 
 export default function (app) {
 	app.get("/", auth, (req, res) => {
@@ -16,4 +18,6 @@ export default function (app) {
 	app.use("/account", AccountRouter);
 	app.use("/report", ReportRouter);
 	app.use("/admin", AdminRouter);
+	app.use("/ads-type", AdsTypeRouter);
+	app.use("/report-type", ReportTypeRouter);
 }

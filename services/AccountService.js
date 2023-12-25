@@ -25,4 +25,25 @@ export default class AccountService {
         
         return account
     }
+
+    async createFirstAccount() {
+        const isExist = await this.repository.findByEntity({fullName: "admin"});
+
+        if (!isExist) {
+            const account = {
+                fullName: "admin",
+                email: "admin@gmail.com",
+                password: await bcrypt.hash("12345678", await bcrypt.genSalt(10)),
+                createdBy: "admin",
+                createdAt: new Date(),
+                phoneNumber: "0123456789",
+                birthday: "1976-01-01",
+                role: 3,
+            }
+
+            await this.repository.add(account);
+        }
+
+        return !isExist;
+    }
 }

@@ -21,4 +21,8 @@ export default class ReportTypesRepository {
     async findByEntity(entity) {
         return await this.model.findOne(entity);
     }
+
+    async update({oldName, newName}) {
+        return await this.model.updateOne({name: oldName}, {name: newName})
+    }
 }

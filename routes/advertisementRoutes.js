@@ -42,9 +42,7 @@ router.get("/type-ad", async (req, res) => {
 	res.render("vwAds/typeAds", {
 		layout: "ads",
 		list,
-	}
-);
-
+	});
 });
 
 export default router;

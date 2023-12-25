@@ -1,0 +1,157 @@
+{{#section 'jsReportType'}}
+    <script>
+        var name;
+        $(document).ready(function() {
+            $('#deleteReportTypeModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                name = button.data('name'); // Extract info from data-* attributes
+
+                // Update the modal's content
+                var modal = $(this);
+                modal.find('.modal-body').html('Bạn xác nhận xóa loại hình báo cáo: <br><b style="text-align:center; display: block;">' + name + '</b>');
+            });
+
+            $('#deleteReportTypeButton').click(function(e) {
+                e.preventDefault();
+
+                $.post('/report-type/delete', {name: name}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            })
+
+            $('#addReportTypeButton').click(function(e) {
+                e.preventDefault();
+                
+                var name = $('#addReportTypeModal input[name="name"]').val();
+
+                $.post('/report-type/add', {name: name}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            })
+
+            $('#editReportTypeModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                name = button.data('name'); // Extract info from data-* attributes
+
+                // Update the modal's content
+                var modal = $(this);
+                modal.find('#oldName').val(name);
+            });
+
+            $('#editReportTypeButton').click(function(e) {
+                e.preventDefault();
+
+                var oldName = $('#editReportTypeModal input[name="oldName"]').val();
+                var newName = $('#editReportTypeModal input[name="newName"]').val();
+
+                console.log(oldName, newName);
+
+                $.post('/report-type/update', {oldName: oldName, newName: newName}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            });
+        });
+    </script>
+{{/section}}
+
+
+<div class="d-flex justify-content-between">
+	<h4>Loại hình báo cáo</h4>
+	{{! Cho phân hệ cán bộ sở }}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportTypeModal">
+        <i class="bi bi-plus-lg"></i>
+        Thêm mới
+    </button>
+</div>
+
+
+<table class="table table-hover mt-3 flex">
+    <thead>
+        <tr class="table-light">
+            <th scope="col">No.</th>
+            <th scope="col">Tên loại hình quảng cáo</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each this.list}}
+        <tr>
+            <th scope="row">{{inc @index}}</th>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editReportTypeModal" data-name="{{name}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteReportTypeModal" data-name="{{name}}">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+
+<!-- Delete Report Type Modal -->
+<div class="modal fade" id="deleteReportTypeModal" tabindex="-1" aria-labelledby="deleteReportTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteReportTypeModal"><b>Xác nhận xóa</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button id="deleteReportTypeButton" type="button" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Report Type Modal -->
+<div class="modal fade" id="addReportTypeModal" tabindex="-1" aria-labelledby="addReportTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addReportTypeModal"><b>Thêm mới loại hình báo cáo</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Tên loại hình báo cáo</label>
+                <input type="text" class="form-control" name="name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="addReportTypeButton" class="btn btn-primary">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Report Type Modal -->
+<div class="modal fade" id="editReportTypeModal" tabindex="-1" aria-labelledby="editReportTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReportTypeModal"><b>Chỉnh sửa tên loại hình quảng cáo</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Tên cũ</label>
+                <input type="text" class="form-control" id="oldName" name="oldName" disabled>
+                <label class="form-label mt-3">Tên mới</label>
+                <input type="text" class="form-control" name="newName">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="editReportTypeButton" class="btn btn-primary">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>

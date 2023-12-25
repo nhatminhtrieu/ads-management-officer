@@ -22,4 +22,8 @@ export default class ReportTypesService {
     async deleteReportType(type){
         return await this.repository.delete(type);
     }
+
+    async updateReportType({oldName, newName}){
+        return await this.repository.update({oldName, newName});
+    }
 }

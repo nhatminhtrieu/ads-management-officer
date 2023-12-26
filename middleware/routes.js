@@ -7,6 +7,7 @@ import AdminRouter from "../routes/adminRoutes.js";
 import ReportRouter from "../routes/reportRoutes.js";
 import AdsTypeRouter from "../routes/adsTypesRoutes.js";
 import ReportTypeRouter from "../routes/reportTypesRoutes.js";
+import DistrictRouter from "../routes/districtRoutes.js";
 
 export default function (app) {
 	app.get("/", auth, (req, res) => {
@@ -20,4 +21,5 @@ export default function (app) {
 	app.use("/admin", AdminRouter);
 	app.use("/ads-type", AdsTypeRouter);
 	app.use("/report-type", ReportTypeRouter);
+	app.use("/districts", DistrictRouter);
 }

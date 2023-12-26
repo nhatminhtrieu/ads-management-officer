@@ -6,6 +6,10 @@ const DistrictSchema = new Schema(
             type: String,
             required: true,
             unique: true,
+        },
+        status: {
+            type: Boolean,
+            default: true,
         }
     },
     {

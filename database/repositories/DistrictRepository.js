@@ -15,14 +15,18 @@ export default class DistrictRepository {
     }
 
     async getDistrictByName(name) {
-        return await this.model.findOne({ name });
+        return await this.model.findOne({ district: name });
     }
 
-    async updateDistrict(name, data) {
-        return await this.model.findOneAndUpdate({ name }, data, { new: true });
+    async getDistrictById(id) {
+        return await this.model.findById(id);
     }
 
-    async deleteDistrict(name) {
-        return await this.model.findOneAndDelete({ name });
+    async updateDistrict(id, newName) {
+        return await this.model.findOneAndUpdate({ _id: id }, { district: newName }, { new: true });
+    }
+
+    async deleteDistrict(id) {
+        return await this.model.findByIdAndUpdate({ _id: id }, { status: false }, { new: true });
     }
 }

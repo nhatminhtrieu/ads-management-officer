@@ -17,21 +17,20 @@ router.post('/create', async (req, res) => {
 // Read
 router.get('/', async (req, res) => {
     const result = await districtService.getAllDistricts();
-    res.send(result);
+    res.json(result);
 });
 
-// Update
-router.patch('/edit/:id', async (req, res) => {
-    const { id } = req.params;
-    const data = req.body;
-    const result = await districtService.updateDistrict({ id, data });
-    res.send(result);
+router.post("/update", async (req, res) => {
+    const { id } = req.query;
+    const { newName } = req.body;
+    const result = await districtService.updateDistrict(id, newName);
+    res.json(result);
 });
 
 // Delete
-router.delete('/delete', async (req, res) => {
-    const { id } = req.body;
-    const result = await districtService.deleteDistrict({ id });
+router.post('/delete', async (req, res) => {
+    const { id } = req.query;
+    const result = await districtService.deleteDistrict(id);
     res.send(result);
 });
 

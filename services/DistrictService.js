@@ -18,23 +18,25 @@ export default class DistrictService {
         return await this.repository.getAllDistricts();
     }
 
-    async updateDistrict(name, data) {
-        const existingDistrict = await this.repository.getDistrictByName(name);
-        if (!existingDistrict) {
+    async updateDistrict(id, newName) {
+        id = id.trim();
+        const district = await this.repository.getDistrictById(id);
+        if (!district)
             throw new Error("District not found");
+        if (district.name === newName) {
+            throw new Error("District already exists");
         }
-        if (existingDistrict.name !== data.name) {
-            throw new Error("District name cannot be changed");
-        }
-        return await this.repository.updateDistrict(name, data);
+        console.log("Update successfully")
+        return await this.repository.updateDistrict(id, newName);
     }
 
-    async deleteDistrict(name) {
-        const existingDistrict = await this.repository.getDistrictByName(name);
+    async deleteDistrict(id) {
+        id = id.trim();
+        const existingDistrict = await this.repository.getDistrictById(id);
         if (!existingDistrict) {
             throw new Error("District not found");
         }
-        return await this.repository.deleteDistrict(name);
+        return await this.repository.deleteDistrict(id);
     }
 }
 

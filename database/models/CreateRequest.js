@@ -3,9 +3,33 @@ import mongoose, { Schema } from "mongoose";
 const CreateRequestSchema = new mongoose.Schema(
 	{
 		advertisement: {
-			type: Schema.Types.ObjectId,
-			ref: "Advertisement",
-			required: true,
+			TypeBoard: {
+				type: String,
+				ref: "Advertisement",
+				required: true,
+			},
+			number: {
+				type: String,
+				required: true,
+			},
+			size: {
+				type: String,
+				required: true,
+			},
+			imgs: [
+				{
+					type: String,
+					required: true,
+				},
+			],
+			start: {
+				type: Date,
+				required: true,
+			},
+			end: {
+				type: Date,
+				required: true,
+			},
 		},
 		location: {
 			type: Schema.Types.ObjectId,
@@ -14,33 +38,36 @@ const CreateRequestSchema = new mongoose.Schema(
 			required: true,
 		},
 		// Thông tin công ty
-		name: {
-			type: String,
-			required: true,
-		},
-		address: {
-			type: String,
-			required: true,
-		},
-		email: {
-			type: String,
-			required: true,
-		},
-		phone: {
-			type: String,
-			required: true,
-		},
-		startContract: {
-			type: Date,
-			required: true,
-		},
-		endContract: {
-			type: Date,
-			required: true,
+		company: {
+			name: {
+				type: String,
+				required: true,
+			},
+			address: {
+				type: String,
+				required: true,
+			},
+			email: {
+				type: String,
+				required: true,
+			},
+			phone: {
+				type: String,
+				required: true,
+			},
+			address: {
+				type: String,
+				required: true,
+			},
 		},
 		createdBy: {
 			type: Schema.Types.ObjectId,
 			ref: "Account",
+			required: false,
+		},
+		accepted: {
+			type: Boolean,
+			default: false,
 			required: true,
 		},
 	},

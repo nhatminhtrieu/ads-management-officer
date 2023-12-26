@@ -11,7 +11,7 @@ export default class DistrictRepository {
     }
 
     async getAllDistricts() {
-        return await this.model.find();
+        return await this.model.find({ status: true });
     }
 
     async getDistrictByName(name) {

@@ -2,16 +2,13 @@ import express from 'express';
 import DistrictService from '../services/DistrictService.js';
 
 const router = express.Router();
-// CRUD
 
 const districtService = new DistrictService();
 
 // Create
 router.post('/create', async (req, res) => {
     const name = req.body;
-    console.log(name.district)
     const result = await districtService.addDistrict({ district: name.district });
-    console.log(result);
 });
 
 // Read

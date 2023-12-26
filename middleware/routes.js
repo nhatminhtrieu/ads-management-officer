@@ -6,7 +6,7 @@ import AccountRouter from "../routes/accountRoutes.js";
 import AdminRouter from "../routes/adminRoutes.js";
 import ReportRouter from "../routes/reportRoutes.js";
 import AdsTypeRouter from "../routes/adsTypeRoutes.js";
-import ReportTypeRouter from "../routes/reportTypesRoutes.js";
+import ReportTypeRouter from "../routes/reportTypeRoutes.js";
 import LocationRouter from "../routes/locationRoutes.js";
 
 export default function (app) {

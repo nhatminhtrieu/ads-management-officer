@@ -1,8 +1,8 @@
-import AdsTypesRepository from "../database/repositories/AdsTypesRepository.js";
+import AdsTypeRepository from "../database/repositories/AdsTypeRepository.js";
 
 export default class AdsTypesService {
   constructor() {
-    this.repository = new AdsTypesRepository();
+    this.repository = new AdsTypeRepository();
   }
 
   async addAdsType(newType) {

@@ -76,6 +76,6 @@ const CreateRequestSchema = new mongoose.Schema(
 	}
 );
 
-const CreateRequest = mongoose.model("CreateRequest", CreateRequestSchema, "CreateRequests");
+const CreateRequest = mongoose.model("CreateRequest", CreateRequestSchema, "createRequests");
 
 export default CreateRequest;

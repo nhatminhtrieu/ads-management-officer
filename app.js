@@ -6,6 +6,7 @@ import cors from "cors";
 import { engine } from "express-handlebars";
 import hbs_sections from "express-handlebars-sections";
 import session from "express-session";
+import passport from "passport";
 
 import Connection from "./database/Connection.js";
 import CreateFirstAccount from "./database/CreateFirstAccount.js";
@@ -48,14 +49,17 @@ app.use(
 	})
 );
 
-// app.use(function (req, res, next) {
-// 	if (typeof req.session.isAuthenticated === "undefined") {
-// 		req.session.isAuthenticated = false;
-// 		res.redirect("/account/login");
-// 	} else {
-// 		next();
-// 	}
-// });
+app.use(function (req, res, next) {
+	if (typeof req.session.isAuthenticated === "undefined") {
+		req.session.isAuthenticated = false;
+		res.redirect("/account/login");
+	} else {
+		if (req.session.authUser) {
+			res.locals.authUser = req.session.authUser;
+		}
+		next();
+	}
+});
 
 app.use("/static", auth, express.static("static"));
 routesMdw(app);

@@ -1,0 +1,186 @@
+{{#section "css"}}
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
+	/>
+{{/section}}
+
+{{#section "js"}}
+	<script>
+		((g) => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary",
+		q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps =
+		{}), r = new Set(), e = new URLSearchParams(), u = () => h || (h = new Promise(async (f, n) => {
+		await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(
+		k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()), g[k] ); e.set("callback", c + ".maps." +
+		q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => (h =
+		n(Error(p + " could not load."))); a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+		m.head.append(a); })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : (d[l] = (f,
+		...n) => r.add(f) && u().then(() => d[l](f, ...n))); })({ key:
+		"AIzaSyCwF9RHdM2Jhzi-hDNJEGvJvEEFos4ViRA", v: "weekly" });
+	</script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
+	></script>
+	<script>
+		$("#startContract").datetimepicker({ timepicker: false, format: 'd/m/Y', mask: true });
+		$("#endContract").datetimepicker({ timepicker: false, format: 'd/m/Y', mask: true });
+	</script>
+	<script type="module" src="/static/js/vwAds/stepperForm.js"></script>
+	<script type="module" src="/static/js/vwAds/loadMap.js"></script>
+{{/section}}
+<div class="d-flex justify-content-between">
+	<h4 id="step-name">Tạo bảng quảng cáo</h4>
+	<div class="text-primary">Bước <span id="step-count"></span>/3</div>
+</div>
+<form id="frmLogin" method="post">
+	<div class="d-flex flex-column" id="step-1" style="gap: 1rem">
+		<!-- Loại bảng quảng cáo input -->
+		<div class="form-outline">
+			<label for="typeBoard" class="form-label">Loại bảng quảng cáo
+				<span class="text-danger">*</span></label>
+			<select class="form-select border-2" name="typeBoard" id="typeBoard">
+				<option value="">Select one</option>
+				<option value="">New Delhi</option>
+				<option value="">Istanbul</option>
+				<option value="">Jakarta</option>
+			</select>
+		</div>
+
+		<!-- Kích thước input -->
+		<div class="form-outline">
+			<label class="form-label" for="size">Kích thước
+				<span class="text-danger">*</span></label>
+			<input
+				type="text"
+				id="size"
+				class="form-control border-2"
+				placeholder="2.5m x 10m"
+				name="size"
+				value="2m"
+			/>
+		</div>
+
+		<!-- Upload hình ảnh bảng quảng cáo -->
+		<div class="form-outline">
+			<label for="imgs" class="form-label">Hình ảnh
+				<span class="text-danger">*</span>
+			</label>
+			<input
+				class="form-control border-2"
+				type="file"
+				id="formFileMultiple"
+				multiple
+				aria-describedby="fileHelp"
+				accept="image/*"
+				required
+			/>
+		</div>
+	</div>
+	<div class="d-flex flex-column d-none" id="step-2" style="gap: 1rem">
+		<div id="map" style="height:300px; width:100%"></div>
+
+		<!-- Điểm đặt quảng cáo input -->
+		<div class="form-outline">
+			<label class="form-label" for="address">Điểm đặt quảng cáo</label>
+			<input
+				type="text"
+				id="address"
+				class="form-control border-2 bg-white"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ"
+				name="address"
+				disabled
+			/>
+		</div>
+
+		<!-- Khu vực điểm đặt quảng cáo input -->
+		<div class="form-outline">
+			<label class="form-label" for="area">Khu vực</label>
+			<input
+				type="text"
+				id="area"
+				class="form-control border-2 bg-white"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ"
+				name="area"
+				disabled
+			/>
+		</div>
+	</div>
+	<div class="d-flex flex-column d-none" id="step-3" style="gap: 1rem">
+		<!-- Tên công ty input -->
+		<div class="form-outline">
+			<label class="form-label" for="nameCompany">Tên công ty
+				<span class="text-danger">*</span></label>
+			<input
+				type="text"
+				id="nameCompany"
+				class="form-control border-2"
+				placeholder="Công ty ABC"
+				name="nameCompany"
+			/>
+		</div>
+		<!-- Tên Email input -->
+		<div class="form-outline">
+			<label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+			<input
+				type="email"
+				id="name"
+				class="form-control border-2"
+				placeholder="Công ty ABC"
+				name="email"
+			/>
+		</div>
+		<!-- Phone -->
+		<div class="form-outline">
+			<label class="form-label" for="nameCompany">Phone <span class="text-danger">*</span></label>
+			<input
+				type="text"
+				id="phone"
+				class="form-control border-2"
+				placeholder="0909123456"
+				name="phone"
+			/>
+		</div>
+		<!-- Địa chỉ -->
+		<div class="form-outline">
+			<label class="form-label" for="address">Địa chỉ <span class="text-danger">*</span></label>
+			<input
+				type="text"
+				id="addressCompany"
+				class="form-control border-2"
+				placeholder="227 Nguyễn Văn Cừ"
+				name="addressCompany"
+			/>
+		</div>
+		<div class="d-flex justify-content-between">
+			<div class="form-outline w-100">
+				<label class="form-label" for="startContract">Ngày bắt đầu
+					<span class="text-danger">*</span></label>
+				<input type="text" id="startContract" class="form-control border-2" name="startContract" />
+			</div>
+			<div class="form-outline w-100 ms-2">
+				<label class="form-label" for="endContract">Ngày kết thúc
+					<span class="text-danger">*</span></label>
+				<input type="text" id="endContract" class="form-control border-2" name="endContract" />
+			</div>
+
+		</div>
+	</div>
+	<div class="alert alert-danger mt-4" role="alert">
+		<strong>Tạo bảng quảng cáo không thành công</strong>
+		{{err_message}}
+	</div>
+	<div id="fileHelp" class="invalid-feedback">
+		Tối đa 02 hình, mỗi hình tối đa 10MB.
+	</div>
+</form>
+<div class="d-flex">
+	<button class="btn btn-outline-primary" id="btn-back" style="width: 6rem" disabled>
+		Trở về
+	</button>
+	<button class="btn btn-primary ms-2" id="btn-next" style="width: 6rem">
+		Tiếp theo
+	</button>
+	<button type="submit" class="btn btn-primary ms-2 d-none" id="btn-submit" style="width: 6rem">
+		Xác nhận
+	</button>
+</div>

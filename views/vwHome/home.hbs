@@ -1,3 +1,13 @@
-<div class="container-fluid h-100" style="margin-top: 60px">
-	Trang chủ có giao diện map hiện đầy đủ các quảng cáo tại phường đang quản lý
+{{#section "css"}}
+	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+{{/section}}
+
+{{#section "js"}}
+	<script type="module" src="/static/js/vwHome/loadMap.js"></script>
+{{/section}}
+
+<div class="container-fluid vh-100" style="padding-top: 60px">
+	<div id="map" style="height: 80%"></div>
+	<h3>Return data</h3>
+	<div id="map-return-data">Chọn 1 địa điểm bất kỳ</div>
 </div>

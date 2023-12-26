@@ -1,6 +1,7 @@
 // Define your routes here
 import express from "express";
 const router = express.Router();
+const createRequestsRouter = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypesService.js";
 
@@ -32,9 +33,15 @@ router.get("/edit-request", (req, res) => {
 	res.render("vwAds/editRequests", { layout: "ads" });
 });
 
-router.get("/create-request", (req, res) => {
+createRequestsRouter.get("/", (req, res) => {
 	res.render("vwAds/createRequests", { layout: "ads" });
 });
+
+createRequestsRouter.get("/new-ad", (req, res) => {
+	res.render("vwAds/newAd", { layout: "ads" });
+});
+
+router.use("/create-request", createRequestsRouter);
 
 router.get("/type-ad", async (req, res) => {
 	const service = new AdsTypesService();

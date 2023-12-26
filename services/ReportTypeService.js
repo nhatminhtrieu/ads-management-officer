@@ -1,8 +1,8 @@
-import ReportTypesRepository from "../database/repositories/ReportTypesRepository.js"
+import ReportTypeRepository from "../database/repositories/ReportTypeRepository.js"
 
 export default class ReportTypesService {
     constructor() {
-        this.repository = new ReportTypesRepository()
+        this.repository = new ReportTypeRepository()
     }
 
     async addReportType(newType){

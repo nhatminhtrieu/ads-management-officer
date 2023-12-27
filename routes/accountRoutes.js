@@ -3,51 +3,120 @@ import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import otpGenerator from "otp-generator";
 import nodemailer from "nodemailer";
+import moment from "moment";
+import { config } from "dotenv";
 
+import auth from "../middleware/auth.js";
 import AccountService from "../services/AccountService.js";
 
+config()
 const router = express.Router();
 const service = new AccountService();
 
 passport.use(new FacebookStrategy({
-    clientID: "304889805870139",
-    clientSecret: "8971ed8025628aea94a6542b056029f7",
-    callbackURL: "http://localhost:3456/account/facebook/callback",
+    clientID: process.env.FB_CLIENT_ID,
+    clientSecret: process.env.FB_CLIENT_SECRET,
+    callbackURL: process.env.FB_CALLBACK_URL,
     profileFields: ['id', 'emails', 'name', 'displayName']
 },
     async function (accessToken, refreshToken, profile, cb) {
-        const newAccount = {
-            email: profile.emails[0].value,
-            fullName: profile.displayName,
-            password: "123456",
-            provider: "facebook",
+        const existedAccount = await service.findByLinkAccount(profile.id);
+        if (existedAccount) {
+            return cb(null, {...profile, status: "authenticated"});
         }
 
-        await service.createAccount(newAccount)
-        return cb(null, profile);
+        return cb(null, {
+            status: "not authenticated"
+        });
     }
 ));
 
 router.get("/", (req, res) => {
-	res.redirect("/account/login");
+    res.redirect("/account/login");
 });
 
 router.get("/login", (req, res) => {
-	res.render("vwAccounts/login", { layout: false });
-});
-
-router.get("/register", (req, res) => {
-	res.render("vwAccounts/signup", { layout: false });
+    res.render("vwAccounts/login", { layout: false });
 });
 
 router.get("/forgotPassword", async (req, res) => {
-	const email = req.session.authUser?.email;
-	email ? res.render("vwAccounts/verifyOTP", { layout: false }) : res.render("vwAccounts/inputEmail", { layout: false });
+    const email = req.session.authUser?.email;
+    email ? res.render("vwAccounts/verifyOTP", { layout: false }) : res.render("vwAccounts/inputEmail", { layout: false });
+});
+
+router.get("/verifyOTP", async (req, res) => {
+    res.render("vwAccounts/verifyOTP", { layout: false });
+})
+
+router.get("/resetPassword", async (req, res) => {
+    res.render("vwAccounts/resetPassword", { layout: false });
+})
+
+router.get("/profile", auth, (req, res) => {
+    res.render("vwAccounts/infor", {
+        layout: "profile",
+    });
+});
+
+router.get("/link", auth, (req, res) => {
+    res.render("vwAccounts/link", {
+        layout: "profile.hbs",
+    });
+})
+
+router.get("/changePassword", auth, (req, res) => {
+    res.render("vwAccounts/changePassword", {
+        layout: "profile.hbs",
+    });
+})
+
+router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
+
+router.get(
+    "/facebook/callback",
+    passport.authenticate("facebook", { failureRedirect: "/account/login" }),
+    async function (req, res) {
+        const { status } = req.user;
+        console.log(status);
+        if (status == "not authenticated") {
+            console.log(req.session.authUser)
+            if (typeof req.session.authUser != "undefined") {
+                const { id } = req.user;
+                const { username } = req.session.authUser;
+                await service.updateLinkAccount(username, id);
+                res.redirect("/account/link");
+                return;
+            } else {
+                res.redirect("/account/login");
+                return;
+            }
+        } 
+
+        const user = await service.findByLinkAccount(req.user.id);
+        req.session.isAuthenticated = true;
+        req.session.authUser = user;
+        res.redirect("/home");
+    }
+);
+
+router.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    var check = await service.verifyAccount({username}, password);
+    if (check) {
+        req.session.isAuthenticated = true;
+        if(check.dob != null) {
+            check.dob = moment(check.dob).format("DD/MM/YYYY");
+        }
+        req.session.authUser = check
+        res.redirect("/home");
+    } else {
+        res.render("vwAccounts/login", { layout: false, err_message: "Invalid email or password" });
+    }
 });
 
 router.post("/sendOTP", async (req, res) => {
     const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-    if(Object.keys(req.body).length != 0 || req.session.authUser == undefined) {
+    if (Object.keys(req.body).length != 0 || req.session.authUser == undefined) {
         req.session.authUser = {};
         req.session.authUser.username = req.body.username;
         req.session.authUser.email = req.body.email;
@@ -58,8 +127,8 @@ router.post("/sendOTP", async (req, res) => {
         res.render("vwAccounts/inputEmail", { layout: false, err_message: "Tài khoản không tồn tại" });
         return;
     }
-	req.session.authUser.otp = otp;
-	var transporter =  nodemailer.createTransport({ // config mail server
+    req.session.authUser.otp = otp;
+    var transporter = nodemailer.createTransport({ // config mail server
         service: 'Gmail',
         auth: {
             user: 'bddquan@gmail.com',
@@ -71,32 +140,38 @@ router.post("/sendOTP", async (req, res) => {
         to: req.session.authUser.email,
         subject: 'Thay đổi mật khẩu',
         text: 'Bạn nhận được tin nhắn này từ đội ngũ phát triển website - JCXDC team ',
-		html: '<p>Mã xác nhận của bạn là <b>' + otp + '</b>'
+        html:
+            '<div style="border-bottom:1px solid #eee"> \
+                <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
+            </div> \
+            <p style="font-size:1.1em">Xin chào,</p> \
+            <p>Cảm ơn bạn đã sử dụng sản phẩm của chúng tôi. Sử dụng mã OTP dưới đây để xác nhận cài đặt lại mật khẩu của tài khoản.</p> \
+            <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">'
+            + otp + '</h2> \
+            <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
+            <hr style="border:none;border-top:1px solid #eee" /> \
+            <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
+                <p>JCXDC team</p> \
+                <p>HCM City</p> \
+            </div>'
     }
     transporter.sendMail(mainOptions, (err, info) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
         else {
             res.redirect("/account/verifyOTP")
         }
     })
 })
 
-router.get("/verifyOTP", async (req, res) => {
-    res.render("vwAccounts/verifyOTP", { layout: false });
-})
 
 router.post("/verifyOTP", async (req, res) => {
-	const otp = Object.values(req.body).join("");
-	if (otp ==   req.session.authUser.otp) {
+    const otp = Object.values(req.body).join("");
+    if (otp == req.session.authUser.otp) {
         res.redirect("/account/resetPassword");
     } else {
         res.render("vwAccounts/verifyOTP", { layout: false, err_message: "Mã OTP không đúng" });
     }
 });
-
-router.get("/resetPassword", async (req, res) => {
-    res.render("vwAccounts/resetPassword", { layout: false });
-})
 
 router.post("/resetPassword", async (req, res) => {
     const password = req.body.password;
@@ -106,36 +181,38 @@ router.post("/resetPassword", async (req, res) => {
     res.redirect("/account/login");
 })
 
-router.post("/login", async (req, res) => {
-	const { username, password } = req.body;
-	const check = await service.verifyAccount(username, password);
-	if (check) {
-		req.session.isAuthenticated = true;
-		req.session.authUser = check;
-		res.redirect("/home");
-	} else {
-		res.render("vwAccounts/login", { layout: false, err_message: "Invalid email or password" });
-	}
-});
+router.post("/changePassword", auth, async (req, res) => {
+    const { _id } = req.session.authUser;
+    const { currentPassword, newPassword } = req.body;
 
-router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
+    const check = await service.verifyAccount({_id}, currentPassword);
+    if (check) {
+        await service.updatePassword(_id, newPassword);
+        res.render("vwAccounts/changePassword", { layout: "profile.hbs", success_message: "Đổi mật khẩu thành công" });
+    } else {
+        res.render("vwAccounts/changePassword", { layout: "profile.hbs", err_message: "Mật khẩu không đúng" });
+    }
+})
 
-router.get(
-	"/facebook/callback",
-	passport.authenticate("facebook", { failureRedirect: "/account/login" }),
-	function (req, res) {
-		// Successful authentication, redirect home.
-		res.redirect("/static/html/map.html");
-	}
-);
+router.post("/changeInfo", auth, async (req, res) => {
+    const { _id } = req.session.authUser;
+    const { email, fullname, phone, rawDob } = req.body;
 
-router.get("/profile", (req, res) => {
-	res.render("vwAccounts/profile");
-});
+    const dob = rawDob === '__/__/____' ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
 
-router.post("/logout", (req, res) => {
-	req.session.isAuthenticated = false;
-	req.session.authUser = null;
-	res.redirect("/account/login");
+    await service.updateProfile(_id, { email, fullname, phone, dob });
+   
+    const user = (await service.findById(_id)).toObject();
+    if(user.dob != null) {
+        user.dob = moment(user.dob).format("DD/MM/YYYY");
+    }
+    req.session.authUser = user;
+    res.redirect("/account/profile");
+})
+
+router.post("/logout", auth, (req, res) => {
+    req.session.isAuthenticated = false;
+    req.session.authUser = null;
+    res.redirect("/account/login");
 })
 export default router;

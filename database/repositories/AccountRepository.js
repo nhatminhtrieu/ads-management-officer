@@ -14,7 +14,15 @@ export default class AccountRepository {
         return await this.model.findOne(entity);
     }
 
-    async patch(username, password) {
-        return await this.model.updateOne({ username }, { password });
+    async patch(_id, password) {
+        return await this.model.updateOne({ _id }, { password });
+    }
+
+    async patchEntity(entity, data) {
+        return await this.model.updateOne(entity, data);
+    }
+
+    async patchLinkAccount(username, id) {
+        return await this.model.updateOne({ username }, { $push: { account_link: id } });
     }
 }

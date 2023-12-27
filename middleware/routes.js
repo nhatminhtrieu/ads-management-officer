@@ -12,7 +12,7 @@ export default function (app) {
 	app.get("/", auth, (req, res) => {
 		res.redirect("/home");
 	});
-	app.use("/home", HomeRouter);
+	app.use("/home", auth, HomeRouter);
 	app.use("/advertisement", AdvertisementRouter);
 	app.use("/verify-captcha", VerifyCaptchaRouter);
 	app.use("/account", AccountRouter);

@@ -1,0 +1,95 @@
+{{#section 'css'}}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+{{/section}}
+
+<div class="d-flex align-items-center">
+    <h3>Thông tin cá nhân</h3>
+    <button id="edit" class="list-group-item ms-4">
+        <i class="fa fa-edit" aria-hidden="true"></i>
+        Edit
+    </button>
+</div>
+<form id="frmInfo" action="/account/changeInfo" class="row g-3 needs-validation" method="post">
+    <div class="form-outline">
+        <label class="form-label" for="email"><b>Email</b></label>
+        <input type="email" id="email" class="form-control border-2" 
+            {{#if authUser.email}}
+                value={{authUser.email}}
+            {{else}}
+                placeholder="Chưa có thông tin email"
+            {{/if}}
+            name="email"  disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="fullName"><b>Họ tên</b></label>
+        <input type="text" id="fullName" class="form-control border-2" 
+            {{#if authUser.fullname}}
+                value="{{authUser.fullname}}"
+            {{else}}
+                placeholder="Chưa có thông tin họ tên"
+            {{/if}}
+            name="fullname" disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="phone"><b>Số điện thoại</b></label>
+        <input type="text" id="phone" class="form-control border-2"  
+            {{#if authUser.phone}}
+                value={{authUser.phone}}
+            {{else}}
+                placeholder="Chưa có thông tin số điện thoại"
+            {{/if}}
+            name="phone" disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="txtDoB"><b>Ngày tháng năm sinh</b></label>
+        <input type="text" id="txtDoB" class="form-control border-2" 
+            {{#if authUser.dob}}
+                value={{authUser.dob}}
+            {{/if}}
+            name="rawDob" disabled 
+        />
+    </div>
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary" disabled>Cập nhật</button>
+        <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
+    </div>
+</form>
+
+{{#section 'js'}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+        console.log("{{authUser.stringDate}}")
+    </script>
+    <script>
+        $('#txtDoB').datetimepicker({
+            timepicker: false,
+            format: 'd/m/Y',
+            mask: true,
+            scrollMonth: false,
+            scrollInput: false
+        });
+
+        $('#edit').click(function() {
+            $('input').removeAttr('disabled');
+            $('button').removeAttr('disabled');
+        });
+
+
+        $('#cancel').click(function() {
+            $('#frmInfo')[0].reset()
+            $('#txtDoB').datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y',
+                mask: true,
+                scrollMonth: false,
+                scrollInput: false
+            });
+            $('input').attr('disabled', 'disabled');
+            $('button').attr('disabled', 'disabled');
+        });
+    </script>
+{{/section}}

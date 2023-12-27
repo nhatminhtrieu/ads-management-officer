@@ -1,0 +1,162 @@
+{{#section 'css'}}
+<style>
+    .badge {
+        padding: 1rem 0.8rem
+    }
+
+    .badge-success {
+        background-color: #dcf1e4;
+        color: #0c622e
+    }
+
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+</style>
+{{/section}}
+
+<a href="/admin/officer" class="btn btn-secondary"><i class="bi bi-chevron-left"></i>Quay lại</a>
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                            alt="avatar" class="rounded-circle" style="width: 100%;">
+                        <h5 class="my-3">{{officer.username}}</h5>
+                        <p class="text-muted mb-1">
+                            Chức vụ: 
+                            Cán bộ
+                            {{#ifCond officer.role "==" 1}}
+                                phường
+                            {{/ifCond}}
+                            {{#ifCond officer.role "==" 2}}
+                                quận
+                            {{/ifCond}}
+                            {{#ifCond officer.role "==" 3}}
+                                sở
+                            {{/ifCond}}
+                        </p>
+                        <div class="d-flex justify-content-center mb-2"></div>
+                        {{#if officer.status}}
+                            <span class="badge badge-success rounded-pill">Hoạt động</span>
+                        {{else}}
+                            <span class="badge badge-danger rounded-pill">Đã nghỉ</span>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Họ và tên</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{officer.fullname}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{officer.email}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Ngày sinh</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{officer.dob}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Điện thoại</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{officer.phone}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Địa chỉ</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{officer.address}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Phân công khu vực</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="text-muted mb-0">Quận
+                            <p>
+                                <select class="form-select" id="district" aria-label="Default select example">
+                                    <option selected>Open this select menu</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="text-muted mb-0">phường</p>
+                            <select class="form-select" id="ward" aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="d-flex">
+                    <div>
+                        <form action="/account/changeStatus/{{officer._id}}" method="post"> 
+                            <input hidden name="status" value="{{officer.status}}">
+                            {{#if officer.status}}
+                               <button type="submit" class="btn btn-danger">Đánh dấu nghỉ</button>
+                            {{else}}
+                                <button type="submit" class="btn btn-success">Đánh dấu hoạt động</button>
+                            {{/if}}
+                        </form>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary ms-1">Xóa tài khoản</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+{{#section 'js'}}
+
+<script>
+    const role = "{{officer.role}}";
+    role == 1 && $('#district').attr('disabled', 'disabled');
+    role == 2 && $('#ward').attr('disabled', 'disabled');
+    role == 3 && $('#district').attr('disabled', 'disabled') && $('#ward').attr('disabled', 'disabled');
+</script>
+{{/section}}

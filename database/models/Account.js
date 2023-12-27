@@ -16,14 +16,13 @@ const AccountSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    provider: {
-        type: String,
-        default: 'department', // department, facebook, google
-        required: true
+    account_link:{
+        type: Array,
     },
     createdat: { 
         type: Date, 
-        default: Date.now 
+        default: Date.now,
+        required: true
     },
     phone: {
         type: String,

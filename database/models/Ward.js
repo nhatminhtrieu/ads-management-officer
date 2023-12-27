@@ -3,10 +3,6 @@ import District from "./District.js";
 
 const WardSchema = new Schema(
     {
-        id: {
-            type: Schema.Types.ObjectId,
-            required: true,
-        },
         ward: {
             type: String,
             required: true,
@@ -15,7 +11,11 @@ const WardSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: District,
             required: true,
-        }
+        },
+        status: {
+            type: Boolean,
+            default: true,
+        },
     },
     {
         versionKey: false,
@@ -23,3 +23,5 @@ const WardSchema = new Schema(
 );
 
 const Ward = model("Ward", WardSchema, "wards");
+
+export default Ward;

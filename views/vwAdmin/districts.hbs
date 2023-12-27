@@ -1,1 +1,21 @@
-<h4>Quản lý quảng cáo theo quận/huyện</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">District name</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each districts}}
+        <tr>
+            <th scope="row">1</th>
+            <td>{{this.district}}</td>
+            <td>
+                <a href="/districts/edit/?id={{this.id}}" class="btn btn-primary">Edit</a>
+                <a href="/districts/delete/?id={{this.id}}" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

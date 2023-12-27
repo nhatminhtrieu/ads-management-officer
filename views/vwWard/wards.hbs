@@ -1,0 +1,28 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Ward name</th>
+            <th scope="col">District name</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each ward}}
+        <tr>
+            <th scope="row">1</th>
+            <td>{{this.ward}}</td>
+            <td>{{this.district.district}}</td>
+            <td>
+                <form action="/wards/create" method="post">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+                <form action="/wards/delete?id={{this.id}}&districtID={{this.district.id}}" method="post"
+                    onsubmit="return confirm('Are you sure you want to delete this ward?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

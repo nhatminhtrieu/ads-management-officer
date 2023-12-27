@@ -1,70 +1,43 @@
-import Ward from '../models/Ward.js'
+import WardModel from '../models/Ward.js'
+import DistrictModel from '../models/District.js'
+
 
 export default class WardRepository {
     constructor() {
-        this.model = Ward;
+        this.model = WardModel;
     }
 
     async addWard(data) {
-        try {
-            const ward = new this.model(data);
-            await ward.save();
-            return ward;
-        } catch (err) {
-            console.err("addWard", err);
-            throw err;
-        }
+        const ward = new this.model(data);
+        return await ward.save();
     }
 
     async getAllWards() {
-        try {
-            return await this.model.find({});
-        } catch (err) {
-            console.err("getAllWards", err);
-            throw err;
-        }
+        return await this.model.find({ status: true }).populate('district', 'district');
     }
 
-    async getWardByName(name) {
-        try {
-            return await this.model.findOne({ name });
-        } catch (err) {
-            console.err("getWardByName", err);
-            throw err;
-        }
+    async getAllWardsByDistrict(districtID) {
+        return await this.model.find({ district: districtID, status: true }).populate('district', 'district');
     }
 
-    async updateWard(name, data) {
-        try {
-            const updatedWard = await Ward.findOneAndUpdate({ name: name }, data, { new: true });
-            if (!updatedWard) {
-                throw new Error("Ward not found");
-            }
-
-            if (updatedWard.name !== data.name) {
-                throw new Error("Ward name cannot be changed");
-            }
-
-            if (updatedWard.districts === data.districts) {
-                throw new Error("Districts cannot be changed");
-            }
-
-            return updatedWard;
-        } catch (err) {
-            throw err;
-        }
+    async getDistrictById(id) {
+        return await DistrictModel.findById(id);
     }
 
-    async deleteWard(name) {
-        try {
-            const deletedWard = await Ward.findOneAndDelete({ name: name });
-            if (!deletedWard) {
-                throw new Error("Ward not found");
-            }
+    async getWardByName(name, districtName) {
+        const result = await this.model.findOne({ ward: name, district: districtName });
+        return result;
+    }
 
-            return deletedWard;
-        } catch (err) {
-            throw err;
-        }
+    async getWardById(id) {
+        return await this.model.findById(id);
+    }
+
+    async updateWard(id, districtID, newName) {
+        return await this.model.findOneAndUpdate({ _id: id, district: districtID }, { ward: newName }, { new: true });
+    }
+
+    async deleteWard(id, districtID) {
+        return await this.model.findByIdAndUpdate({ _id: id }, { district: districtID, status: false }, { new: true });
     }
 }

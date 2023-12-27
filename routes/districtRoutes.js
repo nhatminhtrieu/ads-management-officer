@@ -14,7 +14,8 @@ router.post('/create', async (req, res) => {
 // Read
 router.get('/', async (req, res) => {
     const result = await districtService.getAllDistricts();
-    res.json(result);
+    console.log(result)
+    res.render('vwAdmin/districts', { layout: 'admin.hbs', districts: result });
 });
 
 router.post("/update", async (req, res) => {

@@ -39,4 +39,3 @@ export default class DistrictService {
         return await this.repository.deleteDistrict(id);
     }
 }
-

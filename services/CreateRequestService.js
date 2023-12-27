@@ -1,3 +1,4 @@
+import moment from "moment";
 import CreateRequestRepository from "../database/repositories/CreateRequestRepository.js";
 
 export default class CreateRequestService {
@@ -5,7 +6,7 @@ export default class CreateRequestService {
 		this.repository = new CreateRequestRepository();
 	}
 
-	async addCreateRequest(newReq) {
+	async createRequest(newReq) {
 		const isExist = await this.repository.findByEntity(newReq);
 		if (isExist) {
 			return { error: "Request already exists" };
@@ -41,6 +42,15 @@ export default class CreateRequestService {
 		return list;
 	}
 
+	async findById(_id) {
+		let request = await this.repository.findByEntity({ _id });
+		if (request) {
+			request.advertisement.start = moment(request.advertisement.start).format("DD/MM/YYYY");
+			request.advertisement.end = moment(request.advertisement.end).format("DD/MM/YYYY");
+		}
+		return request;
+	}
+
 	async findRequestsByUser(user_id) {
 		return await this.repository.findAllByEntity({ createdBy: user_id });
 	}
@@ -49,7 +59,12 @@ export default class CreateRequestService {
 		return await this.repository.delete({ _id: id });
 	}
 
-	async acceptCreateRequest(id) {
-		return await this.repository.update(id, { accepted: true });
+	async approveCreateRequest(id) {
+		// Chờ service của location để tạo bảng quảng cáo mới
+		return await this.repository.update(id, { accepted: "approved" });
+	}
+
+	async rejectCreateRequest(id) {
+		return await this.repository.update(id, { accepted: "rejected" });
 	}
 }

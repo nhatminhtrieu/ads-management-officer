@@ -1,0 +1,107 @@
+<form id="form-create-request" method="post">
+    {{#with this.request.advertisement}}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Bảng quảng cáo</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <img src="https://kynguyengroup.com/wp-content/uploads/2020/01/BAC-A-Mat-sau.jpg" class="col-6"
+                    alt="alt">
+                <img src="https://pano.vn/wp-content/uploads/2019/04/quang-cao-treo-banner-bang-ron-co-phuon-3.jpg"
+                    class="col-6" alt="alt">
+            </div>
+            <div>
+                <strong>Loại bảng quảng cáo: </strong>
+                {{TypeBoard}}
+            </div>
+            <div>
+                <strong>Số lượng: </strong>
+                {{number}}
+            </div>
+            <div>
+                <strong>Kích cỡ: </strong>
+                {{size}}
+            </div>
+            <div>
+                <strong>Thời hạn hợp đồng: </strong>
+                {{start}} - {{end}}
+            </div>
+        </div>
+    </div>
+    {{/with}}
+
+    <!-- {{#with this.location}} -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Điểm đặt</h4>
+        </div>
+        <div class="card-body">
+            <div>
+                <strong>Địa chỉ: </strong>
+                {{address}}
+            </div>
+            <div>
+                <strong>Phân loại: </strong>
+                {{type}}
+            </div>
+            <div>
+                <strong>Khu vực: </strong>
+                {{area.ward}}, {{area.district}}
+            </div>
+            {{#if zoning}}
+            <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
+                <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
+            </div>
+            {{else}}
+            <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
+                <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
+            </div>
+            <div class="text-uppercase mt-2 fw-bold fst-italic text-secondary">
+                <i class="bi bi-x-circle-fill me-2"></i>Chưa quy hoạch
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    <!-- {{/with}} -->
+
+    {{#with this.request.company}}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Công ty</h4>
+        </div>
+        <div class="card-body">
+            <div>
+                <strong>Tên công ty: </strong>
+                {{name}}
+            </div>
+            <div>
+                <strong>Địa chỉ: </strong>
+                {{address}}
+            </div>
+            <div>
+                <strong>Email: </strong>
+                {{email}}
+            </div>
+            <div>
+                <strong>Số điện thoại: </strong>
+                {{phone}}
+            </div>
+        </div>
+    </div>
+    {{/with}}
+    <input id="hidden-id-input" class="d-none" value="{{this.request._id}}" name="id" readonly />
+    <button name="" id="" class="btn btn-danger" formaction="/advertisement/create-request/delete">
+        Hủy yêu cầu
+    </button>
+    <div class="d-flex">
+        <button name="" id="" class="btn btn-danger" style="width: 150px"
+            formaction="/advertisement/create-request/reject">
+            Từ chối
+        </button>
+        <button name="" id="" class="btn btn-success ms-2" style="width: 150px"
+            formaction="/advertisement/create-request/approve">
+            Đồng ý
+        </button>
+    </div>
+</form>

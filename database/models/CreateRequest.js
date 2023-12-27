@@ -45,17 +45,13 @@ const CreateRequestSchema = new mongoose.Schema(
 			},
 			address: {
 				type: String,
-				required: true,
+				required: false,
 			},
 			email: {
 				type: String,
 				required: true,
 			},
 			phone: {
-				type: String,
-				required: true,
-			},
-			address: {
 				type: String,
 				required: true,
 			},
@@ -66,8 +62,9 @@ const CreateRequestSchema = new mongoose.Schema(
 			required: false,
 		},
 		accepted: {
-			type: Boolean,
-			default: false,
+			type: String,
+			enum: ["pending", "approved", "rejected"],
+			default: "pending",
 			required: true,
 		},
 	},

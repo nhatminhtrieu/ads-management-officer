@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between">
 	<h4>Yêu cầu cấp phép</h4>
 	{{! Cho phân hệ cán bộ sở }}
-	<a name="" id="" class="btn btn-primary" href="create-request/new" role="button">
+	<a name="" id="" class="btn btn-primary" href="create-request/create" role="button">
 		<i class="bi bi-plus-lg"></i>
 		Tạo mới
 	</a>
@@ -14,16 +14,22 @@
 			<th scope="col" style="width: 20%">Công ty</th>
 			<th scope="col">Địa chỉ</th>
 			<th scope="col" style="width: 20%">Tình trạng</th>
+			<th scope="col">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
 		{{#each this.list}}
 		<tr>
-			<th scope="row">1</th>
+			<th scope="row">{{@index}}</th>
 			<td>{{advertisement.TypeBoard}}</td>
 			<td>{{company.name}}</td>
 			<td>{{location}}</td>
-			<td>{{#if accepted}}Đã được duyệt{{else}}Chưa được duyệt{{/if}}</td>
+			<td>{{accepted}}</td>
+			<td>
+				<a class="link-primary" href="/advertisement/create-request/detail?id={{_id}}">
+					<i class="bi bi-arrows-angle-expand"></i>
+				</a>
+			</td>
 		</tr>
 		{{/each}}
 	</tbody>

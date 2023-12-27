@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import ReportTypeService from "../services/ReportTypesService.js";
+import ReportTypeService from "../services/ReportTypeService.js";
 import ReportService from "../services/ReportService.js";
 
 // UI routers declaration

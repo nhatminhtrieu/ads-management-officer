@@ -19,11 +19,11 @@ export default class CreateRequestRepository {
 	}
 
 	async findAllByEntity(entity) {
-		return await this.model.find(entity);
+		return await this.model.find(entity).lean();
 	}
 
 	async findByEntity(entity) {
-		return await this.model.findOne(entity);
+		return await this.model.findOne(entity).lean();
 	}
 
 	async update(id, newEntity) {

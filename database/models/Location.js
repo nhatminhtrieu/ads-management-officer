@@ -7,7 +7,7 @@ const LocationSchema = new Schema({
   },
   format: {
     type: Schema.Types.ObjectId,
-    ref: "AdsTypes",
+    ref: "adsTypes",
     required: true,
   },
   zoning: {
@@ -26,6 +26,8 @@ const LocationSchema = new Schema({
     type: Object,
     required: true,
   },
+}, {
+  versionKey: false,
 });
 
 const Location = model("Location", LocationSchema, "locations");

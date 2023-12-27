@@ -21,6 +21,7 @@ export default class AdvertisementService {
       const locations = advertisements.filter((item, pos) => {
         return advertisements.indexOf(item) == pos;
       });
+      console.log(locations);
       return locations;
     } catch (err) {
       console.log("AdvertisementService.getAllLocations", err);

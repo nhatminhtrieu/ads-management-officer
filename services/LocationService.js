@@ -7,10 +7,38 @@ export default class LocationService {
 
   async createLocation(entity) {
     try {
-      const location = await this.repository.add(data);
+      const location = await this.repository.add(entity);
       return location;
     } catch (err) {
       console.log("LocationService.createLocation", err);
+    }
+  }
+
+  async findDataForPage({ offset, limit }) {
+    try {
+      const rawData = await this.repository.findDataForPage({ offset, limit });
+      const data = rawData.map((item, index) => {
+        const newItem = {
+          type: item.type,
+          format: item.format.name,
+          address: item.address,
+          index: offset + index + 1,
+        };
+        return newItem;
+      });
+      console.log("Service:", data);
+
+      return data;
+    } catch (err) {
+      console.log("LocationService.findDataForPage", err);
+    }
+  }
+
+  async countAll() {
+    try {
+      return await this.repository.countAll();
+    } catch (err) {
+      console.log("LocationService.countAll", err);
     }
   }
 

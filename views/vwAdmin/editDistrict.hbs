@@ -1,0 +1,10 @@
+<form action="/districts/update/?id={{district.id}}" method="post">
+    <div class="mb-3">
+        <h3>Edit District</h3>
+        <label for="txtName" class="form-label">Old District Name</label>
+        <input type="text" class="form-control" id="txtName" value="{{district.district}}" disabled>
+        <label for="txtName" class="form-label">New District Name</label>
+        <input type="text" class="form-control" id="txtName" name="district" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>

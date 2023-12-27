@@ -14,8 +14,8 @@
             <td>{{this.ward}}</td>
             <td>{{this.district.district}}</td>
             <td>
-                <form action="/wards/create" method="post">
-                    <button type="submit" class="btn btn-primary">Add</button>
+                <form action="/wards/update?id={{this.id}}&districtID={{this.district.id}}" method="post">
+                    <button type="submit" class="btn btn-primary">Edit</button>
                 </form>
                 <form action="/wards/delete?id={{this.id}}&districtID={{this.district.id}}" method="post"
                     onsubmit="return confirm('Are you sure you want to delete this ward?');">

@@ -61,7 +61,6 @@ export default class WardService {
             throw new Error("Ward not found");
         }
 
-        console.log("Delete ward")
         return await this.repository.deleteWard(id, districtID);
     }
 }

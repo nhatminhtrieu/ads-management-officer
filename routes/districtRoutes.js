@@ -2,34 +2,46 @@ import express from 'express';
 import DistrictService from '../services/DistrictService.js';
 
 const router = express.Router();
-
 const districtService = new DistrictService();
 
-// Create
-router.post('/create', async (req, res) => {
-    const name = req.body;
-    const result = await districtService.addDistrict({ district: name.district });
-});
+// Create: Checked
+router
+    .get('/create', (req, res) => {
+        res.render('vwAdmin/createDistrict', { layout: 'admin.hbs' });
+    })
+    .post('/create', async (req, res) => {
+        const district = req.body;
+        await districtService.addDistrict(district);
+        res.redirect('/districts');
+    });
 
-// Read
-router.get('/', async (req, res) => {
-    const result = await districtService.getAllDistricts();
-    console.log(result)
-    res.render('vwAdmin/districts', { layout: 'admin.hbs', districts: result });
-});
+// Read: Checked
+router
+    .get('/', async (req, res) => {
+        const result = await districtService.getAllDistricts();
+        res.render('vwAdmin/districts', { layout: 'admin.hbs', districts: result });
+    });
 
-router.post("/update", async (req, res) => {
-    const { id } = req.query;
-    const { newName } = req.body;
-    const result = await districtService.updateDistrict(id, newName);
-    res.json(result);
-});
+// Update: Checked
+router
+    .get('/update', async (req, res) => {
+        const { id } = req.query;
+        const result = await districtService.getDistrictById(id);
+        res.render('vwAdmin/editDistrict', { layout: 'admin.hbs', district: result });
+    })
+    .post('/update', async (req, res) => {
+        const { id } = req.query;
+        const newName = req.body.district;
+        await districtService.updateDistrict(id, newName);
+        res.redirect('/districts');
+    });
 
-// Delete
-router.post('/delete', async (req, res) => {
-    const { id } = req.query;
-    const result = await districtService.deleteDistrict(id);
-    res.send(result);
-});
+// Delete: Checked
+router
+    .post('/delete', async (req, res) => {
+        const { id } = req.query;
+        await districtService.deleteDistrict(id);
+        res.redirect('/districts');
+    });
 
 export default router;

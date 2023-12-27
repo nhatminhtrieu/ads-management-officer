@@ -5,17 +5,21 @@ export default class DistrictService {
         this.repository = new DistrictRepository();
     }
 
-    async addDistrict(data) {
-        const existingDistrict = await this.repository.getDistrictByName(data.name);
+    async addDistrict(district) {
+        const existingDistrict = await this.repository.getDistrictByName(district.district);
         if (existingDistrict) {
             throw new Error("District already exists");
         }
-        console.log(data);
-        return await this.repository.addDistrict(data);
+        return await this.repository.addDistrict(district);
     }
 
     async getAllDistricts() {
         return await this.repository.getAllDistricts();
+    }
+
+    async getDistrictById(id) {
+        id = id.trim();
+        return await this.repository.getDistrictById(id);
     }
 
     async updateDistrict(id, newName) {
@@ -23,10 +27,6 @@ export default class DistrictService {
         const district = await this.repository.getDistrictById(id);
         if (!district)
             throw new Error("District not found");
-        if (district.name === newName) {
-            throw new Error("District already exists");
-        }
-        console.log("Update successfully")
         return await this.repository.updateDistrict(id, newName);
     }
 

@@ -9,8 +9,8 @@ const wardService = new WardService();
 router.post('/create', async (req, res) => {
     const { wardName, districtID } = req.body;
     const result = await wardService.addWard({ ward: wardName, district: districtID });
-    res.redirect('/wards');
 })
+
 // /wards/658955201284436f7935f8d2
 router.get('/:id', async (req, res) => {
     const { id } = req.params;   // id = districtID
@@ -24,7 +24,6 @@ router.get('/:id', async (req, res) => {
 // Read all as district officer
 router.get('/', async (req, res) => {
     const result = await wardService.getAllWards(); // get all wards for admin
-    console.log(result);
     if (!result) {
         return res.status(404).send("Ward not found");
     }
@@ -34,6 +33,7 @@ router.get('/', async (req, res) => {
 router.post("/update", async (req, res) => {
     const { id, districtID } = req.query;
     const { newName } = req.body;
+    res.render('vwWard/editWard', { layout: 'admin.hbs', id, districtID, newName });
     const result = await wardService.updateWard(id, districtID, newName);
     res.json(result);
 })

@@ -10,7 +10,6 @@ export default class WardService {
         if (!existingDistrict) {
             throw new Error("District not found");
         }
-        console.log("District exist");
         const existingWard = await this.repository.getWardByName(data.ward, data.district);
         if (existingWard) {
             throw new Error("Ward already exists");
@@ -20,6 +19,10 @@ export default class WardService {
 
     async getAllWards() {
         return await this.repository.getAllWards();
+    }
+
+    async getWardById(id) {
+        return await this.repository.getWardById(id);
     }
 
     async getAllWardsByDistrict(id) {

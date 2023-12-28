@@ -13,7 +13,7 @@ export default class WardRepository {
     }
 
     async getAllWards() {
-        return await this.model.find({ status: true }).populate('district', 'district');
+        return await this.model.find({ status: true }).populate('district', 'district').sort('district');
     }
 
     async getAllWardsByDistrict(districtID) {
@@ -24,8 +24,8 @@ export default class WardRepository {
         return await DistrictModel.findById(id);
     }
 
-    async getWardByName(name, districtName) {
-        const result = await this.model.findOne({ ward: name, district: districtName });
+    async getWardByName(name, districtID) {
+        const result = await this.model.findOne({ ward: name, district: districtID });
         return result;
     }
 

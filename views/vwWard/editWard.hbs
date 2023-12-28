@@ -1,11 +1,11 @@
-<form action="/wards" method="post">
+<form action="/wards/update?id={{this.ward.id}}&districtID={{this.district.id}}" method="post">
     <div class="form-group">
-        <label for="wardID">Ward ID</label>
-        <input type="text" class="form-control" id="wardID" name="id" required>
+        <label for="oldWardName">Old Ward Name</label>
+        <input type="text" class="form-control" id="oldWardName" value="{{this.ward.ward}}" disabled>
     </div>
     <div class="form-group">
-        <label for="districtID">District ID</label>
-        <input type="text" class="form-control" id="districtID" name="districtID" required>
+        <label for="districtName">District Name</label>
+        <input type="text" class="form-control" id="districtName" value="{{this.district.district}}" disabled>
     </div>
     <div class="form-group">
         <label for="newName">New Ward Name</label>

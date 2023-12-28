@@ -13,4 +13,8 @@ export default class AccountRepository {
     async findByEntity(entity) {
         return await this.model.findOne(entity);
     }
+
+    async patch(username, password) {
+        return await this.model.updateOne({ username }, { password });
+    }
 }

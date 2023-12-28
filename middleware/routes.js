@@ -5,8 +5,9 @@ import HomeRouter from "../routes/homeRoutes.js";
 import AccountRouter from "../routes/accountRoutes.js";
 import AdminRouter from "../routes/adminRoutes.js";
 import ReportRouter from "../routes/reportRoutes.js";
-import AdsTypeRouter from "../routes/adsTypesRoutes.js";
-import ReportTypeRouter from "../routes/reportTypesRoutes.js";
+import AdsTypeRouter from "../routes/adsTypeRoutes.js";
+import ReportTypeRouter from "../routes/reportTypeRoutes.js";
+import LocationRouter from "../routes/locationRoutes.js";
 import DistrictRouter from "../routes/districtRoutes.js";
 import WardRouter from "../routes/wardRoutes.js";
 
@@ -22,6 +23,7 @@ export default function (app) {
 	app.use("/admin", AdminRouter);
 	app.use("/ads-type", AdsTypeRouter);
 	app.use("/report-type", ReportTypeRouter);
+	app.use("/location", LocationRouter);
 	app.use("/districts", DistrictRouter);
 	app.use("/wards", WardRouter)
 }

@@ -2,7 +2,7 @@
 import express from "express";
 const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
-import AdsTypesService from "../services/AdsTypesService.js";
+import AdsTypesService from "../services/AdsTypeService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
 router.get("/locations", async (req, res) => {

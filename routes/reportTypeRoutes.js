@@ -1,5 +1,5 @@
 import express from "express";
-import ReportTypesService from "../services/ReportTypesService.js";
+import ReportTypesService from "../services/ReportTypeService.js";
 
 const router = express.Router();
 const reportTypesService = new ReportTypesService();

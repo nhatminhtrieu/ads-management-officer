@@ -8,8 +8,7 @@ export default class AdvertisementService {
   async getAllAdvertisements() {
     try {
       const advertisements = await this.repository.getAllAdvertisements();
-      const locations = advertisements;
-      return locations;
+      return advertisements;
     } catch (err) {
       console.log("AdvertisementService.getAllAdvertisement", err);
     }

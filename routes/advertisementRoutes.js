@@ -7,8 +7,8 @@ import LocationService from "../services/LocationService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
 router.get("/locations", async (req, res) => {
-	const service = new AdvertisementService();
-	const locations = await service.getAllLocations();
+	const service = new LocationService();
+	const locations = await service.findAllLocations();
 	res.send(locations);
 });
 
@@ -28,13 +28,16 @@ router.get("/manage", (req, res) => {
 
 router.get("/ad-location", async (req, res) => {
 	const service = new LocationService();
-	const page = req.query.page || 1;
 	const limit = 20;
+
+	const totalPage = await service.findTotalPages({limit});
+	let page = req.query.page || 1;
+	if (page < 1) page = 1;
+	if (page > totalPage) page = totalPage;
+	
 	const offset = (page - 1) * limit;
 
-	
 	const data = await service.findDataForPage({ offset, limit });
-	const totalPage = Math.ceil(data.length / limit);
 
 	const pageNumbers = [];
 
@@ -88,6 +91,17 @@ router.post('/locations/new', async (req, res) => {
 	await service.createLocation(entity);
 
 	res.redirect('/advertisement/ad-location');
+});
+
+router.get("/ad-location/:id", async (req, res) => {
+	const service = new LocationService();
+	const list = await service.find({_id: req.params.id});
+	const location = list[0];
+	
+	res.render("vwAds/vwLocations/detail", { 
+		layout: "ads",
+		location,
+	});
 });
 
 router.get("/edit-request", (req, res) => {

@@ -22,6 +22,14 @@ export default class LocationRepository {
     return await this.model.countDocuments();
   }
 
+  async find(entity) {
+    return await this.model.find(entity).populate("format");
+  }
+
+  async findAll(){
+    return await this.model.find();
+  }
+
   async generate() {
     return await generateLocation();
   }

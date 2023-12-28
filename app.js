@@ -31,9 +31,9 @@ app.engine(
 				return parseInt(value) + 1;
 			},
 
-			ifNumberEqual(num1, num2, options) {
-                return (Number(num1) == Number(num2)) ? options.fn(this) : options.inverse(this);
-            }
+			ifCond(v1, operator, v2, options) {
+				return eval(`${v1} ${operator} ${v2}`) ? options.fn(this) : options.inverse(this);
+			}
 		},
 	})
 );

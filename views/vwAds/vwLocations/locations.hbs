@@ -31,7 +31,7 @@
 
 <ul class="pagination justify-content-center">
 	<li class="page-item">
-		<a class="page-link {{#ifNumberEqual this.page 1}} disabled {{/ifNumberEqual}}" href="/advertisement/ad-location?page=1" aria-label="Previous">
+		<a class="page-link {{#ifCond this.page "===" 1}} disabled {{/ifCond}}" href="/advertisement/ad-location?page=1" aria-label="Previous">
 			<span aria-hidden="true">&laquo;</span>
 		</a>
 	</li>
@@ -43,7 +43,7 @@
 	{{/each}}
 	
 	<li class="page-item">
-		<a class="page-link {{#ifNumberEqual this.totalPage this.page}} disabled {{/ifNumberEqual}}" href="/advertisement/ad-location?page={{this.totalPage}}" aria-label="Next">
+		<a class="page-link {{#ifCond this.totalPage "===" this.page}} disabled {{/ifCond}}" href="/advertisement/ad-location?page={{this.totalPage}}" aria-label="Next">
 			<span aria-hidden="true">&raquo;</span>
 		</a>
 	</li>

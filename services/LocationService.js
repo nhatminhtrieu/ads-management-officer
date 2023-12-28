@@ -19,6 +19,7 @@ export default class LocationService {
       const rawData = await this.repository.findDataForPage({ offset, limit });
       const data = rawData.map((item, index) => {
         const newItem = {
+          _id: item._id,
           type: item.type,
           format: item.format.name,
           address: item.address,
@@ -39,6 +40,32 @@ export default class LocationService {
       return await this.repository.countAll();
     } catch (err) {
       console.log("LocationService.countAll", err);
+    }
+  }
+
+  async find(entity) {
+    try {
+      return await this.repository.find(entity);
+    } catch (err) {
+      console.log("LocationService.find", err);
+    }
+  }
+
+  async findAllLocations() {
+    try {
+      return await this.repository.findAll();
+    } catch (err) {
+      console.log("LocationService.getAllLocations", err);
+    }
+  }
+
+  async findTotalPages({limit}) {
+    try {
+      const totalItems = await this.countAll();
+      const totalPages = Math.ceil(totalItems / limit);
+      return totalPages;
+    } catch (err) {
+      console.log("LocationService.findTotalPages", err);
     }
   }
 

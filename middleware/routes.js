@@ -8,18 +8,22 @@ import ReportRouter from "../routes/reportRoutes.js";
 import AdsTypeRouter from "../routes/adsTypeRoutes.js";
 import ReportTypeRouter from "../routes/reportTypeRoutes.js";
 import LocationRouter from "../routes/locationRoutes.js";
+import DistrictRouter from "../routes/districtRoutes.js";
+import WardRouter from "../routes/wardRoutes.js";
 
 export default function (app) {
-  app.get("/", auth, (req, res) => {
-    res.redirect("/home");
-  });
-  app.use("/home", HomeRouter);
-  app.use("/advertisement", AdvertisementRouter);
-  app.use("/verify-captcha", VerifyCaptchaRouter);
-  app.use("/account", AccountRouter);
-  app.use("/report", ReportRouter);
-  app.use("/admin", AdminRouter);
-  app.use("/ads-type", AdsTypeRouter);
-  app.use("/report-type", ReportTypeRouter);
-  app.use("/location", LocationRouter);
+	app.get("/", auth, (req, res) => {
+		res.redirect("/home");
+	});
+	app.use("/home", HomeRouter);
+	app.use("/advertisement", AdvertisementRouter);
+	app.use("/verify-captcha", VerifyCaptchaRouter);
+	app.use("/account", AccountRouter);
+	app.use("/report", ReportRouter);
+	app.use("/admin", AdminRouter);
+	app.use("/ads-type", AdsTypeRouter);
+	app.use("/report-type", ReportTypeRouter);
+	app.use("/location", LocationRouter);
+	app.use("/districts", DistrictRouter);
+	app.use("/wards", WardRouter)
 }

@@ -1,3 +1,6 @@
+import DistrictService from "../../services/DistrictService.js";
+import WardService from "../../services/WardService.js";
+
 const type = [
   "Đất công/Công viên/Hành lang an toàn giao thông",
   "Đất tư nhân/Nhà ở riêng lẻ",
@@ -22,17 +25,39 @@ const maxLat = 10.770785;
 const maxLng = 106.692092;
 const minLng = 106.672324;
 const wardDistrict1 = [
-  "Bến Nghé",
-  "Bến Thành",
-  "Cầu Kho",
-  "Cầu Ông Lãnh",
-  "Cô Giang",
-  "Đa Kao",
-  "Nguyễn Cư Trinh",
-  "Nguyễn Thái Bình",
-  "Phạm Ngũ Lão",
-  "Tân Định",
+  "Phường Bến Nghé",
+  "Phường Bến Thành",
+  "Phường Cầu Kho",
+  "Phường Cầu Ông Lãnh",
+  "Phường Cô Giang",
+  "Phường Đa Kao",
+  "Phường Nguyễn Cư Trinh",
+  "Phường Nguyễn Thái Bình",
+  "Phường Phạm Ngũ Lão",
+  "Phường Tân Định",
 ];
+const districtService = new DistrictService();
+const wardService = new WardService();
+
+async function formatDistrict(district) {
+  try {
+    const result = await districtService.findDistrictByName(district);
+    if (result) return { $oid: result._id };
+    return district;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function formatWard(district, ward) {
+  try {
+    const result = await wardService.findWardByEntity({ district, ward });
+    if (result) return { $oid: result._id };
+    return ward;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function formatData(response, zoning, lat, lng) {
   const adsType = format[Math.floor(Math.random() * format.length)];
@@ -67,6 +92,11 @@ async function formatData(response, zoning, lat, lng) {
       ? (ward = `Phường ${Math.floor(Math.random() * 14) + 1}`)
       : (ward =
           wardDistrict1[Math.floor(Math.random() * wardDistrict1.length)]);
+  }
+
+  if (district == "Quận 5" || district == "Quận 1") {
+    district = await formatDistrict(district);
+    ward = await formatWard(district["$oid"], ward);
   }
 
   return {

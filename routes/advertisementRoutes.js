@@ -4,6 +4,7 @@ const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
 import LocationService from "../services/LocationService.js";
+import WardService from "../services/WardService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
 // UI routers declaration
@@ -52,28 +53,28 @@ router.get("/locations/new", async (req, res) => {
   });
 });
 
-router.post("/locations/new", async (req, res) => {
-  const data = req.body;
+router.post('/locations/new', async (req, res) => {
+	const data = req.body;
+	
+	const matchDistrict = data.address.match(/Quận\s[^,]*,\s/);
+	const district = matchDistrict ? matchDistrict[0].slice(0, -2) : "Quận 5";
+	const matchWard = data.address.match(/Phường\s[^,]*,\s/);
+	const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
+	
+	const wardService = new WardService();
+	const areaId = await wardService.findAreaId({ district, ward });
 
-  const matchDistrict = data.address.match(/Quận\s[^,]*,\s/);
-  const district = matchDistrict ? matchDistrict[0].slice(0, -2) : "Quận 5";
-  const matchWard = data.address.match(/Phường\s[^,]*,\s/);
-  const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
+	const entity = {
+		type: data.type,
+		format: Object(data.format),
+		zoning: false,
+		coordinate: JSON.parse(data.coordinate),
+		address: data.address,
+		area: areaId,
+	}
 
-  const entity = {
-    type: data.type,
-    format: Object(data.format),
-    zoning: false,
-    coordinate: JSON.parse(data.coordinate),
-    address: data.address,
-    area: {
-      district,
-      ward,
-    },
-  };
-
-  const service = new LocationService();
-  await service.createLocation(entity);
+	const locationService = new LocationService();
+	await locationService.createLocation(entity);
 
   res.redirect("/advertisement/ad-location");
 });

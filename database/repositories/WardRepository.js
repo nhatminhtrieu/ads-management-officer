@@ -59,4 +59,18 @@ export default class WardRepository {
       { new: true }
     );
   }
+
+    async findAreaId({ district, ward }) {
+        const areas = await this.model.find({}).populate('district').find({ ward });
+        let areaId = "12345678"; // default
+
+        for (let i = 0; i < areas.length; i++) {
+            if (areas[i].district.district === district) {
+                areaId = areas[i]._id;
+                break;
+            }
+        }
+
+        return areaId;
+    }
 }

@@ -27,8 +27,6 @@ export default class LocationService {
         };
         return newItem;
       });
-      console.log("Service:", data);
-
       return data;
     } catch (err) {
       console.log("LocationService.findDataForPage", err);

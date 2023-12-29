@@ -23,7 +23,8 @@ const LocationSchema = new Schema({
     required: true,
   },
   area: {
-    type: Object,
+    type: Schema.Types.ObjectId,
+    ref: "wards",
     required: true,
   },
 }, {

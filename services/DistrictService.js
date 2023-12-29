@@ -43,4 +43,9 @@ export default class DistrictService {
     }
     return await this.repository.deleteDistrict(id);
   }
+
+  async findDistrictId(entity) {
+    const district = await this.findDistrictByName(entity.district);
+    return district._id;
+  }
 }

@@ -5,6 +5,7 @@ import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
 import LocationService from "../services/LocationService.js";
 import WardService from "../services/WardService.js";
+import DistrictService from "../services/DistrictService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
 // UI routers declaration
@@ -62,7 +63,10 @@ router.post('/locations/new', async (req, res) => {
 	const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
 	
 	const wardService = new WardService();
-	const areaId = await wardService.findAreaId({ district, ward });
+	const districtService = new DistrictService();
+
+	const wardId = await wardService.findWardId({ward});
+	const districtId = await districtService.findDistrictId({district});
 
 	const entity = {
 		type: data.type,
@@ -70,7 +74,10 @@ router.post('/locations/new', async (req, res) => {
 		zoning: false,
 		coordinate: JSON.parse(data.coordinate),
 		address: data.address,
-		area: areaId,
+		area: {
+			district: districtId,
+			ward: wardId,
+		},
 	}
 
 	const locationService = new LocationService();

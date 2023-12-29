@@ -101,7 +101,7 @@ async function formatData(response, zoning, lat, lng) {
 
   return {
     type: type[Math.floor(Math.random() * type.length)],
-    adsType,
+    format: adsType,
     zoning,
     coordinate: {
       lat,

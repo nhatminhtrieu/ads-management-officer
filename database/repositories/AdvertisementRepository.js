@@ -1,4 +1,6 @@
 import AdvertisementModel from "../models/Advertisement.js";
+import generateAdvertisement from "../utils/generateAdvertisement.js";
+import LocationRepository from "./LocationRepository.js";
 
 class AdvertisementRepository {
   constructor() {
@@ -24,11 +26,17 @@ class AdvertisementRepository {
         lat: Number(position.lat),
         lng: Number(position.lng),
       };
-      return await this.model.find({ coordinate: coordinate });
+      const repository = new LocationRepository();
+      const location = await repository.find({ coordinate });
+      return await this.model.find({ location: location._id });
     } catch (err) {
       console.err("getAllAdvertisementsByCoordinate", err);
       throw err;
     }
+  }
+
+  async generate() {
+    return await generateAdvertisement();
   }
 }
 

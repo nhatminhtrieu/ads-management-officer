@@ -36,4 +36,12 @@ export default class AdvertisementService {
       console.log("AdvertisementService.getAllAdvertisement", err);
     }
   }
+
+  async generateAds() {
+    try {
+      return await this.repository.generate();
+    } catch (err) {
+      console.log("AdvertisementService.generateAds", err);
+    }
+  }
 }

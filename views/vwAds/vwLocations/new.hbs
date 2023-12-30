@@ -2,11 +2,20 @@
 	<script type="module" src="/static/js/vwLocations/loadMap.js"></script>
 
 	<script>
-		$(".readonly").on('keydown paste focus mousedown', function(e){
+		$(".disabled").on('keydown paste focus mousedown', function(e){
 			if(e.keyCode != 9) // ignore tab
 				e.preventDefault();
 		});
 	</script>
+{{/section}}
+
+{{#section "css"}}
+<style>
+	.disabled {
+		pointer-events: none;
+		background-color: #e9ecef;
+	}
+</style>
 {{/section}}
 
 <a class="btn btn-primary" href="/advertisement/ad-location" role="button">
@@ -24,10 +33,9 @@
 	<input
 		type="text"
 		id="address"
-		class="form-control border-2 readonly"
+		class="form-control border-2 disabled"
 		placeholder="Vui lòng chọn 1 điểm trên bản đồ"
 		name="address"
-		style="background-color: #e9ecef;"
 		required
 	/>
 </div>

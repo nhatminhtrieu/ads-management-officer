@@ -1,5 +1,5 @@
 // Define your routes here
-import express from "express";
+import express, { raw } from "express";
 const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
@@ -87,15 +87,58 @@ router.post('/locations/new', async (req, res) => {
 });
 
 router.get("/ad-location/:id", async (req, res) => {
-  const service = new LocationService();
-  const list = await service.find({ _id: req.params.id });
-  const location = list[0];
+	const locationService = new LocationService();
+	const locations = await locationService.find({_id: req.params.id});
+	const location = locations[0];
 
-  res.render("vwAds/vwLocations/detail", {
-    layout: "ads",
-    location,
-  });
+	const adsTypeService = new AdsTypesService();
+	const rawAdsTypes = await adsTypeService.findAllAdsType();
+	const adsTypes = rawAdsTypes.map(adsType => {
+		return {
+			_id: adsType._id,
+			name: adsType.name,
+			isSelected: adsType._id.toString() === location.format._id.toString(),
+		}
+	});
+
+	const rawZoning = [
+		{
+			zoning: true,
+			name: "Đã quy hoạch",
+		},
+		{
+			zoning: false,
+			name: "Chưa quy hoạch",
+		}
+	]
+	const zoning = rawZoning.map(zoning => {
+		return {
+			zoning: zoning.zoning,
+			name: zoning.name,
+			isSelected: zoning.zoning === location.zoning,
+		}
+	});
+	
+	res.render("vwAds/vwLocations/detail", { 
+		layout: "ads",
+		location,
+		adsTypes,
+		zoning
+	});
 });
+
+router.post("/ad-location/:id", async (req, res) => {
+	const data = {
+		type: req.body.type,
+		format: Object(req.body.format),
+		zoning: req.body.zoning === "true",
+	}
+
+	const locationService = new LocationService();
+	const result = await locationService.updateLocation(req.params.id, data);
+
+	res.redirect(`/advertisement/ad-location/${req.params.id}`);
+})
 
 router.get("/edit-request", (req, res) => {
   res.render("vwAds/editRequests", { layout: "ads" });

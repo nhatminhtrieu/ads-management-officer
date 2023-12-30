@@ -74,4 +74,12 @@ export default class LocationService {
       console.log("LocationService.generateLocations", err);
     }
   }
+
+  async updateLocation(id, entity) {
+    try {
+      return await this.repository.update(id, entity);
+    } catch (err) {
+      console.log("LocationService.updateLocation", err);
+    }
+  }
 }

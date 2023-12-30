@@ -51,6 +51,7 @@ export async function loadSingleAdMarker(map, id) {
   const location = await response.json();
   const contentString = await contentAd(location);
   map.pushAdMarker(location, location.address, contentString);
+  return location;
 }
 
 export async function loadReportMarkers(map) {

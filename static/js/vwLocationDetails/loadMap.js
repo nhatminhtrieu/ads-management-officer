@@ -9,7 +9,8 @@ async function main() {
 	const id = window.location.pathname.split('/').pop();
 	const HomeMap = new CustomMap();
 	await HomeMap.init(onMapChange);
-	await loadSingleAdMarker(HomeMap, id)
+	const location = await loadSingleAdMarker(HomeMap, id)
+	await HomeMap.setCenter(location.coordinate);
 }
 
 main();

@@ -1,7 +1,25 @@
 {{#section "js"}}
-{{!--
-<script type="module" src="/static/js/vwAds/stepperForm.js"></script> --}}
-<script type="module" src="/static/js/vwAds/loadMap.js"></script>
+<script type="module">
+	import CustomMap from "/static/js/map/CustomMap.js";
+	import { contentAd } from "/static/js/loadMarker.js";
+
+	function onMapChange(returnData) {
+		const address = returnData.address;
+		const location_id = returnData._id;
+
+		$("#address").attr("value", address);
+		$("#location").attr("value", location_id);
+	}
+
+	const HomeMap = new CustomMap();
+	const list = {{{ json locations }}};
+	HomeMap.init(onMapChange).then(() => {
+		for (const location of list) {
+			const contentString = contentAd(location);
+			HomeMap.pushAdMarker(location, location.address, contentString);
+		}
+	});
+</script>
 <script>
 	$("#form-create-request").on('submit', (e) => {
 		e.preventDefault();
@@ -83,13 +101,6 @@
 		<div class="form-outline">
 			<label class="form-label" for="address">Địa chỉ</label>
 			<input type="text" id="address" class="form-control border-2 bg-white"
-				placeholder="Vui lòng chọn 1 điểm trên bản đồ" name="" readonly required />
-		</div>
-
-		<!-- Khu vực điểm đặt quảng cáo input -->
-		<div class="form-outline">
-			<label class="form-label" for="area">Khu vực</label>
-			<input type="text" id="area" class="form-control border-2 bg-white"
 				placeholder="Vui lòng chọn 1 điểm trên bản đồ" name="" readonly required />
 		</div>
 

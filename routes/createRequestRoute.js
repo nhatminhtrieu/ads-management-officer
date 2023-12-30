@@ -1,9 +1,11 @@
 import express from "express";
 
 import CreateRequestService from "../services/CreateRequestService.js";
+import LocationService from "../services/LocationService.js";
 
 const Router = express.Router();
 const service = new CreateRequestService();
+const locationService = new LocationService();
 
 // UI routers declaration
 Router.get("/", async (req, res) => {
@@ -11,8 +13,9 @@ Router.get("/", async (req, res) => {
 	res.render("vwAds/vwCreateRequests/list", { layout: "ads", list, empty: list.length === 0 });
 });
 
-Router.get("/create", (req, res) => {
-	res.render("vwAds/vwCreateRequests/create", { layout: "ads" });
+Router.get("/create", async (req, res) => {
+	const locations = await locationService.findAllLocations();
+	res.render("vwAds/vwCreateRequests/create", { layout: "ads", locations });
 });
 
 Router.get("/detail", async (req, res) => {

@@ -18,6 +18,7 @@
 			const contentString = contentAd(location);
 			HomeMap.pushAdMarker(location, location.address, contentString);
 		}
+		HomeMap.setAdCluster();
 		// Enable catch selected marker function
 		HomeMap.catchSelectedLocation();
 	});

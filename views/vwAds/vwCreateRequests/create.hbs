@@ -1,0 +1,142 @@
+{{#section "js"}}
+{{!--
+<script type="module" src="/static/js/vwAds/stepperForm.js"></script> --}}
+<script type="module" src="/static/js/vwAds/loadMap.js"></script>
+<script>
+	$("#form-create-request").on('submit', (e) => {
+		e.preventDefault();
+		$('#form-create-request').off('submit').submit();
+	});
+</script>
+{{/section}}
+
+<form id="form-create-request" method="post">
+	<div class="d-flex justify-content-between">
+		<h4 id="step-name">Tạo bảng quảng cáo</h4>
+		<div class="text-primary">Bước <span id="step-count"></span>1/3</div>
+	</div>
+	<div class="d-flex flex-column" id="step-1" style="gap: 1rem">
+		<!-- Loại bảng quảng cáo input -->
+		<div class="form-outline">
+			<label for="typeBoard" class="form-label">Loại bảng quảng cáo
+				<span class="text-danger">*</span></label>
+			<select class="form-select border-2" name="typeBoard" id="typeBoard">
+				<option value="Trụ bảng hiflex">Trụ bảng hiflex</option>
+				<option value="Trụ màn hình điện tử LED">Trụ màn hình điện tử LED</option>
+				<option value="Trụ hộp đèn">Trụ hộp đèn</option>
+				<option value="Bảng hiflex ốp tường">Bảng hiflex ốp tường</option>
+				<option value="Màn hình điện tử ốp tườn">Màn hình điện tử ốp tường</option>
+				<option value="Trụ treo băng rôn dọc">Trụ treo băng rôn dọc</option>
+				<option value="Trụ treo băng rôn ngang">Trụ treo băng rôn ngang</option>
+				<option value="Trụ/Cụm pano">Trụ/Cụm pano</option>
+				<option value="Cổng chào">Cổng chào</option>
+				<option value="Trung tâm thương mại">Trung tâm thương mại</option>
+			</select>
+		</div>
+
+		<!-- Kích thước input -->
+		<div class="form-outline">
+			<label class="form-label" for="size">Kích thước
+				<span class="text-danger">*</span></label>
+			<input type="text" id="size" class="form-control border-2" placeholder="2.5m x 10m" name="size" value=""
+				required />
+		</div>
+
+		<!-- Số lượng input -->
+		<div class="form-outline">
+			<label class="form-label" for="number">Số lượng
+				<span class="text-danger">*</span></label>
+			<input type="text" id="number" class="form-control border-2" placeholder="1 trụ/1 bảng" name="number"
+				value="" required />
+		</div>
+
+		<!-- Upload hình ảnh bảng quảng cáo -->
+		<div class="form-outline">
+			<label for="imgs" class="form-label">Hình ảnh
+				<span class="text-danger">*</span>
+			</label>
+			<input class="form-control border-2" type="file" id="formFileMultiple" name="imgs" multiple
+				aria-describedby="fileHelp" accept="image/*" required />
+		</div>
+
+		<!-- Thời gian hợp đồng -->
+		<div class="d-flex justify-content-between">
+			<div class="form-outline w-100">
+				<label class="form-label" for="startContract">Ngày bắt đầu
+					<span class="text-danger">*</span></label>
+				<input type="date" id="startContract" class="form-control border-2" name="startContract" required />
+			</div>
+			<div class="form-outline w-100 ms-2">
+				<label class="form-label" for="endContract">Ngày kết thúc
+					<span class="text-danger">*</span></label>
+				<input type="date" id="endContract" class="form-control border-2" name="endContract" required />
+			</div>
+
+		</div>
+		<div class="d-flex justify-content-between">
+			<h4 id="step-name">Chọn điểm đặt quảng cáo</h4>
+			<div class="text-primary">Bước <span id="step-count"></span>2/3</div>
+		</div>
+		<div id="map" style="height:300px; width:100%"></div>
+
+		<!-- Điểm đặt quảng cáo input -->
+		<div class="form-outline">
+			<label class="form-label" for="address">Địa chỉ</label>
+			<input type="text" id="address" class="form-control border-2 bg-white"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ" name="" readonly required />
+		</div>
+
+		<!-- Khu vực điểm đặt quảng cáo input -->
+		<div class="form-outline">
+			<label class="form-label" for="area">Khu vực</label>
+			<input type="text" id="area" class="form-control border-2 bg-white"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ" name="" readonly required />
+		</div>
+
+		<!-- Object ID của điểm đặt -->
+		<div class="form-outline d-none">
+			<label class="form-label" for="address">Location</label>
+			<input type="text" id="location" class="form-control border-2 bg-white"
+				placeholder="Vui lòng chọn 1 điểm trên bản đồ" name="location" readonly />
+		</div>
+		<div class="d-flex justify-content-between">
+			<h4 id="step-name">Thông tin công ty</h4>
+			<div class="text-primary">Bước <span id="step-count"></span>3/3</div>
+		</div>
+		<!-- Tên công ty input -->
+		<div class="form-outline">
+			<label class="form-label" for="comName">Tên công ty
+				<span class="text-danger">*</span></label>
+			<input type="text" id="comName" class="form-control border-2" placeholder="Công ty ABC" name="comName"
+				required />
+		</div>
+		<!-- Tên Email input -->
+		<div class="form-outline">
+			<label class="form-label" for="comEmail">Email <span class="text-danger">*</span></label>
+			<input type="email" name="comEmail" id="comEmail" class="form-control border-2"
+				placeholder="fit@hcmus.edu.vn" />
+		</div>
+		<!-- Phone -->
+		<div class="form-outline">
+			<label class="form-label" for="comPhone">Phone <span class="text-danger">*</span></label>
+			<input type="text" name="comPhone" id="comPhone" class="form-control border-2" placeholder="0909123456"
+				required />
+		</div>
+		<!-- Địa chỉ -->
+		<div class="form-outline">
+			<label class="form-label" for="comAddress">Địa chỉ <span class="text-danger">*</span></label>
+			<input type="text" id="comAddress" class="form-control border-2" placeholder="227 Nguyễn Văn Cừ"
+				name="comAddress" />
+		</div>
+	</div>
+	<div class="alert alert-danger mt-4" role="alert">
+		<strong>Tạo bảng quảng cáo không thành công</strong>
+		{{err_message}}
+	</div>
+	<div id="fileHelp" class="invalid-feedback">
+		Tối đa 02 hình, mỗi hình tối đa 10MB.
+	</div>
+	<button type="submit" class="btn btn-primary" id="btn-submit" style="width: 6rem">
+		Xác nhận
+	</button>
+</form>

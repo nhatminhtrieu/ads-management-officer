@@ -43,6 +43,16 @@ export async function loadAdMarkers(map) {
   }
 }
 
+export async function loadSingleAdMarker(map, id) {
+  const response = await fetch(`http://localhost:3000/location/find/${id}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const location = await response.json();
+  const contentString = await contentAd(location);
+  map.pushAdMarker(location, location.address, contentString);
+}
+
 export async function loadReportMarkers(map) {
   try {
     const response = await fetch("http://localhost:3000/report/all");

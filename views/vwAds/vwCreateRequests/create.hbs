@@ -13,11 +13,12 @@
 
 	const HomeMap = new CustomMap();
 	const list = {{{ json locations }}};
-	HomeMap.init(onMapChange).then(() => {
+	HomeMap.init(onMapChange).then(async () => {
 		for (const location of list) {
 			const contentString = contentAd(location);
-			HomeMap.pushAdMarker(location, location.address, contentString);
+			await HomeMap.pushAdMarker(location, location.address, contentString);
 		}
+		HomeMap.setAdCluster();
 	});
 </script>
 <script>

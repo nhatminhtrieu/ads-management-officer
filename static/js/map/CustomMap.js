@@ -90,11 +90,6 @@ export default class CustomMap {
 		MarkersObject.cluster = new markerClusterer.MarkerClusterer({ markers, map });
 	}
 
-	setCluster(MarkersObject) {
-		const markers = MarkersObject.markers.map((marker) => marker.marker);
-		MarkersObject.cluster.addMarkers(markers);
-	}
-
 	setAdCluster() {
 		const markers = this.adMarker.markers.map((marker) => marker.marker);
 		this.adMarker.cluster.addMarkers(markers);

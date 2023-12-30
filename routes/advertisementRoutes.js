@@ -37,7 +37,7 @@ router.use("/create-request", createRequestRouter);
 
 router.get("/type-ad", async (req, res) => {
 	const service = new AdsTypesService();
-	const list = await service.getAllAdsTypes();
+	const list = await service.findAllAdsType();
 	res.render("vwAds/typeAds", {
 		layout: "ads",
 		list,

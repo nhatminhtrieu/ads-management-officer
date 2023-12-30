@@ -27,7 +27,7 @@ app.engine(
 		helpers: {
 			section: hbs_sections(),
 
-			inc (value) {
+			inc(value) {
 				return parseInt(value) + 1;
 			},
 		},
@@ -50,15 +50,16 @@ app.use(
 );
 
 app.use(function (req, res, next) {
-	if (typeof req.session.isAuthenticated === "undefined") {
-		req.session.isAuthenticated = false;
-		res.redirect("/account/login");
-	} else {
-		if (req.session.authUser) {
-			res.locals.authUser = req.session.authUser;
-		}
-		next();
-	}
+	// if (typeof req.session.isAuthenticated === "undefined") {
+	// 	req.session.isAuthenticated = false;
+	// 	res.redirect("/account/login");
+	// } else {
+	// 	if (req.session.authUser) {
+	// 		res.locals.authUser = req.session.authUser;
+	// 	}
+	// 	next();
+	// }
+	next();
 });
 
 app.use("/static", auth, express.static("static"));

@@ -19,15 +19,15 @@ router
 
 // Create
 router
-    .get('/create', async (req, res) => {
-        try {
-            const districts = await districtService.getAllDistricts();
-            res.render('vwWard/createWard', { layout: 'admin.hbs', districts: districts });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send("An error occurred while getting districts");
-        }
-    })
+    // .get('/create', async (req, res) => {
+    //     try {
+    //         const districts = await districtService.getAllDistricts();
+    //         res.render('vwWard/createWard', { layout: 'admin.hbs', districts: districts });
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(500).send("An error occurred while getting districts");
+    //     }
+    // })
     .post('/create', async (req, res) => {
         try {
             const { wardName, districtID } = req.body;

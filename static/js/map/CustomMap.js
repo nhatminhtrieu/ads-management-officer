@@ -205,7 +205,7 @@ export default class CustomMap {
 	}
 
 	catchSelectedLocation() {
-		this.map.addListener("click", async (event) => {
+		this.map.addListener("click", (event) => {
 			this.updateSelectedMarker(event.latLng);
 		});
 	}

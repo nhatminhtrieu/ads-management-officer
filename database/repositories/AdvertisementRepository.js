@@ -15,7 +15,7 @@ class AdvertisementRepository {
     try {
       return await this.model.find({});
     } catch (err) {
-      console.err("getAllAdvertisements", err);
+      console.error("getAllAdvertisement", err);
       throw err;
     }
   }

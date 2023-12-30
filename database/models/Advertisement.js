@@ -29,7 +29,7 @@ const AdvertisementSchema = new Schema({
   },
   location: {
     type: Schema.Types.ObjectId,
-    ref: "locations",
+    ref: "Location",
     required: true,
   },
 });

@@ -147,6 +147,13 @@ router.post("/ad-location/can-be-deleted/:id", async (req, res) => {
 	res.json(result);
 });
 
+router.post("/ad-location/delete/:id", async (req, res) => {
+	const id = req.params.id;
+	const locationService = new LocationService();
+	const result = await locationService.deleteLocation(id);
+	res.redirect("/advertisement/ad-location");
+});
+
 router.get("/edit-request", (req, res) => {
   res.render("vwAds/editRequests", { layout: "ads" });
 });

@@ -82,4 +82,12 @@ export default class LocationService {
       console.log("LocationService.updateLocation", err);
     }
   }
+
+  async deleteLocation(id) {
+    try {
+      return await this.repository.delete(id);
+    } catch (err) {
+      console.log("LocationService.deleteLocation", err);
+    }
+  }
 }

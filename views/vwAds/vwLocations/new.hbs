@@ -1,0 +1,63 @@
+{{#section "js"}}
+	<script type="module" src="/static/js/vwLocations/loadMap.js"></script>
+
+	<script>
+		$(".readonly").on('keydown paste focus mousedown', function(e){
+			if(e.keyCode != 9) // ignore tab
+				e.preventDefault();
+		});
+	</script>
+{{/section}}
+
+<a class="btn btn-primary" href="/advertisement/ad-location" role="button">
+    <i class="bi bi-caret-left-fill"></i>
+    Trở về
+</a>
+
+<h4 class="mt-3">Tạo mới điểm đặt quảng cáo</h4>
+<div id="map" style="height:300px; width:100%"></div>
+
+<form method="POST">
+<!-- Địa chỉ điểm đặt quảng cáo input -->
+<div class="form-outline mt-3">
+	<label class="form-label" for="address">Điểm đặt quảng cáo <div style="display:inline; color:red">*</div></label>
+	<input
+		type="text"
+		id="address"
+		class="form-control border-2 bg-white readonly"
+		placeholder="Vui lòng chọn 1 điểm trên bản đồ"
+		name="address"
+        required
+	/>
+</div>
+
+<!-- Hidden input for latlng -->
+<input type="hidden" id="latlng" name="coordinate" />
+
+<!-- Loại vị trí input -->
+<div class="form-outline mt-3">
+	<label class="form-label" for="type">Loại vị trí <div style="display:inline; color:red">*</div></label>
+	<input
+		type="text"
+		id="type"
+		class="form-control border-2 bg-white"
+		placeholder="Vui lòng nhập tên loại vị trí"
+		name="type"
+        required
+	/>
+</div>
+
+<div class="form-outline mt-3">
+    <label class="form-label" for="description">Loại hình quảng cáo <div style="display:inline; color:red">*</div></label>
+    <select class="form-select" name="format" required>
+        {{#each list}}
+            <option value={{_id}}>{{name}}</option>
+        {{/each}}
+    </select>
+</div>
+
+<div class="text-end">
+    <button type="submit" class="btn btn-primary mt-3">Tạo mới</button>
+</div>
+</form>
+

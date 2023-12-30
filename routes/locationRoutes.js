@@ -23,4 +23,9 @@ router.get("/find", async (req, res) => {
   res.send(result);
 });
 
+router.get("/find-all", async (req, res) => {
+  const result = await locationService.findAllLocations();
+  res.send(result);
+});
+
 export default router;

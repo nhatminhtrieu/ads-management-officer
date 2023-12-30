@@ -23,11 +23,9 @@ function contentReport(report) {
   return contentString;
 }
 
-async function getAdLocation(locationId) {
+async function getLocations() {
   try {
-    const response = await fetch(
-      `http://localhost:3000/location/find?id=${locationId}`
-    );
+    const response = await fetch("http://localhost:3000/location/find-all");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -37,25 +35,9 @@ async function getAdLocation(locationId) {
   }
 }
 
-async function getAds() {
-  try {
-    const response = await fetch(
-      "http://localhost:3000/advertisement/find-all"
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 export async function loadAdMarkers(map) {
-  const list = await getAds();
-  for await (const ad of list) {
-    let location = await getAdLocation(ad.location);
-    location = location[0];
+  const list = await getLocations();
+  for await (const location of list) {
     const contentString = await contentAd(location);
     map.pushAdMarker(location, location.address, contentString);
   }

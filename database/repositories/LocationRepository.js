@@ -1,5 +1,4 @@
 import LocationModel from "../models/Location.js";
-import AdsTypes from "../models/AdsTypes.js";
 import generateLocation from "../utils/generateLocation.js";
 import { mongoose } from "mongoose";
 
@@ -13,12 +12,16 @@ export default class LocationRepository {
     return await newEntity.save();
   }
 
-  async findDataForPage({offset, limit}){
-    const data = await this.model.find().populate("format").skip(offset).limit(limit);
+  async findDataForPage({ offset, limit }) {
+    const data = await this.model
+      .find()
+      .populate("format")
+      .skip(offset)
+      .limit(limit);
     return data;
   }
-  
-  async countAll(){
+
+  async countAll() {
     return await this.model.countDocuments();
   }
 
@@ -26,8 +29,8 @@ export default class LocationRepository {
     return await this.model.find(entity).populate("format");
   }
 
-  async findAll(){
-    return await this.model.find();
+  async findAll() {
+    return await this.model.find().populate("format");
   }
 
   async generate() {

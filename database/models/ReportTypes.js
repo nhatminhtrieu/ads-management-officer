@@ -6,6 +6,6 @@ const ReportTypeSchema = new Schema({
     versionKey: false,
 });
 
-const ReportTypes = model("ReportTypes", ReportTypeSchema, "ReportTypes");
+const ReportTypes = model("reportTypes", ReportTypeSchema, "reportTypes");
 
 export default ReportTypes;

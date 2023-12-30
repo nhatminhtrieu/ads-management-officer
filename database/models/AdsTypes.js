@@ -6,6 +6,6 @@ const AdsTypesSchema = new Schema({
     versionKey: false,
 });
 
-const AdsTypes = model("AdsTypes", AdsTypesSchema, "AdsTypes");
+const AdsTypes = model("adsTypes", AdsTypesSchema, "adsTypes");
 
 export default AdsTypes;

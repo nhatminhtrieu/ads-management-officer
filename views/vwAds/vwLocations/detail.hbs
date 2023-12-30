@@ -1,0 +1,77 @@
+{{#section "js"}}
+	<script type="module" src="/static/js/vwLocations/loadMap.js"></script>
+
+	<script>
+		$(".readonly").on('keydown paste focus mousedown', function(e){
+			if(e.keyCode != 9) // ignore tab
+				e.preventDefault();
+		});
+	</script>
+{{/section}}
+
+
+<a class="btn btn-primary" href="/advertisement/ad-location" role="button">
+    <i class="bi bi-caret-left-fill"></i>
+    Trở về
+</a>
+
+<h4 class="mt-3">Thông tin chi tiết điểm đặt quảng cáo</h4>
+<div class="form-outline mt-3">
+	<label class="form-label" for="_id">ID</label>
+	<input
+		type="text"
+		id="_id"
+		class="form-control border-2 bg-white"
+		name="_id"
+        value="{{location._id}}"
+        disabled
+	/>
+</div>
+
+<div class="form-outline mt-3">
+	<label class="form-label" for="address">Địa chỉ</label>
+	<input
+		type="text"
+		id="address"
+		class="form-control border-2 bg-white"
+		name="address"
+        value="{{location.address}}"
+        disabled
+	/>
+</div>
+
+<div class="form-outline mt-3">
+	<label class="form-label" for="type">Loại điểm đặt quảng cáo</label>
+	<input
+		type="text"
+		id="type"
+		class="form-control border-2 bg-white"
+		name="type"
+        value="{{location.type}}"
+        disabled
+	/>
+</div>
+
+<div class="form-outline mt-3">
+	<label class="form-label" for="format">Hình thức quảng cáo</label>
+	<input
+		type="text"
+		id="format"
+		class="form-control border-2 bg-white"
+		name="format"
+        value="{{location.format.name}}"
+        disabled
+	/>
+</div>
+
+<div class="form-outline mt-3">
+	<label class="form-label" for="zoning">Thông tin quy hoạch</label>
+	<input
+		type="text"
+		id="zoning"
+		class="form-control border-2 bg-white"
+		name="zoning"
+        value="{{#ifCond location.zoning "===" false}} Chưa quy hoạch {{else}} Đã quy hoạch {{/ifCond}}"
+        disabled
+	/>
+</div>

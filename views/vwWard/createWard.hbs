@@ -1,0 +1,17 @@
+<form action="/wards/create" method="post">
+    <div class="form-group">
+        <label for="wardName">Ward Name</label>
+        <input type="text" class="form-control" id="wardName" name="wardName" required>
+    </div>
+    <div class="form-group">
+        <label for="districtID">District</label>
+        <select class="form-control" id="districtID" name="districtID" required>
+            {{#each districts}}
+            <option value="{{this._id}}">{{this.district}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>

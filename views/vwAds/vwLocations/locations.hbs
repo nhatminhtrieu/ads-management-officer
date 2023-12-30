@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between">
+	<h4>Danh sách điểm đặt quảng cáo</h4>
+	{{! Cho phân hệ cán bộ sở }}
+	<a name="" id="" class="btn btn-primary" href="locations/new" role="button">
+		<i class="bi bi-plus-lg"></i>
+		Tạo mới
+	</a>
+</div>
+<table class="table table-hover mt-3">
+	<thead>
+		<tr class="table-light">
+			<th scope="col" style="width: 2rem">No.</th>
+			<th scope="col" style="width: 50%">Địa chỉ</th>
+			<th scope="col" style="width: 25%">Loại vị trí</th>
+			<th scope="col" style="width: 25%">Hình thức quảng cáo</th>
+			<th scope="col">&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each this.list}}
+		<tr>
+			<th scope="row">{{index}}</th>
+			<td>{{address}}</td>
+			<td>{{type}}</td>
+			<td>{{format}}</td>
+			<td><a href="/advertisement/ad-location/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>
+
+<ul class="pagination justify-content-center">
+	<li class="page-item">
+		<a class="page-link {{#ifCond this.page "===" 1}} disabled {{/ifCond}}" href="/advertisement/ad-location?page=1" aria-label="Previous">
+			<span aria-hidden="true">&laquo;</span>
+		</a>
+	</li>
+
+	{{#each this.pageNumbers}}
+		<li class="page-item">
+			<a class="page-link {{#if isActive}} disabled {{/if}}" href="/advertisement/ad-location?page={{value}}">{{value}}</a>
+		</li>
+	{{/each}}
+	
+	<li class="page-item">
+		<a class="page-link {{#ifCond this.totalPage "===" this.page}} disabled {{/ifCond}}" href="/advertisement/ad-location?page={{this.totalPage}}" aria-label="Next">
+			<span aria-hidden="true">&raquo;</span>
+		</a>
+	</li>
+</ul>

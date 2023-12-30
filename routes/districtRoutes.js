@@ -1,30 +1,30 @@
-import express from 'express';
-import DistrictService from '../services/DistrictService.js';
+import express from "express";
+import DistrictService from "../services/DistrictService.js";
 
 const router = express.Router();
 const districtService = new DistrictService();
 
 // Create: Checked
-// router.post('/create', async (req, res) => {
-//     try {
-//         const district = req.body;
-//         const result = await districtService.addDistrict(district);
-//         res.redirect('/admin/area');
-//     } catch (error) {
-//         console.error(error);
-//         res.render('vwAdmin/areas', { err_message: "Thêm thất bại" });
-//     }
-// });
+router.post("/create", async (req, res) => {
+	try {
+		const district = req.body;
+		await districtService.addDistrict(district);
+		res.json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("An error occurred while getting all districts");
+	}
+});
 
 // Read: Checked
-router.get('/', async (req, res) => {
-    try {
-        const result = await districtService.getAllDistricts();
-        res.render('vwAdmin/areas', { layout: 'admin.hbs', districts: result });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while getting all districts");
-    }
+router.get("/", async (req, res) => {
+	try {
+		const result = await districtService.getAllDistricts();
+		res.render("vwAdmin/districts", { layout: "admin.hbs", districts: result });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("An error occurred while getting all districts");
+	}
 });
 
 // // Update: Checked
@@ -64,27 +64,27 @@ router.get('/', async (req, res) => {
 //         }
 //     });
 
-router.post('/update', async (req, res) => {
-    try {
-        const districtId = req.body.id;
-        const districtName = req.body.district;
-        const result = await districtService.updateDistrict(districtId, districtName);
-        res.redirect('/admin/area');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while updating the district");
-    }
+router.post("/update", async (req, res) => {
+	try {
+		const districtId = req.body.id;
+		const districtName = req.body.district;
+		const result = await districtService.updateDistrict(districtId, districtName);
+		res.redirect("/admin/area");
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("An error occurred while updating the district");
+	}
 });
 
-router.post('/delete/:id', async (req, res) => {
-    try {
-        const districtId = req.params.id;
-        const result = await districtService.deleteDistrict(districtId);
-        res.redirect('/admin/area');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while deleting the district");
-    }
+router.post("/delete/:id", async (req, res) => {
+	try {
+		const districtId = req.params.id;
+		const result = await districtService.deleteDistrict(districtId);
+		res.redirect("/admin/area");
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("An error occurred while deleting the district");
+	}
 });
 
 export default router;

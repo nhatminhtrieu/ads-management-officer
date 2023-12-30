@@ -1,23 +1,159 @@
+{{#section 'jsDistricts'}}
+<script>
+    $(document).ready(function () {
+        // Create
+        $('#addDistrictForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const districtName = $('#addDistrictForm input[name="district"]').val();
+            $.ajax({
+                type: 'POST',
+                url: '/districts/create',
+                data: { district: districtName },
+                success: function (response) {
+                    console.log(response);
+                    $('#addDistrictModal').modal('hide');
+                    if (response.success) {
+                        console.log("Show modal");
+                        $('#successModal').modal('show');
+                        setTimeout(function () {
+                            $('#successModal').modal('hide');
+                            location.reload();
+                        }, 5000);
+                    }
+                }
+            });
+
+        });
+
+        // Update
+        $('#updateDistrictForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var districtId = $('#updateDistrictId').val();
+            var districtName = $('#txtUpdateDistrictName').val();
+
+            console.log(districtId, districtName);
+
+            $.ajax({
+                type: 'POST',
+                url: '/districts/update/' + districtId,
+                data: { district: districtName },
+                success: function (response) {
+                    $('#updateDistrictModal').modal('hide');
+                    if (response.success) {
+                        $('#successModal').modal('show');
+                    }
+                }
+            });
+        });
+
+        // Delete
+        $('#deleteDistrictButton').on('click', function (e) {
+            e.preventDefault();
+
+            var districtId = $('#deleteDistrictId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/districts/delete/' + districtId,
+                success: function (response) {
+                    $('#deleteDistrictModal').modal('hide');
+
+                    if (response.success) {
+                        $('#successModal').modal('show');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{{/section}}
+
+<!-- Successs Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Operation was successful.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Quản lý các đơn vị phường và quận</h4>
+<!-- Add District Modal -->
+<div class="modal fade" id="addDistrictModal" tabindex="-1" aria-labelledby="addDistrictModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDistrictModalLabel">Tạo quận quản lý mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addDistrictForm" method="post">
+                    <div class="mb-3">
+                        <label for="txtDistrictName" class="form-label">Tên quận</label>
+                        <input type="text" class="form-control" id="txtDistrictName" name="district"
+                            placeholder="Quận 1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update District Modal -->
+<div class="modal fade" id="updateDistrictModal" tabindex="-1" aria-labelledby="updateDistrictModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateDistrictModalLabel">Cập nhật tên quận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateDistrictForm" action="/districts/update" method="post">
+                    <input type="hidden" id="updateDistrictId" name="id">
+                    <div class="mb-3">
+                        <label for="updateDistrictName" class="form-label">Tên quận mới</label>
+                        <input type="text" class="form-control" id="updateDistrictName" name="districtName" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <table class="table">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">District name</th>
-            <th scope="col">&nbsp;</th>
-        </tr>
-    </thead>
+    <!-- ... -->
     <tbody>
         {{#each districts}}
         <tr>
             <th scope="row">{{inc @index}}</th>
             <td>{{this.district}}</td>
             <td>
-                <a href="/districts/create" method="post" class="btn btn-success">Add</a>
-                <a href="/districts/update?id={{this._id}}" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-danger"
-                    onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this district?')) document.getElementById('delete-form-{{this.id}}').submit();">Delete</a>
-                <form id="delete-form-{{this.id}}" action="/districts/delete?id={{this.id}}" method="post"
-                    style="display: none;"></form>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#addDistrictModal">Add</button>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                    data-bs-target="#updateDistrictModal"
+                    onclick="document.getElementById('updateDistrictId').value = '{{this._id}}';">Update</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#deleteDistrictModal"
+                    onclick="document.getElementById('deleteDistrictId').value = '{{this._id}}';">Delete</button>
+                <!-- ... -->
             </td>
         </tr>
         {{/each}}

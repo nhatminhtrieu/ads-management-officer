@@ -12,24 +12,13 @@ router.get("/officer", (req, res) => {
 	res.render("vwAdmin/officers", { layout: "admin" });
 });
 
-router.get('/area', async (req, res) => {
+router.get("/area", async (req, res) => {
 	try {
 		const result = await districtService.getAllDistricts();
-		return res.render('vwAdmin/areas', { layout: 'admin', districts: result });
+		return res.render("vwAdmin/areas", { layout: "admin", districts: result });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send("An error occurred while getting all districts");
-	}
-});
-
-router.post('/area', async (req, res) => {
-	try {
-		const district = req.body;
-		const result = await districtService.addDistrict(district);
-		res.redirect('/admin/area');
-	} catch (error) {
-		console.error(error);
-		res.render('vwAdmin/areas', { layout: 'admin' });
 	}
 });
 

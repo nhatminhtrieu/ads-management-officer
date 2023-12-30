@@ -12,7 +12,7 @@ router.post("/create", async (req, res) => {
 		res.json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).send("An error occurred while getting all districts");
+		res.json({ success: false });
 	}
 });
 
@@ -64,15 +64,16 @@ router.get("/", async (req, res) => {
 //         }
 //     });
 
-router.post("/update", async (req, res) => {
+router.post("/update/:id", async (req, res) => {
 	try {
-		const districtId = req.body.id;
+		const districtId = req.params.id;
 		const districtName = req.body.district;
 		const result = await districtService.updateDistrict(districtId, districtName);
-		res.redirect("/admin/area");
+		if (result)
+			res.json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).send("An error occurred while updating the district");
+		return res.json({ success: false });
 	}
 });
 
@@ -80,10 +81,11 @@ router.post("/delete/:id", async (req, res) => {
 	try {
 		const districtId = req.params.id;
 		const result = await districtService.deleteDistrict(districtId);
-		res.redirect("/admin/area");
+		if (result)
+			res.json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).send("An error occurred while deleting the district");
+		return res.json({ success: false });
 	}
 });
 

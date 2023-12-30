@@ -3,7 +3,11 @@
 
 	<script>
 		window.onload = function () {
-			document.getElementById('fnButton').style.display = 'none';
+			$.post(`/advertisement/ad-location/can-be-deleted/{{location._id}}`, function (data) {
+				if (data === true) {
+					$('#deleteButton').prop("disabled", false);
+				}
+			});
 		}
 
 		$("#edit").click(function() {
@@ -11,6 +15,7 @@
 			$('#type').prop("required", true);
 			$('#format').prop("disabled", false);
 			$('#zoning').prop("disabled", false);
+			$('#deleteButton').prop("hidden", false);
 			$('#fnButton').show();
 		});
 
@@ -25,11 +30,20 @@
     Trở về
 </a>
 
-<div class="mt-3" style="display: flex; align-items: center;">
-	<h4>Thông tin chi tiết điểm đặt quảng cáo </h4>
-	<div id="edit" style="margin-left: 16px; cursor: pointer">
-		<i class="bi bi-pencil-square"></i>
-		Chỉnh sửa
+<div class="d-flex justify-content-between">
+	<div class="mt-3" style="display: flex; align-items: center;">
+		<h4>Thông tin chi tiết điểm đặt quảng cáo </h4>
+		<div id="edit" style="margin-left: 16px; cursor: pointer">
+			<i class="bi bi-pencil-square"></i>
+			Chỉnh sửa
+		</div>
+	</div>
+
+	<div>
+		<button type="button" class="btn btn-danger" id="deleteButton" hidden disabled>
+			<i class="bi bi-trash"></i>
+			Xóa
+		</button>
 	</div>
 </div>
 
@@ -88,6 +102,7 @@
 		Hủy
 	</a>
 	<button type="submit" class="btn btn-primary">
+		<i class="bi bi-floppy"></i>
 		Lưu
 	</button>
 </div>

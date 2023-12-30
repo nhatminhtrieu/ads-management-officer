@@ -140,6 +140,13 @@ router.post("/ad-location/:id", async (req, res) => {
 	res.redirect(`/advertisement/ad-location/${req.params.id}`);
 })
 
+router.post("/ad-location/can-be-deleted/:id", async (req, res) => {
+	const id = req.params.id;
+	const advertisementService = new AdvertisementService();
+	const result = await advertisementService.canBeDeleted(id);
+	res.json(result);
+});
+
 router.get("/edit-request", (req, res) => {
   res.render("vwAds/editRequests", { layout: "ads" });
 });

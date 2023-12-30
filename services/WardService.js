@@ -75,4 +75,9 @@ export default class WardService {
 
     return await this.repository.deleteWard(id, districtID);
   }
+
+  async findWardId(entity) {
+    const ward = await this.findWardByEntity(entity);
+    return ward._id;
+  }
 }

@@ -27,8 +27,6 @@ export default class LocationService {
         };
         return newItem;
       });
-      console.log("Service:", data);
-
       return data;
     } catch (err) {
       console.log("LocationService.findDataForPage", err);
@@ -74,6 +72,22 @@ export default class LocationService {
       return await this.repository.generate();
     } catch (err) {
       console.log("LocationService.generateLocations", err);
+    }
+  }
+
+  async updateLocation(id, entity) {
+    try {
+      return await this.repository.update(id, entity);
+    } catch (err) {
+      console.log("LocationService.updateLocation", err);
+    }
+  }
+
+  async deleteLocation(id) {
+    try {
+      return await this.repository.delete(id);
+    } catch (err) {
+      console.log("LocationService.deleteLocation", err);
     }
   }
 }

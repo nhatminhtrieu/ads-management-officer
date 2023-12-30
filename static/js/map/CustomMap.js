@@ -209,4 +209,9 @@ export default class CustomMap {
 			this.updateSelectedMarker(event.latLng);
 		});
 	}
+
+	async setCenter(position) {
+		this.map.setCenter(position);
+		this.map.setZoom(16);
+	}
 }

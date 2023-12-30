@@ -38,6 +38,23 @@ class AdvertisementRepository {
   async generate() {
     return await generateAdvertisement();
   }
+
+  async canBeDeleted(id) {
+    try {
+      const list = await this.model.find({}).populate("location");
+
+      for (const item of list) {
+        if (item.location && item.location._id.toString() === id) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (err) {
+      console.error("canBeDeleted", err);
+      throw err;
+    }
+  }
 }
 
 export default AdvertisementRepository;

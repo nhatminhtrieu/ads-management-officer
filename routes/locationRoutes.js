@@ -16,11 +16,11 @@ router.post("/add", async (req, res) => {
   res.send(result);
 });
 
-// location/find?id=...
-router.get("/find", async (req, res) => {
-  const id = req.query.id;
+// location/find/...
+router.get("/find/:id", async (req, res) => {
+  const id = req.params.id;
   const result = await locationService.find({ _id: id });
-  res.send(result);
+  res.send(result[0]);
 });
 
 router.get("/find-all", async (req, res) => {

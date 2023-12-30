@@ -1,9 +1,11 @@
 // Define your routes here
-import express from "express";
+import express, { raw } from "express";
 const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
 import LocationService from "../services/LocationService.js";
+import WardService from "../services/WardService.js";
+import DistrictService from "../services/DistrictService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
 // UI routers declaration
@@ -52,41 +54,104 @@ router.get("/locations/new", async (req, res) => {
   });
 });
 
-router.post("/locations/new", async (req, res) => {
-  const data = req.body;
+router.post('/locations/new', async (req, res) => {
+	const data = req.body;
+	
+	const matchDistrict = data.address.match(/Quận\s[^,]*,\s/);
+	const district = matchDistrict ? matchDistrict[0].slice(0, -2) : "Quận 5";
+	const matchWard = data.address.match(/Phường\s[^,]*,\s/);
+	const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
+	
+	const wardService = new WardService();
+	const districtService = new DistrictService();
 
-  const matchDistrict = data.address.match(/Quận\s[^,]*,\s/);
-  const district = matchDistrict ? matchDistrict[0].slice(0, -2) : "Quận 5";
-  const matchWard = data.address.match(/Phường\s[^,]*,\s/);
-  const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
+	const wardId = await wardService.findWardId({ward});
+	const districtId = await districtService.findDistrictId({district});
 
-  const entity = {
-    type: data.type,
-    format: Object(data.format),
-    zoning: false,
-    coordinate: JSON.parse(data.coordinate),
-    address: data.address,
-    area: {
-      district,
-      ward,
-    },
-  };
+	const entity = {
+		type: data.type,
+		format: Object(data.format),
+		zoning: false,
+		coordinate: JSON.parse(data.coordinate),
+		address: data.address,
+		area: {
+			district: districtId,
+			ward: wardId,
+		},
+	}
 
-  const service = new LocationService();
-  await service.createLocation(entity);
+	const locationService = new LocationService();
+	await locationService.createLocation(entity);
 
   res.redirect("/advertisement/ad-location");
 });
 
 router.get("/ad-location/:id", async (req, res) => {
-  const service = new LocationService();
-  const list = await service.find({ _id: req.params.id });
-  const location = list[0];
+	const locationService = new LocationService();
+	const locations = await locationService.find({_id: req.params.id});
+	const location = locations[0];
 
-  res.render("vwAds/vwLocations/detail", {
-    layout: "ads",
-    location,
-  });
+	const adsTypeService = new AdsTypesService();
+	const rawAdsTypes = await adsTypeService.findAllAdsType();
+	const adsTypes = rawAdsTypes.map(adsType => {
+		return {
+			_id: adsType._id,
+			name: adsType.name,
+			isSelected: adsType._id.toString() === location.format._id.toString(),
+		}
+	});
+
+	const rawZoning = [
+		{
+			zoning: true,
+			name: "Đã quy hoạch",
+		},
+		{
+			zoning: false,
+			name: "Chưa quy hoạch",
+		}
+	]
+	const zoning = rawZoning.map(zoning => {
+		return {
+			zoning: zoning.zoning,
+			name: zoning.name,
+			isSelected: zoning.zoning === location.zoning,
+		}
+	});
+	
+	res.render("vwAds/vwLocations/detail", { 
+		layout: "ads",
+		location,
+		adsTypes,
+		zoning
+	});
+});
+
+router.post("/ad-location/:id", async (req, res) => {
+	const data = {
+		type: req.body.type,
+		format: Object(req.body.format),
+		zoning: req.body.zoning === "true",
+	}
+
+	const locationService = new LocationService();
+	const result = await locationService.updateLocation(req.params.id, data);
+
+	res.redirect(`/advertisement/ad-location/${req.params.id}`);
+})
+
+router.post("/ad-location/can-be-deleted/:id", async (req, res) => {
+	const id = req.params.id;
+	const advertisementService = new AdvertisementService();
+	const result = await advertisementService.canBeDeleted(id);
+	res.json(result);
+});
+
+router.post("/ad-location/delete/:id", async (req, res) => {
+	const id = req.params.id;
+	const locationService = new LocationService();
+	const result = await locationService.deleteLocation(id);
+	res.redirect("/advertisement/ad-location");
 });
 
 router.get("/edit-request", (req, res) => {

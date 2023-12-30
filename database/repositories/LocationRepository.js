@@ -36,4 +36,12 @@ export default class LocationRepository {
   async generate() {
     return await generateLocation();
   }
+
+  async update(id, entity) {
+    return await this.model.updateOne({ _id: id }, entity);
+  }
+
+  async delete(id) {
+    return await this.model.deleteOne({ _id: id });
+  }
 }

@@ -44,4 +44,13 @@ export default class AdvertisementService {
       console.log("AdvertisementService.generateAds", err);
     }
   }
+
+  async canBeDeleted(id) {
+    try {
+      const result = await this.repository.canBeDeleted(id);
+      return result;
+    } catch (err) {
+      console.log("AdvertisementService.canBeDeleted", err);
+    }
+  }
 }

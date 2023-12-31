@@ -70,9 +70,9 @@
 <div class="d-flex justify-content-between">
     <h4>Quản lý các quận</h4>
     <caption>
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDistrictModal">
-            <i class="bi bi-plus-square"></i>
-            Thêm quận mới
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDistrictModal">
+            <i class="bi bi-plus"></i>
+            Thêm mới
         </button>
     </caption>
 </div>
@@ -120,6 +120,34 @@
     </div>
 </div>
 
+{{!-- <!-- Update District Modal -->
+<div class="modal fade" id="updateDistrictModal" tabindex="-1" aria-labelledby="updateDistrictModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateDistrictModalLabel">Cập nhật quận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateDistrictForm" method="post">
+                    <div class="mb-3">
+                        <label for="updateDistrictId" class="form-label d-none">ID quận</label>
+                        <input type="text" class="form-control d-none" id="updateDistrictId" name="districtId" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="updateDistrictName" class="form-label">Tên quận</label>
+                        <input type="text" class="form-control" id="updateDistrictName" name="district"
+                            placeholder="Quận 1" value="{{oldDistrictName}}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
 <!-- Update District Modal -->
 <div class="modal fade" id="updateDistrictModal" tabindex="-1" aria-labelledby="updateDistrictModalLabel"
     aria-hidden="true">
@@ -132,15 +160,41 @@
             <div class="modal-body">
                 <form id="updateDistrictForm" method="post">
                     <div class="mb-3">
-                        <label for="updateDistrictId" class="form-label">ID quận</label>
-                        <input type="text" class="form-control" id="updateDistrictId" name="districtId" readonly>
+                        <label for="updateDistrictId" class="form-label d-none">ID quận</label>
+                        <input type="text" class="form-control d-none" id="updateDistrictId" name="districtId" readonly>
+                        <label for="oldDistrictName" class="form-label">Tên quận cũ</label>
+                        <input type="text" class="form-control" id="oldDistrictName" name="oldDistrictName" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="updateDistrictName" class="form-label">Tên quận</label>
+                        <label for="updateDistrictName" class="form-label">Tên quận mới</label>
                         <input type="text" class="form-control" id="updateDistrictName" name="district"
                             placeholder="Quận 1" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Successs Modal -->
+<div class="modal fade" id="SuccessModal" tabindex="-1" role="dialog" aria-labelledby="SuccessModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SuccessModalLabel">Thành công</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="updateDistrictName" class="form-label">Tên quận</label>
+                    <input type="text" class="form-control" id="updateDistrictName" name="district" placeholder="Quận 1"
+                        required>
+                </div>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
                 </form>
             </div>
         </div>
@@ -189,12 +243,12 @@
     </div>
 </div>
 
-<table class="table table-hover">
+<table class="table table-hover mt-3 flex">
     <thead class="table-light">
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Tên quận</th>
-            <th scope="col">Thao tác</th>
+            <th scope="col" style="width: 2rem">No.</th>
+            <th scope="col" style="width: 75%">Tên quận</th>
+            <th scope="col" style="width:108px">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
@@ -202,17 +256,17 @@
         <tr>
             <th scope="row">{{inc @index}}</th>
             <td>{{this.district}}</td>
-            <td>
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#updateDistrictModal"
-                    onclick="document.getElementById('updateDistrictId').value = '{{this._id}}';">
+            <td class="text-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#updateDistrictModal" onclick="document.getElementById('updateDistrictId').value = '{{this._id}}'; 
+             document.getElementById('oldDistrictName').value = '{{this.district}}';">
                     <i class="bi bi-pencil-square"></i>
-                    Đổi tên quận</button>
-                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                     data-bs-target="#deleteDistrictModal"
                     onclick="document.getElementById('deleteDistrictId').value = '{{this._id}}';">
                     <i class="bi bi-trash-fill"></i>
-                    Xoá</button>
+                </button>
             </td>
         </tr>
         {{/each}}

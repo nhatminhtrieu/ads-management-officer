@@ -25,9 +25,12 @@ router.get('/', async (req, res) => {
     const allWards = await wardService.getAllWards();
     const { items: wards, pages } = paginate(allWards, page, limit);
 
+    const district = await districtService.getAllDistricts();
+
     return res.render('vwAdmin/wards', {
         layout: 'admin',
         ward: wards,
+        district: district,
         isWardList: true,
         pages: pages
     });

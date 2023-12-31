@@ -108,8 +108,10 @@
                     <div class="mb-3">
                         <label for="district" class="form-label">Quận</label>
                         <select class="form-select" id="district" name="district">
-                            {{#each districts}}
+                            {{#each district}}
+                            {{#if this.district}}
                             <option value="{{this._id}}">{{this.district}}</option>
+                            {{/if}}
                             {{/each}}
                         </select>
                     </div>

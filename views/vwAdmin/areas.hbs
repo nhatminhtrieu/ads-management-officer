@@ -1,7 +1,66 @@
-<a class="btn btn-primary" href="/districts">
-    Quận
-</a>
+<div class="row row-cols-1 row-cols-md-2 mb-3 text-center">
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">Quản lý theo quận</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>Số lượng cán bộ: 2</li>
+                    <li>Hỗ trợ qua email</li>
+                    <li>Truy cập trung tâm trợ giúp</li>
+                </ul>
+                <a href="/districts">
+                    <button type="button" class="w-100 btn btn-lg btn-outline-primary">Xem chi tiết</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">Quản lý theo phường</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>Số lượng cán bộ: 20</li>
+                    <li>Hỗ trợ qua email</li>
+                    <li>Truy cập trung tâm trợ giúp</li>
+                </ul>
+                <button type="button" class="w-100 btn btn-lg btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#districtModal">Xem chi tiết</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<button class="btn btn-primary">
-    Phường
-</button>
+<!-- Modal -->
+<div class="modal fade" id="districtModal" tabindex="-1" aria-labelledby="districtModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="districtModalLabel">Chọn quận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <select id="districtSelect" class="form-control">
+                    <option value="">Tất cả</option>
+                    {{#each districts}}
+                    <option value="{{this.id}}">{{this.district}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="goToDistrict">Chọn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('goToDistrict').addEventListener('click', function () {
+        const districtId = document.getElementById('districtSelect').value;
+        window.location.href = '/wards/' + districtId;
+    });
+</script>

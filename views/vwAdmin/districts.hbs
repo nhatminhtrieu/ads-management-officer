@@ -1,20 +1,13 @@
 {{#section 'jsDistricts'}}
 <script>
     $(document).ready(function () {
-        function handleSuccessResponse() {
-            $('#successModal').modal('show');
+        function handleResponse(success) {
+            var modal = success ? '#successModal' : '#failModal';
+            $(modal).modal('show');
             setTimeout(function () {
-                $('#successModal').modal('hide');
+                $(modal).modal('hide');
                 location.reload();
-            }, 5000);
-        }
-
-        function handleFailResponse() {
-            $('#failModal').modal('show');
-            setTimeout(function () {
-                $('#failModal').modal('hide');
-                location.reload();
-            }, 5000);
+            }, 3000);
         }
 
         // Create
@@ -28,9 +21,7 @@
                 data: { district: districtName },
                 success: function (response) {
                     $('#addDistrictModal').modal('hide');
-                    if (response.success) {
-                        handleSuccessResponse();
-                    }
+                    handleResponse(response.success);
                 }
             });
         });
@@ -46,10 +37,7 @@
                 url: '/districts/delete/' + districtId,
                 success: function (response) {
                     $('#deleteDistrictModal').modal('hide');
-
-                    if (response.success) {
-                        handleSuccessResponse();
-                    }
+                    handleResponse(response.success);
                 }
             });
         });
@@ -67,26 +55,28 @@
                 data: { district: districtName },
                 success: function (response) {
                     $('#updateDistrictModal').modal('hide');
-
-                    if (response.success)
-                        handleSuccessResponse();
-                    else handleFailResponse();
-
+                    handleResponse(response.success);
                 },
             });
         });
 
         $('#closeModal').on('click', function (e) {
             e.preventDefault();
-            $('#successModal').modal('hide');
-            $('#failModal').modal('hide');
+            $('.modal').modal('hide');
             location.reload();
         });
     });
 </script>
 {{/section}}
-
-<h4>Quản lý các đơn vị phường và quận</h4>
+<div class="d-flex justify-content-between">
+    <h4>Quản lý các quận</h4>
+    <caption>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDistrictModal">
+            <i class="bi bi-plus-square"></i>
+            Thêm quận mới
+        </button>
+    </caption>
+</div>
 
 <!-- Add District Modal -->
 <div class="modal fade" id="addDistrictModal" tabindex="-1" aria-labelledby="addDistrictModalLabel" aria-hidden="true">
@@ -199,22 +189,30 @@
     </div>
 </div>
 
-<table class="table">
-    <!-- ... -->
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tên quận</th>
+            <th scope="col">Thao tác</th>
+        </tr>
+    </thead>
     <tbody>
         {{#each districts}}
         <tr>
             <th scope="row">{{inc @index}}</th>
             <td>{{this.district}}</td>
             <td>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                    data-bs-target="#addDistrictModal">Add</button>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#updateDistrictModal"
-                    onclick="document.getElementById('updateDistrictId').value = '{{this._id}}';">Update</button>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    onclick="document.getElementById('updateDistrictId').value = '{{this._id}}';">
+                    <i class="bi bi-pencil-square"></i>
+                    Đổi tên quận</button>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                     data-bs-target="#deleteDistrictModal"
-                    onclick="document.getElementById('deleteDistrictId').value = '{{this._id}}';">Delete</button>
+                    onclick="document.getElementById('deleteDistrictId').value = '{{this._id}}';">
+                    <i class="bi bi-trash-fill"></i>
+                    Xoá</button>
             </td>
         </tr>
         {{/each}}

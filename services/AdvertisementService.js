@@ -53,4 +53,59 @@ export default class AdvertisementService {
       console.log("AdvertisementService.canBeDeleted", err);
     }
   }
+
+  async countAll() {
+    try {
+      return await this.repository.countAll();
+    } catch (err) {
+      console.log("AdvertisementService.countAll", err);
+    }
+  }
+
+  async findTotalPages({ limit }) {
+    try {
+      const totalItems = await this.countAll();
+      const totalPages = Math.ceil(totalItems / limit);
+      return totalPages;
+    } catch (err) {
+      console.log("AdvertisementService.findTotalPages", err);
+    }
+  }
+
+  async findDataForPage({ offset, limit }) {
+    try {
+      const rawData = await this.repository.findDataForPage({ offset, limit });
+      const data = rawData.map((item, index) => {
+        const newItem = {
+          _id: item._id,
+          typeBoard: item.typeBoard,
+          number: item.number,
+          size: item.size,
+          address: item.location.address,
+          index: offset + index + 1,
+        };
+        return newItem;
+      });
+      return data;
+    } catch (err) {
+      console.log("AdvertisementService.findDataForPage", err);
+    }
+  }
+
+  async find(entity) {
+    try {
+      return await this.repository.find(entity);
+    } catch (err) {
+      console.log("AdvertisementService.find", err);
+    }
+  }
+
+  async createAdvertisement(entity) {
+    try {
+      const ad = await this.repository.add(entity);
+      return ad;
+    } catch (err) {
+      console.log("AdvertisementService.createAdvertisement", err);
+    }
+  }
 }

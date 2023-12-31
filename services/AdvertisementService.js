@@ -8,8 +8,7 @@ export default class AdvertisementService {
   async getAllAdvertisements() {
     try {
       const advertisements = await this.repository.getAllAdvertisements();
-      const locations = advertisements;
-      return locations;
+      return advertisements;
     } catch (err) {
       console.log("AdvertisementService.getAllAdvertisement", err);
     }
@@ -21,6 +20,7 @@ export default class AdvertisementService {
       const locations = advertisements.filter((item, pos) => {
         return advertisements.indexOf(item) == pos;
       });
+      console.log(locations);
       return locations;
     } catch (err) {
       console.log("AdvertisementService.getAllLocations", err);
@@ -34,6 +34,23 @@ export default class AdvertisementService {
       return advertisements;
     } catch (err) {
       console.log("AdvertisementService.getAllAdvertisement", err);
+    }
+  }
+
+  async generateAds() {
+    try {
+      return await this.repository.generate();
+    } catch (err) {
+      console.log("AdvertisementService.generateAds", err);
+    }
+  }
+
+  async canBeDeleted(id) {
+    try {
+      const result = await this.repository.canBeDeleted(id);
+      return result;
+    } catch (err) {
+      console.log("AdvertisementService.canBeDeleted", err);
     }
   }
 }

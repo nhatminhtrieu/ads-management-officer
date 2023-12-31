@@ -16,4 +16,16 @@ router.post("/add", async (req, res) => {
   res.send(result);
 });
 
+// location/find/...
+router.get("/find/:id", async (req, res) => {
+  const id = req.params.id;
+  const result = await locationService.find({ _id: id });
+  res.send(result[0]);
+});
+
+router.get("/find-all", async (req, res) => {
+  const result = await locationService.findAllLocations();
+  res.send(result);
+});
+
 export default router;

@@ -13,8 +13,8 @@ import CreateFirstAccount from "./database/CreateFirstAccount.js";
 import routesMdw from "./middleware/routes.js";
 import auth from "./middleware/auth.js";
 
-import Handlebars from 'handlebars';
-import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
+import Handlebars from "handlebars";
+import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 
 const app = express();
 const port = process.env.PORT;
@@ -29,6 +29,14 @@ app.engine(
 
 			inc(value) {
 				return parseInt(value) + 1;
+			},
+
+			ifCond(v1, operator, v2, options) {
+				return eval(`${v1} ${operator} ${v2}`) ? options.fn(this) : options.inverse(this);
+			},
+
+			json: function (obj) {
+				return JSON.stringify(obj);
 			},
 		},
 	})

@@ -1,43 +1,76 @@
-import WardModel from '../models/Ward.js'
-import DistrictModel from '../models/District.js'
-
+import WardModel from "../models/Ward.js";
+import DistrictModel from "../models/District.js";
 
 export default class WardRepository {
-    constructor() {
-        this.model = WardModel;
-    }
+  constructor() {
+    this.model = WardModel;
+  }
 
-    async addWard(data) {
-        const ward = new this.model(data);
-        return await ward.save();
-    }
+  async addWard(data) {
+    const ward = new this.model(data);
+    return await ward.save();
+  }
 
-    async getAllWards() {
-        return await this.model.find({ status: true }).populate('district', 'district').sort('district');
-    }
+  async getAllWards() {
+    return await this.model
+      .find({ status: true })
+      .populate("district", "district")
+      .sort("district");
+  }
 
-    async getAllWardsByDistrict(districtID) {
-        return await this.model.find({ district: districtID, status: true }).populate('district', 'district');
-    }
+  async getAllWardsByDistrict(districtID) {
+    return await this.model
+      .find({ district: districtID, status: true })
+      .populate("district", "district");
+  }
 
-    async getDistrictById(id) {
-        return await DistrictModel.findById(id);
-    }
+  async getDistrictById(id) {
+    return await DistrictModel.findById(id);
+  }
 
-    async getWardByName(name, districtID) {
-        const result = await this.model.findOne({ ward: name, district: districtID });
-        return result;
-    }
+  async getWardByName(name, districtID) {
+    const result = await this.model.findOne({
+      ward: name,
+      district: districtID,
+    });
+    return result;
+  }
 
-    async getWardById(id) {
-        return await this.model.findById(id);
-    }
+  async getWardById(id) {
+    return await this.model.findById(id);
+  }
 
-    async updateWard(id, districtID, newName) {
-        return await this.model.findOneAndUpdate({ _id: id, district: districtID }, { ward: newName }, { new: true });
-    }
+  async findWardByEntity(entity) {
+    return await this.model.findOne(entity);
+  }
 
-    async deleteWard(id, districtID) {
-        return await this.model.findByIdAndUpdate({ _id: id }, { district: districtID, status: false }, { new: true });
+  async updateWard(id, districtID, newName) {
+    return await this.model.findOneAndUpdate(
+      { _id: id, district: districtID },
+      { ward: newName },
+      { new: true }
+    );
+  }
+
+  async deleteWard(id, districtID) {
+    return await this.model.findByIdAndUpdate(
+      { _id: id },
+      { district: districtID, status: false },
+      { new: true }
+    );
+  }
+
+    async findAreaId({ district, ward }) {
+        const areas = await this.model.find({}).populate('district').find({ ward });
+        let areaId = "12345678"; // default
+
+        for (let i = 0; i < areas.length; i++) {
+            if (areas[i].district.district === district) {
+                areaId = areas[i]._id;
+                break;
+            }
+        }
+
+        return areaId;
     }
 }

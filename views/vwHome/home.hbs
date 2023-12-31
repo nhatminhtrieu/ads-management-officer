@@ -1,9 +1,28 @@
 {{#section "css"}}
-	<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 {{/section}}
 
 {{#section "js"}}
-	<script type="module" src="/static/js/vwHome/loadMap.js"></script>
+<script type="module">
+	import CustomMap from "/static/js/map/CustomMap.js";
+	import { contentAd } from "/static/js/loadMarker.js";
+
+	function onMapChange(returnData) {
+		$("#map-return-data").html(JSON.stringify(returnData));
+	}
+
+	const HomeMap = new CustomMap();
+	const list = {{{ json locations }}};
+	HomeMap.init(onMapChange).then(async () => {
+		for (const location of list) {
+			const contentString = contentAd(location);
+			await HomeMap.pushAdMarker(location, location.address, contentString);
+		}
+		HomeMap.setAdCluster();
+		// Enable catch selected marker function
+		HomeMap.catchSelectedLocation();
+	});
+</script>
 {{/section}}
 
 <div class="container-fluid vh-100" style="padding-top: 60px">

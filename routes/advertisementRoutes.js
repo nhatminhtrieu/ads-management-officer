@@ -1,32 +1,160 @@
 // Define your routes here
-import express from "express";
+import express, { raw } from "express";
 const router = express.Router();
 import AdvertisementService from "../services/AdvertisementService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
+import LocationService from "../services/LocationService.js";
+import WardService from "../services/WardService.js";
+import DistrictService from "../services/DistrictService.js";
 import createRequestRouter from "./createRequestRoute.js";
 
-router.get("/locations", async (req, res) => {
-	const service = new AdvertisementService();
-	const locations = await service.getAllLocations();
-	res.send(locations);
-});
-
-router.get("/", async (req, res) => {
-	const service = new AdvertisementService();
-	const coordinate = {
-		lat: req.query.lat,
-		lng: req.query.lng,
-	};
-	const list = await service.getAdvertisementsByLocation(coordinate);
-	res.send(list);
-});
-
+// UI routers declaration
 router.get("/manage", (req, res) => {
 	res.render("vwAds/ads", { layout: "ads" });
 });
 
-router.get("/ad-location", (req, res) => {
-	res.render("vwAds/locations", { layout: "ads" });
+router.get("/ad-location", async (req, res) => {
+	const service = new LocationService();
+	const limit = 20;
+
+	const totalPage = await service.findTotalPages({ limit });
+	let page = req.query.page || 1;
+	if (page < 1) page = 1;
+	if (page > totalPage) page = totalPage;
+
+	const offset = (page - 1) * limit;
+
+	const data = await service.findDataForPage({ offset, limit });
+
+	const pageNumbers = [];
+
+	for (let i = 1; i <= totalPage; i++) {
+		pageNumbers.push({
+			value: i,
+			isActive: i === +page,
+		});
+	}
+
+	res.render("vwAds/vwLocations/locations", {
+		layout: "ads",
+		list: data,
+		totalPage,
+		page,
+		pageNumbers,
+	});
+});
+
+router.get("/locations/new", async (req, res) => {
+	const adsTypeService = new AdsTypesService();
+	const locationService = new LocationService();
+	const list = await adsTypeService.findAllAdsType();
+	const locations = await locationService.findAllLocations();
+
+	res.render("vwAds/vwLocations/create", {
+		layout: "ads",
+		list,
+		locations,
+	});
+});
+
+router.post("/locations/new", async (req, res) => {
+	const data = req.body;
+
+	const matchDistrict = data.address.match(/Quận\s[^,]*,\s/);
+	const district = matchDistrict ? matchDistrict[0].slice(0, -2) : "Quận 5";
+	const matchWard = data.address.match(/Phường\s[^,]*,\s/);
+	const ward = matchWard ? matchWard[0].slice(0, -2) : "Phường 4";
+
+	const wardService = new WardService();
+	const districtService = new DistrictService();
+
+	const wardId = await wardService.findWardId({ ward });
+	const districtId = await districtService.findDistrictId({ district });
+
+	const entity = {
+		type: data.type,
+		format: Object(data.format),
+		zoning: false,
+		coordinate: JSON.parse(data.coordinate),
+		address: data.address,
+		area: {
+			district: districtId,
+			ward: wardId,
+		},
+	};
+
+	const locationService = new LocationService();
+	await locationService.createLocation(entity);
+
+	res.redirect("/advertisement/ad-location");
+});
+
+router.get("/ad-location/:id", async (req, res) => {
+	const locationService = new LocationService();
+	const locations = await locationService.find({ _id: req.params.id });
+	const location = locations[0];
+
+	const adsTypeService = new AdsTypesService();
+	const rawAdsTypes = await adsTypeService.findAllAdsType();
+	const adsTypes = rawAdsTypes.map((adsType) => {
+		return {
+			_id: adsType._id,
+			name: adsType.name,
+			isSelected: adsType._id.toString() === location.format._id.toString(),
+		};
+	});
+
+	const rawZoning = [
+		{
+			zoning: true,
+			name: "Đã quy hoạch",
+		},
+		{
+			zoning: false,
+			name: "Chưa quy hoạch",
+		},
+	];
+	const zoning = rawZoning.map((zoning) => {
+		return {
+			zoning: zoning.zoning,
+			name: zoning.name,
+			isSelected: zoning.zoning === location.zoning,
+		};
+	});
+
+	res.render("vwAds/vwLocations/detail", {
+		layout: "ads",
+		location,
+		adsTypes,
+		zoning,
+	});
+});
+
+router.post("/ad-location/:id", async (req, res) => {
+	const data = {
+		type: req.body.type,
+		format: Object(req.body.format),
+		zoning: req.body.zoning === "true",
+	};
+
+	const locationService = new LocationService();
+	const result = await locationService.updateLocation(req.params.id, data);
+
+	res.redirect(`/advertisement/ad-location/${req.params.id}`);
+});
+
+router.post("/ad-location/can-be-deleted/:id", async (req, res) => {
+	const id = req.params.id;
+	const advertisementService = new AdvertisementService();
+	const result = await advertisementService.canBeDeleted(id);
+	res.json(result);
+});
+
+router.post("/ad-location/delete/:id", async (req, res) => {
+	const id = req.params.id;
+	const locationService = new LocationService();
+	const result = await locationService.deleteLocation(id);
+	res.redirect("/advertisement/ad-location");
 });
 
 router.get("/edit-request", (req, res) => {
@@ -42,6 +170,29 @@ router.get("/type-ad", async (req, res) => {
 		layout: "ads",
 		list,
 	});
+});
+
+// Data routers declaration
+router.get("/", async (req, res) => {
+	const service = new AdvertisementService();
+	const coordinate = {
+		lat: req.query.lat,
+		lng: req.query.lng,
+	};
+	const list = await service.getAdvertisementsByLocation(coordinate);
+	res.send(list);
+});
+
+router.get("/generate", async (req, res) => {
+	const service = new AdvertisementService();
+	const ads = await service.generateAds();
+	res.send(ads);
+});
+
+router.get("/find-all", async (req, res) => {
+	const service = new AdvertisementService();
+	const list = await service.getAllAdvertisements();
+	res.send(list);
 });
 
 export default router;

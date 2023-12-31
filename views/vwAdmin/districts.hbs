@@ -1,9 +1,200 @@
-<table class="table">
-    <thead>
+{{#section 'jsDistricts'}}
+<script>
+    $(document).ready(function () {
+        function handleResponse(success) {
+            var modal = success ? '#SuccessModal' : '#FailModal';
+            $(modal).modal('show');
+            setTimeout(function () {
+                $(modal).modal('hide');
+                location.reload();
+            }, 3000);
+        }
+
+        $('#closeSuccessModal, #closeFailModal').on('click', function () {
+            const targetModal = $(this).is('#closeSuccessModal') ? '#SuccessModal' : '#FailModal';
+            $(targetModal).modal('hide');
+        });
+
+        // Create
+        $('#addDistrictForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const districtName = $('#addDistrictForm input[name="district"]').val();
+            $.ajax({
+                type: 'POST',
+                url: '/districts/create',
+                data: { district: districtName },
+                success: function (response) {
+                    $('#addDistrictModal').modal('hide');
+                    handleResponse(response.success);
+                }
+            });
+        });
+
+        // Delete
+        $('#deleteDistrictButton').on('click', function (e) {
+            e.preventDefault();
+
+            const districtId = $('#deleteDistrictId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/districts/delete/' + districtId,
+                success: function (response) {
+                    $('#deleteDistrictModal').modal('hide');
+                    handleResponse(response.success);
+                }
+            });
+        });
+
+        // Update
+        $('#updateDistrictForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const districtId = $('#updateDistrictId').val();
+            const districtName = $('#updateDistrictForm input[name="district"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/districts/update/' + districtId,
+                data: { district: districtName },
+                success: function (response) {
+                    $('#updateDistrictModal').modal('hide');
+                    handleResponse(response.success);
+                },
+            });
+        });
+    });
+</script>
+{{/section}}
+<div class="d-flex justify-content-between">
+    <h4>Quản lý các quận</h4>
+    <caption>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDistrictModal">
+            <i class="bi bi-plus-square"></i>
+            Thêm quận mới
+        </button>
+    </caption>
+</div>
+
+<!-- Add District Modal -->
+<div class="modal fade" id="addDistrictModal" tabindex="-1" aria-labelledby="addDistrictModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDistrictModalLabel">Tạo quận quản lý mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addDistrictForm" method="post">
+                    <div class="mb-3">
+                        <label for="txtDistrictName" class="form-label">Tên quận</label>
+                        <input type="text" class="form-control" id="txtDistrictName" name="district"
+                            placeholder="Quận 1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete District Modal -->
+<div class="modal fade" id="deleteDistrictModal" tabindex="-1" aria-labelledby="deleteDistrictModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDistrictModalLabel">Xoá quận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xoá quận này không?</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="deleteDistrictId" value="">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn btn-danger" id="deleteDistrictButton">Xoá</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update District Modal -->
+<div class="modal fade" id="updateDistrictModal" tabindex="-1" aria-labelledby="updateDistrictModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateDistrictModalLabel">Cập nhật quận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateDistrictForm" method="post">
+                    <div class="mb-3">
+                        <label for="updateDistrictId" class="form-label">ID quận</label>
+                        <input type="text" class="form-control" id="updateDistrictId" name="districtId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateDistrictName" class="form-label">Tên quận</label>
+                        <input type="text" class="form-control" id="updateDistrictName" name="district"
+                            placeholder="Quận 1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Successs Modal -->
+<div class="modal fade" id="SuccessModal" tabindex="-1" role="dialog" aria-labelledby="SuccessModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SuccessModalLabel">Thành công</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Thao tác thành công.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeSuccessModal"
+                    data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fail Modal -->
+<div class="modal fade" id="FailModal" tabindex="-1" role="dialog" aria-labelledby="FailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="FailModalLabel">Thất bại</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Thao tác thất bại.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeFailModal" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead class="table-light">
         <tr>
             <th scope="col">#</th>
-            <th scope="col">District name</th>
-            <th scope="col">&nbsp;</th>
+            <th scope="col">Tên quận</th>
+            <th scope="col">Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -12,12 +203,16 @@
             <th scope="row">{{inc @index}}</th>
             <td>{{this.district}}</td>
             <td>
-                <a href="/districts/create" method="post" class="btn btn-success">Add</a>
-                <a href="/districts/update?id={{this._id}}" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-danger"
-                    onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this district?')) document.getElementById('delete-form-{{this.id}}').submit();">Delete</a>
-                <form id="delete-form-{{this.id}}" action="/districts/delete?id={{this.id}}" method="post"
-                    style="display: none;"></form>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#updateDistrictModal"
+                    onclick="document.getElementById('updateDistrictId').value = '{{this._id}}';">
+                    <i class="bi bi-pencil-square"></i>
+                    Đổi tên quận</button>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#deleteDistrictModal"
+                    onclick="document.getElementById('deleteDistrictId').value = '{{this._id}}';">
+                    <i class="bi bi-trash-fill"></i>
+                    Xoá</button>
             </td>
         </tr>
         {{/each}}

@@ -116,4 +116,12 @@ export default class AdvertisementService {
       console.log("AdvertisementService.updateAdvertisement", err);
     }
   }
+
+  async deleteAdvertisement(id) {
+    try {
+      return await this.repository.delete(id);
+    } catch (err) {
+      console.log("AdvertisementService.deleteAdvertisement", err);
+    }
+  }
 }

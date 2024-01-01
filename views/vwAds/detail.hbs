@@ -51,12 +51,6 @@
     let imgsArr = {{{json ad.imgs}}}
 
     window.onload = function () { 
-      $.post(`/advertisement/manage/can-be-deleted/{{location._id}}`, function (data) { 
-        if (data === true) { 
-          $('#deleteButton').prop("disabled", false); 
-        } 
-      });
-
       updatePreview(imgsArr)
       updateHidden(imgsArr)
     } 
@@ -77,6 +71,7 @@
       $('#number').prop("disabled", false); 
       $('#size').prop("disabled", false); 
       $('#file').prop("disabled", false);
+      $('#deleteButton').prop("hidden", false);
       $('#edit').prop("hidden", true);
       $('#fnButton').show(); 
       document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
@@ -88,7 +83,7 @@
     }); 
     $("#deleteButton").click(function (e) {
       e.preventDefault(); 
-      $.post("/advertisement/manage/delete/{{location._id}}", function (response) { 
+      $.post("/advertisement/manage/delete/{{ad._id}}", function (response) { 
         window.location.href = '/advertisement/manage'; 
       }) 
     });
@@ -185,7 +180,6 @@
       class="btn btn-danger"
       id="deleteButton"
       hidden
-      disabled
     >
       <i class="bi bi-trash"></i>
       Xóa

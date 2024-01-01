@@ -140,6 +140,13 @@ router.post("/manage/:id", async (req, res) => {
   res.redirect(`/advertisement/manage/${req.params.id}`);
 });
 
+router.post("/manage/delete/:id", async (req, res) => {
+  const id = req.params.id;
+  const service = new AdvertisementService()
+  const result = await service.deleteAdvertisement(id)
+  res.redirect("/advertisement/manage");
+});
+
 router.get("/ad-location", async (req, res) => {
   const service = new LocationService();
   const limit = 20;

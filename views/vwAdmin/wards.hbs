@@ -226,7 +226,7 @@
     <tbody>
         {{#each ward}}
         <tr>
-            <th scope="row">{{inc @index}}</th>
+            <th scope="row">{{this.index}}</th>
             <td>{{this.ward}}</td>
             <td>{{this.district.district}}</td>
             <td class="text-end">
@@ -246,21 +246,18 @@
 </table>
 
 <ul class="pagination justify-content-center">
-    <li class="page-item">
-        <a class="page-link {{#ifCond this.page "===" 1}} disabled {{/ifCond}}" href="?page=1" aria-label="Previous">
+    <li class="page-item {{#if firstPageDisabled}}disabled{{/if}}">
+        <a class="page-link" href="?page={{firstPage}}" aria-label="First">
             <span aria-hidden="true">&laquo;</span>
         </a>
     </li>
-
     {{#each pages}}
-    <li class="page-item {{#if this.isCurrent}}active{{/if}}">
-        <a class="page-link" href="?page={{this.number}}">{{this.number}}</a>
+    <li class="page-item {{#if isCurrent}}active{{/if}}">
+        <a class="page-link" href="?page={{number}}">{{number}}</a>
     </li>
     {{/each}}
-
-    <li class="page-item">
-        <a class="page-link {{#ifCond this.page "===" this.totalPage}} disabled {{/ifCond}}"
-            href="?page={{this.totalPage}}" aria-label="Next">
+    <li class="page-item {{#if lastPageDisabled}}disabled{{/if}}">
+        <a class="page-link" href="?page={{lastPage}}" aria-label="Last">
             <span aria-hidden="true">&raquo;</span>
         </a>
     </li>

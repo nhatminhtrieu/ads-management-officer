@@ -10,26 +10,54 @@ const districtService = new DistrictService();
 function paginate(array, page, limit) {
     const skip = (page - 1) * limit;
     const items = array.slice(skip, skip + limit);
-    const pages = Array.from({ length: Math.ceil(array.length / limit) }, (_, i) => ({
+    const totalPages = Math.ceil(array.length / limit);
+    const pages = Array.from({ length: totalPages }, (_, i) => ({
         number: i + 1,
         isCurrent: i + 1 === page,
     }));
 
-    return { items, pages };
+    return { items, pages, totalPages };
 }
 
 // Read all as district officer
 router.get('/', async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
+    let page = parseInt(req.query.page) || 1;
     const limit = 10;
     const allWards = await wardService.getAllWards();
-    const { items: wards, pages } = paginate(allWards, page, limit);
+
+    // Check if page number is valid
+    if (isNaN(page) || page < 1) {
+        page = 1;
+    }
+
+    const { items: wards, pages, totalPages } = paginate(allWards, page, limit);
+
+    // Check if page number is out of range
+    if (page > totalPages) {
+        page = totalPages;
+    }
+
+    // Add index to each ward
+    wards.forEach((ward, index) => {
+        ward.index = (page - 1) * limit + index + 1;
+    });
+
+    const firstPageDisabled = page === 1;
+    const lastPageDisabled = page === totalPages;
+
+    const district = await districtService.getAllDistricts();
 
     return res.render('vwAdmin/wards', {
         layout: 'admin',
         ward: wards,
+        district: district,
         isWardList: true,
-        pages: pages
+        pages: pages,
+        totalPages,
+        firstPage: 1,
+        lastPage: totalPages,
+        firstPageDisabled,
+        lastPageDisabled,
     });
 });
 
@@ -37,22 +65,42 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const page = parseInt(req.query.page) || 1;
+        let page = parseInt(req.query.page) || 1;
         const limit = 5;
         const allWards = await wardService.getAllWardsByDistrict(id);
-        const { items: wards, pages } = paginate(allWards, page, limit);
-        const district = await districtService.getDistrictById(id);
 
-        if (!wards.length) {
-            return res.status(404).send("Ward not found");
+        // Check if page number is valid
+        if (isNaN(page) || page < 1) {
+            page = 1;
         }
+
+        const { items: wards, pages, totalPages } = paginate(allWards, page, limit);
+
+        // Check if page number is out of range
+        if (page > totalPages) {
+            page = totalPages;
+        }
+
+        // Add index to each ward
+        wards.forEach((ward, index) => {
+            ward.index = (page - 1) * limit + index + 1;
+        });
+
+        const district = await districtService.getDistrictById(id);
+        const firstPageDisabled = page === 1;
+        const lastPageDisabled = page === totalPages;
 
         return res.render('vwAdmin/wards', {
             layout: 'admin',
             ward: wards,
             district: district,
             isWardList: false,
-            pages: pages
+            pages: pages,
+            totalPages,
+            firstPage: 1,
+            lastPage: totalPages,
+            firstPageDisabled,
+            lastPageDisabled
         });
     } catch (error) {
         console.error(error);

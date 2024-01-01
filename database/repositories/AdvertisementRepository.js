@@ -72,6 +72,10 @@ class AdvertisementRepository {
   async find(entity) {
     return await this.model.find(entity).populate("location");
   }
+
+  async update(id, entity) {
+    return await this.model.updateOne({ _id: id }, entity);
+  }
 }
 
 export default AdvertisementRepository;

@@ -89,41 +89,55 @@ router.get("/manage/:id", async (req, res) => {
   let ad = await service.find({ _id: req.params.id });
   ad = ad[0];
 
-  // const adsTypeService = new AdsTypesService();
-  // const rawAdsTypes = await adsTypeService.findAllAdsType();
-  // const adsTypes = rawAdsTypes.map((adsType) => {
-  //   return {
-  //     _id: adsType._id,
-  //     name: adsType.name,
-  //     isSelected: adsType._id.toString() === location.format._id.toString(),
-  //   };
-  // });
+  const formatDays = {
+    start: moment(ad.start).format("DD/MM/YYYY"),
+    end: moment(ad.end).format("DD/MM/YYYY"),
+  };
 
-  // const rawZoning = [
-  //   {
-  //     zoning: true,
-  //     name: "Đã quy hoạch",
-  //   },
-  //   {
-  //     zoning: false,
-  //     name: "Chưa quy hoạch",
-  //   },
-  // ];
-  // const zoning = rawZoning.map((zoning) => {
-  //   return {
-  //     zoning: zoning.zoning,
-  //     name: zoning.name,
-  //     isSelected: zoning.zoning === location.zoning,
-  //   };
-  // });
+  const rawTypeBoards = [
+    "Trụ bảng hiflex",
+    "Trụ màn hình điện tử LED",
+    "Trụ hộp đèn",
+    "Bảng hiflex ốp tường",
+    "Màn hình điện tử ốp tường",
+    "Trụ treo băng rôn dọc",
+    "Trụ treo băng rôn ngang",
+    "Trụ/Cụm pano",
+    "Cổng chào",
+    "Trung tâm thương mại",
+  ];
+  const typeBoards = rawTypeBoards.map((typeBoard) => {
+    return {
+      name: typeBoard,
+      isSelected: typeBoard === ad.typeBoard,
+    };
+  });
 
   res.render("vwAds/detail", {
     layout: "ads",
     ad,
     location: ad.location,
-    // adsTypes,
-    // zoning,
+    typeBoards,
+    formatDays,
   });
+});
+
+router.post("/manage/:id", async (req, res) => {
+  const data = req.body;
+
+  const entity = {
+    typeBoard: data.typeBoard,
+    number: data.number,
+    size: data.size,
+    imgs: data.imgs,
+    start: moment(data.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
+    end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
+  };
+
+  const service = new AdvertisementService();
+  const result = await service.updateAdvertisement(req.params.id, entity);
+
+  res.redirect(`/advertisement/manage/${req.params.id}`);
 });
 
 router.get("/ad-location", async (req, res) => {

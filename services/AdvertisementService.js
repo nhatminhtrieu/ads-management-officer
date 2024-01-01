@@ -108,4 +108,12 @@ export default class AdvertisementService {
       console.log("AdvertisementService.createAdvertisement", err);
     }
   }
+
+  async updateAdvertisement(id, entity) {
+    try {
+      return await this.repository.update(id, entity);
+    } catch (err) {
+      console.log("AdvertisementService.updateAdvertisement", err);
+    }
+  }
 }

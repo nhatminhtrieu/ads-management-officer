@@ -10,6 +10,10 @@ export default class AccountRepository {
         return await newEntity.save();
     }
 
+    async getAll() {
+        return await this.model.find();
+    }
+
     async findByEntity(entity) {
         return await this.model.findOne(entity);
     }

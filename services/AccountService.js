@@ -45,6 +45,10 @@ export default class AccountService {
         return !isExist;
     }
 
+    async getAllAccount() {
+        return await this.repository.getAll()
+    }
+
     async findById(_id) {
         return await this.repository.findByEntity({_id})
     }
@@ -69,5 +73,10 @@ export default class AccountService {
 
     async updateProfile(_id, data) {
         await this.repository.patchEntity({_id}, data)
+    }
+
+    async updateStatus(_id, curStatus) {
+        const status = curStatus == 1 ? 0 : 1
+        await this.repository.patchEntity({_id}, {status});
     }
 }

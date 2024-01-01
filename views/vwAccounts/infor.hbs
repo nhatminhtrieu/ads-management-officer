@@ -7,7 +7,7 @@
     <h3>Thông tin cá nhân</h3>
     <button id="edit" class="list-group-item ms-4">
         <i class="fa fa-edit" aria-hidden="true"></i>
-        Edit
+        Chỉnh sửa
     </button>
 </div>
 <form id="frmInfo" action="/account/changeInfo" class="row g-3 needs-validation" method="post">
@@ -44,6 +44,17 @@
             name="phone" disabled 
         />
     </div>
+     <div class="form-outline">
+        <label class="form-label" for="address"><b>Địa chỉ</b></label>
+        <input type="text" id="address" class="form-control border-2"  
+            {{#if authUser.address}}
+                value="{{authUser.address}}"
+            {{else}}
+                placeholder="Chưa có thông tin địa chỉ"
+            {{/if}}
+            name="address" disabled 
+        />
+    </div>
     <div class="form-outline">
         <label class="form-label" for="txtDoB"><b>Ngày tháng năm sinh</b></label>
         <input type="text" id="txtDoB" class="form-control border-2" 
@@ -54,7 +65,7 @@
         />
     </div>
     <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" disabled>Cập nhật</button>
+        <button id="update" type="submit" class="btn btn-primary" disabled>Cập nhật</button>
         <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
     </div>
 </form>
@@ -89,7 +100,8 @@
                 scrollInput: false
             });
             $('input').attr('disabled', 'disabled');
-            $('button').attr('disabled', 'disabled');
+            $('update').attr('disabled', 'disabled');
+            $('cancel').attr('disabled', 'disabled');
         });
     </script>
 {{/section}}

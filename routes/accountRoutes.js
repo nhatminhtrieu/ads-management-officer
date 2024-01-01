@@ -177,7 +177,14 @@ router.post("/resetPassword", async (req, res) => {
     const password = req.body.password;
     const { username } = req.session.authUser;
 
-    await service.updatePassword(username, password);
+    const account = await service.findByUsername(username);
+    if (!account) {
+        res.render("vwAccounts/inputEmail", { layout: false, err_message: "Tài khoản không tồn tại" });
+        return;
+    }
+
+    const _id = account._id;
+    await service.updatePassword(_id, password);
     res.redirect("/account/login");
 })
 
@@ -196,11 +203,11 @@ router.post("/changePassword", auth, async (req, res) => {
 
 router.post("/changeInfo", auth, async (req, res) => {
     const { _id } = req.session.authUser;
-    const { email, fullname, phone, rawDob } = req.body;
+    const { email, fullname, phone, rawDob, address } = req.body;
 
     const dob = rawDob === '__/__/____' ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
 
-    await service.updateProfile(_id, { email, fullname, phone, dob });
+    await service.updateProfile(_id, { email, fullname, phone, dob, address });
    
     const user = (await service.findById(_id)).toObject();
     if(user.dob != null) {
@@ -209,6 +216,14 @@ router.post("/changeInfo", auth, async (req, res) => {
     req.session.authUser = user;
     res.redirect("/account/profile");
 })
+
+router.post("/changeStatus/:id", async (req, res) => {
+    const id = req.params.id;
+    const { status } = req.body;
+    await service.updateStatus(id, status);
+    res.redirect("/admin/officer/" + id);
+})
+
 
 router.post("/logout", auth, (req, res) => {
     req.session.isAuthenticated = false;

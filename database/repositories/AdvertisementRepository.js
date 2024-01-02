@@ -6,7 +6,7 @@ class AdvertisementRepository {
   constructor() {
     this.model = AdvertisementModel;
   }
-  async createAdvertisement(advertisement) {
+  async add(advertisement) {
     const newAdvertisement = new AdvertisementModel(advertisement);
     return await newAdvertisement.save();
   }
@@ -54,6 +54,31 @@ class AdvertisementRepository {
       console.error("canBeDeleted", err);
       throw err;
     }
+  }
+
+  async countAll() {
+    return await this.model.countDocuments();
+  }
+
+  async findDataForPage({ offset, limit }) {
+    const data = await this.model
+      .find()
+      .populate("location")
+      .skip(offset)
+      .limit(limit);
+    return data;
+  }
+
+  async find(entity) {
+    return await this.model.find(entity).populate("location");
+  }
+
+  async update(id, entity) {
+    return await this.model.updateOne({ _id: id }, entity);
+  }
+
+  async delete(id) {
+    return await this.model.deleteOne({ _id: id });
   }
 }
 

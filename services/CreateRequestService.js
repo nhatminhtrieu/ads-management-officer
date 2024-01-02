@@ -36,10 +36,31 @@ export default class CreateRequestService {
 
 	async getAllCreateRequests() {
 		const list = await this.repository.getAll();
-		list.forEach((item) => {
-			item["location"] = "Chờ service của location";
-		});
 		return list;
+	}
+
+	async findTotalPages(limit) {
+		try {
+			const totalItems = await this.repository.countAll();
+			const totalPages = Math.ceil(totalItems / limit);
+			return totalPages;
+		} catch (err) {
+			console.log("CreateRequestService.findTotalPages", err);
+		}
+	}
+
+	async findDataForPage({ offset, limit }) {
+		try {
+			const rawData = await this.repository.findDataForPage({ offset, limit });
+			const data = rawData.map((item, index) => {
+				const newItem = item;
+				newItem["index"] = offset + index;
+				return newItem;
+			});
+			return data;
+		} catch (err) {
+			console.log("CreateRequestService.findDataForPage", err);
+		}
 	}
 
 	async findById(_id) {

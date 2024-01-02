@@ -19,29 +19,50 @@ import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access
 const app = express();
 const port = process.env.PORT;
 app.engine(
-  "hbs",
-  engine({
-    extname: "hbs",
-    defaultLayout: "main.hbs",
-    handlebars: allowInsecurePrototypeAccess(Handlebars),
-    helpers: {
-      section: hbs_sections(),
+	"hbs",
+	engine({
+		extname: "hbs",
+		defaultLayout: "main.hbs",
+		handlebars: allowInsecurePrototypeAccess(Handlebars),
+		helpers: {
+			section: hbs_sections(),
 
-      inc(value) {
-        return parseInt(value) + 1;
-      },
+			inc(value) {
+				return parseInt(value) + 1;
+			},
 
-      ifCond(v1, operator, v2, options) {
-        return eval(`${v1} ${operator} ${v2}`)
-          ? options.fn(this)
-          : options.inverse(this);
-      },
+			ifCond(v1, operator, v2, options) {
+				switch (operator) {
+					case "==":
+						return v1 == v2 ? options.fn(this) : options.inverse(this);
+					case "===":
+						return v1 === v2 ? options.fn(this) : options.inverse(this);
+					case "!=":
+						return v1 != v2 ? options.fn(this) : options.inverse(this);
+					case "!==":
+						return v1 !== v2 ? options.fn(this) : options.inverse(this);
+					case "<":
+						return v1 < v2 ? options.fn(this) : options.inverse(this);
+					case "<=":
+						return v1 <= v2 ? options.fn(this) : options.inverse(this);
+					case ">":
+						return v1 > v2 ? options.fn(this) : options.inverse(this);
+					case ">=":
+						return v1 >= v2 ? options.fn(this) : options.inverse(this);
+					case "&&":
+						return v1 && v2 ? options.fn(this) : options.inverse(this);
+					case "||":
+						return v1 || v2 ? options.fn(this) : options.inverse(this);
+					default:
+						return options.inverse(this);
+				}
+			},
 
-      json: function (obj) {
-        return JSON.stringify(obj);
-      },
-    },
-  })
+			json: function (obj) {
+				return JSON.stringify(obj);
+			},
+		},
+	})
 );
 app.set("view engine", "hbs");
 app.set("views", "./views");
@@ -51,12 +72,12 @@ app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {},
-  })
+	session({
+		secret: process.env.SESSION_SECRET,
+		resave: false,
+		saveUninitialized: true,
+		cookie: {},
+	})
 );
 
 app.use(function (req, res, next) {
@@ -76,7 +97,7 @@ app.use("/static", auth, express.static("static"));
 routesMdw(app);
 
 app.listen(port, () => {
-  console.log(`Example app listening on http://127.0.0.1:${port}`);
+	console.log(`Example app listening on http://127.0.0.1:${port}`);
 });
 
 await Connection();

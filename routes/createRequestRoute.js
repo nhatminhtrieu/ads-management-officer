@@ -9,8 +9,28 @@ const locationService = new LocationService();
 
 // UI routers declaration
 Router.get("/", async (req, res) => {
-	const list = await service.getAllCreateRequests();
-	res.render("vwAds/vwCreateRequests/list", { layout: "ads", list, empty: list.length === 0 });
+	const limit = 5;
+	const totalPage = await service.findTotalPages(limit);
+	let page = req.query.page || 1;
+	if (page < 1) page = 1;
+	if (page > totalPage) page = totalPage;
+	const offset = (page - 1) * limit;
+	const list = await service.findDataForPage({ offset, limit });
+	const pageNumbers = [];
+	for (let i = 1; i <= totalPage; i++) {
+		pageNumbers.push({
+			value: i,
+			isActive: i === +page,
+		});
+	}
+	res.render("vwAds/vwCreateRequests/list", {
+		layout: "ads",
+		list,
+		empty: list.length === 0,
+		totalPage,
+		page,
+		pageNumbers,
+	});
 });
 
 Router.get("/create", async (req, res) => {

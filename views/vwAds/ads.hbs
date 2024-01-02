@@ -13,18 +13,16 @@
 			<th scope="col" style="width: 50%">Địa chỉ</th>
 			<th scope="col">Loại bảng quảng cáo</th>
 			<th scope="col">Kích thước</th>
-			<th scope="col">Số lượng</th>
 			<th scope="col">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
 		{{#each this.list}}
-			<tr>
+		<tr>
 			<th scope="row">{{index}}</th>
 			<td>{{address}}</td>
 			<td>{{typeBoard}}</td>
 			<td>{{size}}</td>
-			<td>{{number}}</td>
 			<td><a href="/advertisement/manage/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
 		</tr>
 		{{/each}}

@@ -77,6 +77,7 @@
       document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
       $('#start').prop("disabled", false); 
       $('#end').prop("disabled", false);
+      $('#file').prop('hidden', false)
     }); 
     $("#cancelButton").click(function () {
         window.location.reload(); 
@@ -203,7 +204,7 @@
 
   <div class="form-outline mt-3">
     <label class="form-label" for="typeBoard">Loại bảng quảng cáo</label>
-    <select id="typeBoard" class="form-select" name="typeBoard" required disabled>
+    <select id="typeBoard" class="form-select border-2" name="typeBoard" required disabled>
       {{#each typeBoards}}
         <option value="{{name}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
       {{/each}}
@@ -246,6 +247,7 @@
 		  accept="image/*"
       multiple
       disabled
+      hidden
     />
     <div id="fileHelp" class="invalid-feedback">
 		Tổng dung lượng các hình tối đa 10MB.

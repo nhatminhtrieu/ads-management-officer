@@ -7,18 +7,13 @@ export default class CreateRequestService {
 	}
 
 	async createRequest(newReq) {
-		const isExist = await this.repository.findByEntity(newReq);
-		if (isExist) {
-			return { error: "Request already exists" };
-		}
-
 		const advertisement = {
 			TypeBoard: newReq.typeBoard,
 			size: newReq.size,
 			number: newReq.number,
 			imgs: newReq.imgs,
-			start: newReq.startContract,
-			end: newReq.endContract,
+			start: moment(newReq.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
+			end: moment(newReq.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
 		};
 		const company = {
 			name: newReq.comName,
@@ -31,7 +26,11 @@ export default class CreateRequestService {
 			location: newReq.location,
 			company,
 		};
-		await this.repository.add(newRequest);
+		const isExist = await this.repository.findByEntity(newReq);
+		if (isExist) {
+			return { error: "Request already exists" };
+		}
+		return await this.repository.add(newRequest);
 	}
 
 	async getAllCreateRequests() {

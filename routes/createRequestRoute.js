@@ -49,7 +49,8 @@ Router.get("/detail", async (req, res) => {
 
 // Data routers declaration
 Router.post("/create", async (req, res) => {
-	await service.createRequest(req.body);
+	const data = req.body;
+	await service.createRequest(data);
 	res.redirect("/advertisement/create-request");
 });
 

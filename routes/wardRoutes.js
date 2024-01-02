@@ -30,12 +30,15 @@ router.get('/', async (req, res) => {
         page = 1;
     }
 
-    const { items: wards, pages, totalPages } = paginate(allWards, page, limit);
+    const totalPages = Math.ceil(allWards.length / limit);
 
     // Check if page number is out of range
     if (page > totalPages) {
         page = totalPages;
     }
+
+    // Slice the array of wards to get only the wards for the current page
+    const wards = allWards.slice((page - 1) * limit, page * limit);
 
     // Add index to each ward
     wards.forEach((ward, index) => {
@@ -52,12 +55,18 @@ router.get('/', async (req, res) => {
         ward: wards,
         district: district,
         isWardList: true,
-        pages: pages,
+        pages: Array.from({ length: totalPages }, (_, i) => i + 1).map((number, index) => {
+            return {
+                number: number,
+                isCurrent: index + 1 === page
+            };
+        }),
         totalPages,
         firstPage: 1,
         lastPage: totalPages,
         firstPageDisabled,
         lastPageDisabled,
+        currentPage: page
     });
 });
 
@@ -74,12 +83,15 @@ router.get('/:id', async (req, res) => {
             page = 1;
         }
 
-        const { items: wards, pages, totalPages } = paginate(allWards, page, limit);
+        const totalPages = Math.ceil(allWards.length / limit);
 
         // Check if page number is out of range
         if (page > totalPages) {
             page = totalPages;
         }
+
+        // Slice the array of wards to get only the wards for the current page
+        const wards = allWards.slice((page - 1) * limit, page * limit);
 
         // Add index to each ward
         wards.forEach((ward, index) => {
@@ -95,12 +107,13 @@ router.get('/:id', async (req, res) => {
             ward: wards,
             district: district,
             isWardList: false,
-            pages: pages,
+            pages: Array.from({ length: totalPages }, (_, i) => ({ number: i + 1, isCurrent: i + 1 === page })),
             totalPages,
             firstPage: 1,
             lastPage: totalPages,
             firstPageDisabled,
-            lastPageDisabled
+            lastPageDisabled,
+            currentPage: page
         });
     } catch (error) {
         console.error(error);

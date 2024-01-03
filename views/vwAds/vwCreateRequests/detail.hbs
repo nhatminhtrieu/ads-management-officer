@@ -1,16 +1,46 @@
-<form id="form-create-request" method="post">
+{{#section "js"}}
+<script type="module">
+    import CustomMap from "/static/js/map/CustomMap.js";
+    import { contentAd } from "/static/js/loadMarker.js";
+    const Map = new CustomMap();
+    Map.init().then(() => {
+        const contentString = contentAd({{{ json request.location }}});
+    Map.pushAdMarker({{{ json request.location }}}, {{{ json request.location.address }}}, contentString);
+    Map.setCenter({{{ json request.location.coordinate }}}); 
+    });
+</script>
+<script>
+    function updatePreview(list) {
+        const previewDiv = $('#preview');
+        list.map((img, index) => {
+            const div = $('<div class="col-4" style="position: relative; max-height: 300px;"></div>')
+            const imgEle = $(`<img src="${img}" style="width: 100%; object-fit: cover; border-radius: 0.375rem;" />`)
+            div.append(imgEle)
+            previewDiv.append(div)
+        })
+    }
+
+    let imgsArr = {{{ json request.advertisement.imgs }}}
+
+    window.onload = function () {
+        updatePreview(imgsArr)
+    }
+
+</script>
+{{/section}}
+
+<a class="btn p-0 link-primary" href="javascript:history.back()" role="button">
+    <i class="bi bi-caret-left"></i>
+    Trở về
+</a>
+<form class="mt-3" id="form-create-request" method="post">
     {{#with this.request.advertisement}}
     <div class="card mb-4">
         <div class="card-header">
             <h4>Bảng quảng cáo</h4>
         </div>
         <div class="card-body">
-            <div class="row mb-2">
-                <img src="https://kynguyengroup.com/wp-content/uploads/2020/01/BAC-A-Mat-sau.jpg" class="col-6"
-                    alt="alt">
-                <img src="https://pano.vn/wp-content/uploads/2019/04/quang-cao-treo-banner-bang-ron-co-phuon-3.jpg"
-                    class="col-6" alt="alt">
-            </div>
+            <div class="row flex-nowrap overflow-auto" id="preview"></div>
             <div>
                 <strong>Loại bảng quảng cáo: </strong>
                 {{TypeBoard}}
@@ -31,39 +61,35 @@
     </div>
     {{/with}}
 
-    <!-- {{#with this.location}} -->
+    {{#with this.request.location}}
     <div class="card mb-4">
         <div class="card-header">
-            <h4>Điểm đặt</h4>
+            <h4>Điểm đặt quảng cáo</h4>
         </div>
-        <div class="card-body">
-            <div>
-                <strong>Địa chỉ: </strong>
-                {{address}}
+        <div class="card-body row px-4">
+            <div id="map" style="height: 200px" class="col-6"></div>
+            <div class="col-6">
+                <div>
+                    <strong>Địa chỉ: </strong>
+                    {{address}}
+                </div>
+                <div>
+                    <strong>Phân loại: </strong>
+                    {{type}}
+                </div>
+                {{#if zoning}}
+                <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
+                </div>
+                {{else}}
+                <div class="text-uppercase mt-2 fw-bold fst-italic text-secondary">
+                    <i class="bi bi-x-circle-fill me-2"></i>Chưa quy hoạch
+                </div>
+                {{/if}}
             </div>
-            <div>
-                <strong>Phân loại: </strong>
-                {{type}}
-            </div>
-            <div>
-                <strong>Khu vực: </strong>
-                {{area.ward}}, {{area.district}}
-            </div>
-            {{#if zoning}}
-            <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
-                <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
-            </div>
-            {{else}}
-            <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
-                <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
-            </div>
-            <div class="text-uppercase mt-2 fw-bold fst-italic text-secondary">
-                <i class="bi bi-x-circle-fill me-2"></i>Chưa quy hoạch
-            </div>
-            {{/if}}
         </div>
     </div>
-    <!-- {{/with}} -->
+    {{/with}}
 
     {{#with this.request.company}}
     <div class="card mb-4">

@@ -19,7 +19,11 @@ export default class CreateRequestRepository {
 	}
 
 	async findByEntity(entity) {
-		return await this.model.findOne(entity).populate("location").lean();
+		return await this.model
+			.findOne(entity)
+			.populate("location")
+			.populate({ path: "location", populate: "format" })
+			.lean();
 	}
 
 	async findDataForPage({ offset, limit }) {

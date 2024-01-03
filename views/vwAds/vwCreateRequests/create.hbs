@@ -49,48 +49,59 @@
 	}
 
 	function checkFilesSize(files) {
-		let sum = 0
-		files.map((file) => sum += file.size / 1024 / 1024)
-		const imgsInput = document.querySelector('input#file')
-		const submitBtn = document.querySelector('button[type="submit"]')
+		let sum = 0;
+		$.each(files, function (index, file) {
+			sum += file.size / 1024 / 1024;
+		});
+		const $imgsInput = $('input#file');
+		const $submitBtn = $('button[type="submit"]');
 		if (sum > 10) {
-			imgsInput.classList.add('is-invalid')
-			!submitBtn.classList.contains('disabled') && submitBtn.classList.add('disabled')
+			$imgsInput.addClass('is-invalid');
+			if (!$submitBtn.hasClass('disabled')) {
+				$submitBtn.addClass('disabled');
+			}
 		} else {
-			imgsInput.classList.contains('is-invalid') && imgsInput.classList.remove('is-invalid')
-			submitBtn.classList.contains('disabled') && submitBtn.classList.remove('disabled')
+			if ($imgsInput.hasClass('is-invalid')) {
+				$imgsInput.removeClass('is-invalid');
+			}
+			if ($submitBtn.hasClass('disabled')) {
+				$submitBtn.removeClass('disabled');
+			}
 		}
 	}
 
-	const container = document.getElementById('preview')
-	const hiddenDiv = document.getElementById('hiddenImgsInput')
-	$('input#file').on('change', async (e) => {
-		container.innerHTML = ''
-		hiddenDiv.innerHTML = ''
-		const files = Array.from(e.currentTarget.files);
-		if (files.length) {
-			checkFilesSize(files)
-			const images = await Promise.all(files.map((file) => {
-				return readAsDataURL(file)
-			}))
-			images.map((file) => {
-				const div = document.createElement('div')
-				div.classList.add('col-3')
-				div.style = `position: relative; height: 300px;`
-				const img = document.createElement('img')
-				img.setAttribute('src', file)
-				img.style = `width: 100%; height: 100%; object-fit: cover; border-radius: 0.375rem;`
-				div.append(img)
-				container.append(div)
+	var $container = $('#preview');
+	var $hiddenDiv = $('#hiddenImgsInput');
 
-				const input = document.createElement('input')
-				input.setAttribute('type', 'hidden')
-				input.setAttribute('name', 'imgs[]')
-				input.setAttribute('value', file)
-				hiddenDiv.append(input)
-			})
+	$('input#file').on('change', async function (e) {
+		var files = Array.from(e.currentTarget.files);
+		if (files.length) {
+			checkFilesSize(files);
+			var images = await Promise.all(files.map((file) => {
+				return readAsDataURL(file);
+			}));
+			$.each(images, function (index, file) {
+				var $div = $('<div>').addClass('col-3').css({
+					position: 'relative',
+					'max-height': '300px'
+				});
+				var $img = $('<img>').attr('src', file).css({
+					width: '100%',
+					'object-fit': 'cover',
+					'border-radius': '0.375rem'
+				});
+				$div.append($img);
+				$container.append($div);
+
+				var $input = $('<input>').attr({
+					type: 'hidden',
+					name: 'imgs[]',
+					value: file
+				});
+				$hiddenDiv.append($input);
+			});
 		}
-	})
+	});
 </script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>

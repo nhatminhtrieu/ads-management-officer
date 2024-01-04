@@ -1,4 +1,5 @@
 import AccountRepository from "../database/repositories/AccountRepository.js";
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 export default class AccountService {
@@ -7,9 +8,33 @@ export default class AccountService {
 	}
 
 	async createAccount(account) {
+        const isExist = await this.repository.findByEntity({ username: account.username });
+        if (isExist) {
+            return false
+        }
+
+        switch (account.role) {
+            case '1':
+                account.district = new mongoose.mongo.ObjectId(account.district)
+                account.ward = new mongoose.mongo.ObjectId(account.ward)
+                break;
+            case '2':
+                account.district = new mongoose.mongo.ObjectId(account.district)
+                account.ward = null
+                break;
+            case '3':
+                account.ward = null
+                account.district = null
+                break;
+            default:
+                break;
+        }
+
 		const salt = await bcrypt.genSalt(10);
 		account.password = await bcrypt.hash(account.password, salt);
+    
 		await this.repository.add(account);
+        return true;
 	}
 
     async verifyAccount(entity, password) {
@@ -46,7 +71,11 @@ export default class AccountService {
     }
 
     async getAllAccount() {
-        return await this.repository.getAll()
+        var data = await this.repository.getAll()
+        if (!Array.isArray(data)) {
+            data =  [data]
+        }
+        return data.map((item) => item.toObject()) 
     }
 
     async findById(_id) {
@@ -78,5 +107,9 @@ export default class AccountService {
     async updateStatus(_id, curStatus) {
         const status = curStatus == 1 ? 0 : 1
         await this.repository.patchEntity({_id}, {status});
+    }
+
+    async deleteAccount(_id) {  
+        await this.repository.patchEntity({_id}, {status: -1})
     }
 }

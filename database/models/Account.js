@@ -12,7 +12,6 @@ const AccountSchema = new mongoose.Schema({
     },
     email: {
         type:String,
-        required: true
     },
     password:{
         type:String,
@@ -57,7 +56,7 @@ const AccountSchema = new mongoose.Schema({
         type: Number,
         default: 1,
         required: true,
-    }
+    } // 1: active, 0: inactive, -1: deleted
 }, {
     versionKey: false
 })

@@ -87,7 +87,7 @@ passport.serializeUser(function (user, cb) {
   });
 
 app.use(function (req, res, next) {
-	if (typeof req.session.isAuthenticated === "undefined" && req.path !== '/wards/getWards') {
+	if (typeof req.session.isAuthenticated === "undefined") {
 		req.session.isAuthenticated = false;
 		res.redirect("/account/login");
 	} else {
@@ -96,7 +96,6 @@ app.use(function (req, res, next) {
 		}
 		next();
 	}
-	// next();
 });
 
 app.use("/static", auth, express.static("static"));

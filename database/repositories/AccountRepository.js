@@ -11,7 +11,7 @@ export default class AccountRepository {
     }
 
     async getAll() {
-        return await this.model.find();
+        return await this.model.find({status: {$ne: -1}});
     }
 
     async findByEntity(entity) {

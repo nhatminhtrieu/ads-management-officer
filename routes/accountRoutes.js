@@ -8,10 +8,12 @@ import { config } from "dotenv";
 
 import auth from "../middleware/auth.js";
 import AccountService from "../services/AccountService.js";
+import WardService from "../services/WardService.js";
 
 config()
 const router = express.Router();
 const service = new AccountService();
+const wardService = new WardService();
 
 passport.use(new FacebookStrategy({
     clientID: process.env.FB_CLIENT_ID,
@@ -52,9 +54,14 @@ router.get("/resetPassword", async (req, res) => {
     res.render("vwAccounts/resetPassword", { layout: false });
 })
 
-router.get("/profile", auth, (req, res) => {
+router.get("/profile", auth, async (req, res) => {
+    const { district, role } = req.session.authUser;
+    const wardList = (await wardService.getAllWardsByDistrict(district)).map((item) => item.toObject());
+
     res.render("vwAccounts/infor", {
         layout: "profile",
+        wardList: role == 2 ? wardList : null,
+        lengthWardList: wardList.length,
     });
 });
 
@@ -203,11 +210,12 @@ router.post("/changePassword", auth, async (req, res) => {
 
 router.post("/changeInfo", auth, async (req, res) => {
     const { _id } = req.session.authUser;
-    const { email, fullname, phone, rawDob, address } = req.body;
+    const { email, fullname, phone, rawDob, address, fav_list_raw } = req.body;
 
     const dob = rawDob === '__/__/____' ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
+    const fav_list = !fav_list_raw ? [] : (fav_list_raw[0] == 'on' ? fav_list_raw.slice(1) : fav_list_raw);
 
-    await service.updateProfile(_id, { email, fullname, phone, dob, address });
+    await service.updateProfile(_id, { email, fullname, phone, dob, address, fav_list });
    
     const user = (await service.findById(_id)).toObject();
     if(user.dob != null) {

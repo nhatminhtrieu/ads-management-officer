@@ -1,6 +1,13 @@
 {{#section 'css'}}
 <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+
+<style>
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
 {{/section}}
 
 <div class="d-flex align-items-center">
@@ -64,6 +71,35 @@
             name="rawDob" disabled 
         />
     </div>
+
+    {{#if wardList}}
+     <div class="form-outline">
+        <label class="form-label" for="txtDoB"><b>Các phường quan tâm</b></label>
+        <div class="dropdown" disabled>
+            <button disabled id="multiSelectDropdown" class="btn btn-secondary dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
+                Chưa có thông tin
+                
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <input name="fav_list_raw" class="form-check-input" type="checkbox" id="all" style="margin-left: 3px">
+                    <label class="form-check-label" for="all">
+                        Tất cả
+                    </label>
+                </li>
+                {{#each wardList}}
+                    <li class="gap-2 d-flex">
+                        <input name="fav_list_raw" class="form-check-input" type="checkbox" value="{{_id}}" id="{{_id}}" style="margin-left: 3px">
+                        <label class="form-check-label" for="{{_id}}">
+                            {{ward}}
+                        </label>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+    {{/if}}
+
     <div class="d-flex justify-content-between">
         <button id="update" type="submit" class="btn btn-primary" disabled>Cập nhật</button>
         <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
@@ -72,9 +108,6 @@
 
 {{#section 'js'}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-    <script>
-        console.log("{{authUser.stringDate}}")
-    </script>
     <script>
         $('#txtDoB').datetimepicker({
             timepicker: false,
@@ -100,8 +133,82 @@
                 scrollInput: false
             });
             $('input').attr('disabled', 'disabled');
-            $('update').attr('disabled', 'disabled');
-            $('cancel').attr('disabled', 'disabled');
+            $('#update').attr('disabled', 'disabled');
+            $('#cancel').attr('disabled', 'disabled');
+            $('#multiSelectDropdown').attr('disabled', 'disabled');
         });
+
+       
+        let selectedItems = [];
+        let selectedContent = [];
+        function initSelectedItems() {
+            const favList = '{{authUser.fav_list}}';
+            if (favList) {
+                const favListArr = favList.split(',');
+                favListArr.length == '{{lengthWardList}}' && $('#all').prop('checked', true)
+                favListArr.forEach((item) => {
+                    selectedItems.push(item);
+                    const content = $(`label[for="${item}"]`).text().trim();
+                    selectedContent.push(content);
+                    $(`#${item}`).prop('checked', true);
+                });
+            }
+            let displayText = '';
+            if (selectedContent.length > 2) {
+                displayText = selectedContent.slice(0, 2).join(', ') + ', ...';
+            } else {
+                displayText = selectedContent.join(', ');
+            }
+
+            $('#multiSelectDropdown').text(selectedContent.length > 0 ? displayText : 'Chưa có thông tin');
+        }
+
+        function handleCB(event) {
+            const checkbox = $(event.target);
+
+            if (checkbox.is(':checked')) {
+                const id = checkbox.attr('id');
+                if (id === 'all') {
+                    $('#multiSelectDropdown').text('Tất cả');
+                    $('.dropdown-menu').find('input').prop('checked', true);
+
+                    const items = $('.dropdown-menu').find('input').map(function() {return $(this).val()}).get();
+                    const contents = $('.dropdown-menu').find('input').map(function() {return $(`label[for="${$(this).attr('id')}"]`).text().trim()}).get();
+                
+                    selectedItems = items.slice(1);
+                    selectedContent = contents.slice(1);
+                    return;
+                }
+
+                $(`#all`).prop('checked', false);
+                selectedItems.push(checkbox.val());
+                const content = $(`label[for="${checkbox.attr('id')}"]`).text().trim();
+                selectedContent.push(content);
+            } else {
+                const id = checkbox.attr('id');
+                if (id === 'all') {
+                    selectedItems = [];
+                    selectedContent = [];
+                    $('#multiSelectDropdown').text('Chưa có thông tin');
+                    $('.dropdown-menu').find('input').prop('checked', false);
+                    return;
+                }
+                $(`#all`).prop('checked', false);
+                selectedItems = selectedItems.filter((item) => item !== checkbox.val());
+                selectedContent = selectedContent.filter((item) => item !== $(`label[for="${checkbox.attr('id')}"]`).text().trim());
+            }
+            
+            let displayText = '';
+            if (selectedContent.length > 2) {
+                displayText = selectedContent.slice(0, 2).join(', ') + ', ...';
+            } else {
+                displayText = selectedContent.join(', ');
+            }
+
+            $('#multiSelectDropdown').text(selectedContent.length > 0 ? displayText : 'Chưa có thông tin');
+        }
+       
+        initSelectedItems();
+        $('.dropdown-menu').on('change', handleCB);
     </script>
 {{/section}}

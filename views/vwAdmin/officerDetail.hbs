@@ -131,11 +131,11 @@
 
                             </div>
                             <div class="col-sm-4">
-                                <p class="text-muted mb-0">phường</p>
+                                <p class="text-muted mb-0">Phường</p>
                                 <form id="frmWard">
                                     <select class="form-select" id="ward" aria-label="Default select example" disabled>
                                         {{#ifCond officer.role '!==' 1}}
-                                        <option value="">không có thông tin</option>
+                                        <option value="">Không có thông tin</option>
                                         {{/ifCond}}
                                     </select>
                                 </form>
@@ -165,7 +165,7 @@
                             </form>
                         </div>
                         <div>
-                            <button type="button" class="btn btn-secondary ms-1">Xóa tài khoản</button>
+                            <button type="button" id="delete" class="btn btn-secondary ms-1">Xóa tài khoản</button>
                         </div>
                     </div>
                 </div>
@@ -253,6 +253,25 @@
                 if (data.success == true) {
                     alert('Cập nhật thành công');
                     window.location.reload();
+                }
+            }
+        })
+    })
+
+    $('#delete').click(function () {
+        const data = {
+            _id: "{{officer._id}}"
+        }
+
+        $.ajax({
+            url: `/admin/officer/deleteAccount`,
+            type: 'DELETE',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.success == true) {
+                    alert('Xóa tài khoản thành công');
+                    window.location.href = '/admin/officer';
                 }
             }
         })

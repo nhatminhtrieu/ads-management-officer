@@ -1,4 +1,6 @@
 import mongoose from "mongoose"
+import District from "./District.js"
+import Ward from "./Ward.js"
 
 const AccountSchema = new mongoose.Schema({
     username: {
@@ -10,22 +12,23 @@ const AccountSchema = new mongoose.Schema({
     },
     email: {
         type:String,
-        required: true
     },
     password:{
         type:String,
         required: true
     },
-    provider: {
-        type: String,
-        default: 'department', // department, facebook, google
-        required: true
+    account_link:{
+        type: Array,
     },
     createdat: { 
         type: Date, 
-        default: Date.now 
+        default: Date.now,
+        required: true
     },
     phone: {
+        type: String,
+    },
+    address: {
         type: String,
     },
     dob: {
@@ -34,14 +37,26 @@ const AccountSchema = new mongoose.Schema({
     fav_list: {
         type: Array,
     },
-    area:{
-        type: String,
+    district: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: District,
+        default: null,
+    },
+    ward: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Ward,
+        default: null,
     },
     role: { 
         type: Number, 
         default: 3,
         required: true,
-    } // 1: ward officials, 2: District officials, 3: Department of Culture and Sports officials
+    }, // 1: ward officials, 2: District officials, 3: Department of Culture and Sports officials
+    status: {
+        type: Number,
+        default: 1,
+        required: true,
+    } // 1: active, 0: inactive, -1: deleted
 }, {
     versionKey: false
 })

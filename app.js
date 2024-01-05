@@ -35,9 +35,30 @@ app.engine(
 				return eval(`${v1} ${operator} ${v2}`) ? options.fn(this) : options.inverse(this);
 			},
 
+			ifCond1(v1, operator, v2, options) {
+				switch (operator) {
+					case '==':
+						return (v1 == v2) ? options.fn(this) : options.inverse(this);
+					case '===':
+						return (v1 === v2) ? options.fn(this) : options.inverse(this);
+					case '!=':
+						return (v1 != v2) ? options.fn(this) : options.inverse(this);
+					case '!==':
+						return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+					// other cases...
+					default:
+						return options.inverse(this);
+				}
+			},
+
 			json: function (obj) {
 				return JSON.stringify(obj);
 			},
+
+			debugger(value) {
+				console.log("Value: ", value);
+				return;
+			}
 		},
 	})
 );
@@ -56,18 +77,25 @@ app.use(
 		cookie: {},
 	})
 );
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser(function (user, cb) {
+	cb(null, user);
+  });
+  passport.deserializeUser(function (obj, cb) {
+	cb(null, obj);
+  });
 
 app.use(function (req, res, next) {
-	// if (typeof req.session.isAuthenticated === "undefined") {
-	// 	req.session.isAuthenticated = false;
-	// 	res.redirect("/account/login");
-	// } else {
-	// 	if (req.session.authUser) {
-	// 		res.locals.authUser = req.session.authUser;
-	// 	}
-	// 	next();
-	// }
-	next();
+	if (typeof req.session.isAuthenticated === "undefined") {
+		req.session.isAuthenticated = false;
+		res.redirect("/account/login");
+	} else {
+		if (req.session.authUser) {
+			res.locals.authUser = req.session.authUser;
+		}
+		next();
+	}
 });
 
 app.use("/static", auth, express.static("static"));
@@ -78,4 +106,3 @@ app.listen(port, () => {
 });
 
 await Connection();
-await CreateFirstAccount();

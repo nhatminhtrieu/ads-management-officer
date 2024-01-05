@@ -1,1 +1,82 @@
-<h4>Cán bộ: list cán bộ, điều chỉnh và tạo tài khoản</h4>
+{{#section 'css'}}
+<style>
+  .badge {
+    width: 100px;
+    padding: 0.5rem 0.8rem;
+  }
+  .badge-success {
+    background-color: #dcf1e4;
+    color: #0c622e
+  }
+
+  .badge-danger {
+    background-color: #f8d7da;
+    color: #842029;
+}
+  .rounded-pill {
+    border-radius: 50rem !important;
+  }
+</style>
+{{/section}}
+
+<div class="d-flex justify-content-between">
+  <h4>Danh sách tài khoản của cán bộ</h4>
+  <a href="/admin/createAccount" class="btn btn-light"><i class="bi bi-person-add"></i>Tạo tài khoản</a>
+</div>
+<table class="table align-middle mb-0 bg-white">
+  <thead class="bg-light">
+    <tr>
+      <th>Tên tài khoản</th>
+      <th>Chức vụ</th>
+      <th>Tình trạng</th>
+      <th>Chi tiết</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#if this.length}}
+    {{#each this.list}}
+    <tr>
+      <td>
+        <div class="d-flex align-items-center">
+          <i class="bi bi-person-circle" style="font-size: 40px"></i>
+          <div class="ms-3">
+            <p class="fw-bold mb-1">{{username}}</p>
+            {{#if email}}
+            <p class="text-muted mb-0">{{email}}</p>
+            {{else}}
+            <p class="text-muted mb-0">Chưa có thông tin email</p>
+            {{/if}}
+          </div>
+        </div>
+      </td>
+      <td>
+        {{#ifCond role "==" 1}}
+          Cán bộ phường
+        {{/ifCond}}
+        {{#ifCond role "==" 2}}
+          Cán bộ quận
+        {{/ifCond}}
+        {{#ifCond role "==" 3}}
+          Cán bộ sở
+        {{/ifCond}}
+      </td>
+      <td>
+        {{#ifCond status "==" 0}}
+          <span class="badge badge-danger rounded-pill" >Đã nghỉ</span>
+        {{/ifCond}}
+        {{#ifCond status "==" 1}}
+          <span class="badge badge-success rounded-pill" >Hoạt động</span>
+        {{/ifCond}}
+      </td>
+      <td>
+        <a type="button" href="/admin/officer/{{_id}}" class="btn btn-link btn-sm btn-rounded">
+          <i class="bi bi-info-circle"></i>
+        </a>
+      </td>
+    </tr>
+    {{/each}}
+    {{else}}
+      <td colspan="4" class="text-center">Không có dữ liệu</td>
+    {{/if}}
+  </tbody>
+</table>

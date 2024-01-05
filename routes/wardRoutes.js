@@ -151,4 +151,10 @@ router.post('/delete', async (req, res) => {
     }
 })
 
+router.get('/getWards/:id', async(req, res) => {
+    const { id } = req.params;
+    const wardList = await wardService.getAllWardsByDistrict(id);
+    res.status(200).json({ success: true, data: wardList });
+})
+
 export default router;

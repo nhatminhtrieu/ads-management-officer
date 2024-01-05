@@ -7,6 +7,10 @@
         max-height: 200px;
         overflow-y: auto;
     }
+
+    #multiSelectDropdown:disabled{
+        background-color: #e9ecef;
+    }
 </style>
 {{/section}}
 
@@ -76,7 +80,7 @@
      <div class="form-outline">
         <label class="form-label" for="txtDoB"><b>Các phường quan tâm</b></label>
         <div class="dropdown" disabled>
-            <button disabled id="multiSelectDropdown" class="btn btn-secondary dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
+            <button disabled id="multiSelectDropdown" class="btn btn-light dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
                 Chưa có thông tin
                 
             </button>
@@ -100,9 +104,9 @@
     </div>
     {{/if}}
 
-    <div class="d-flex justify-content-between">
-        <button id="update" type="submit" class="btn btn-primary" disabled>Cập nhật</button>
+    <div class="d-flex gap-2">
         <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
+        <button id="update" type="submit" class="btn btn-primary" disabled>Cập nhật</button>
     </div>
 </form>
 

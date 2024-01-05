@@ -83,7 +83,7 @@ export default class AccountService {
     }
 
 	async findByUsername(username) {
-		return await this.repository.findByEntity({ username });
+		return await this.repository.findByEntity({ username, status: 1 });
 	}
 
     async findByLinkAccount(id) {

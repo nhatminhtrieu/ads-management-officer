@@ -84,9 +84,7 @@ router.get(
     passport.authenticate("facebook", { failureRedirect: "/account/login" }),
     async function (req, res) {
         const { status } = req.user;
-        console.log(status);
         if (status == "not authenticated") {
-            console.log(req.session.authUser)
             if (typeof req.session.authUser != "undefined") {
                 const { id } = req.user;
                 const { username } = req.session.authUser;
@@ -108,7 +106,7 @@ router.get(
 
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    var check = await service.verifyAccount({username}, password);
+    var check = await service.verifyAccount({username, status: 1}, password);
     if (check) {
         req.session.isAuthenticated = true;
         if(check.dob != null) {

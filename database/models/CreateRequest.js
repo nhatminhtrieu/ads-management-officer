@@ -34,7 +34,7 @@ const CreateRequestSchema = new mongoose.Schema(
 		location: {
 			type: Schema.Types.ObjectId,
 			//   Sau khi tạo collection location cho điểm đặt quảng cáo
-			//   ref: "Location",
+			ref: "Location",
 			required: true,
 		},
 		// Thông tin công ty

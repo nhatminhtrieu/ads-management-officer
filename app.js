@@ -32,7 +32,30 @@ app.engine(
 			},
 
 			ifCond(v1, operator, v2, options) {
-				return eval(`${v1} ${operator} ${v2}`) ? options.fn(this) : options.inverse(this);
+				switch (operator) {
+					case "==":
+						return v1 == v2 ? options.fn(this) : options.inverse(this);
+					case "===":
+						return v1 === v2 ? options.fn(this) : options.inverse(this);
+					case "!=":
+						return v1 != v2 ? options.fn(this) : options.inverse(this);
+					case "!==":
+						return v1 !== v2 ? options.fn(this) : options.inverse(this);
+					case "<":
+						return v1 < v2 ? options.fn(this) : options.inverse(this);
+					case "<=":
+						return v1 <= v2 ? options.fn(this) : options.inverse(this);
+					case ">":
+						return v1 > v2 ? options.fn(this) : options.inverse(this);
+					case ">=":
+						return v1 >= v2 ? options.fn(this) : options.inverse(this);
+					case "&&":
+						return v1 && v2 ? options.fn(this) : options.inverse(this);
+					case "||":
+						return v1 || v2 ? options.fn(this) : options.inverse(this);
+					default:
+						return options.inverse(this);
+				}
 			},
 
 			ifCond1(v1, operator, v2, options) {
@@ -67,8 +90,8 @@ app.set("views", "./views");
 app.set("trust proxy", 1); // trust first proxy
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,

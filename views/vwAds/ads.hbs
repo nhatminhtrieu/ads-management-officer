@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between">
 	<h4>Danh sách biển quảng cáo</h4>
 	{{! Cho phân hệ cán bộ sở }}
-	<a name="" id="" class="btn btn-primary" href="#" role="button">
+	<a name="" id="" class="btn btn-primary" href="manage/new" role="button">
 		<i class="bi bi-plus-lg"></i>
 		Tạo mới
 	</a>
@@ -10,46 +10,39 @@
 	<thead>
 		<tr class="table-light">
 			<th scope="col" style="width: 2rem">No.</th>
-			<th scope="col">Hình thức</th>
-			<th scope="col">Địa chỉ</th>
-			<th scope="col">Loại vị trí</th>
+			<th scope="col" style="width: 50%">Địa chỉ</th>
+			<th scope="col">Loại bảng quảng cáo</th>
+			<th scope="col">Kích thước</th>
+			<th scope="col">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
+		{{#each this.list}}
 		<tr>
-			<th scope="row">1</th>
-			<td>Mark</td>
-			<td>Otto</td>
-			<td>@mdo</td>
+			<th scope="row">{{index}}</th>
+			<td>{{address}}</td>
+			<td>{{typeBoard}}</td>
+			<td>{{size}}</td>
+			<td><a href="/advertisement/manage/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
 		</tr>
-		<tr>
-			<th scope="row">2</th>
-			<td>Jacob</td>
-			<td>Thornton</td>
-			<td>@fat</td>
-		</tr>
-		<tr>
-			<th scope="row">3</th>
-			<td colspan="2">Larry the Bird</td>
-			<td>@twitter</td>
-		</tr>
+		{{/each}}
 	</tbody>
 </table>
 <ul class="pagination justify-content-center">
 	<li class="page-item">
-		<a class="page-link" href="#" aria-label="Previous">
+		<a class="page-link {{#ifCond this.page "===" 1}} disabled {{/ifCond}}" href="/advertisement/manage?page=1" aria-label="Previous">
 			<span aria-hidden="true">&laquo;</span>
 		</a>
 	</li>
-	<li class="page-item" aria-current="page">
-		<a class="page-link" href="#">1</a>
-	</li>
-	<li class="page-item"><a class="page-link" href="#">2</a></li>
+
+	{{#each this.pageNumbers}}
+		<li class="page-item">
+			<a class="page-link {{#if isActive}} disabled {{/if}}" href="/advertisement/manage?page={{value}}">{{value}}</a>
+		</li>
+	{{/each}}
+	
 	<li class="page-item">
-		<a class="page-link" href="#">3</a>
-	</li>
-	<li class="page-item">
-		<a class="page-link" href="#" aria-label="Next">
+		<a class="page-link {{#ifCond this.totalPage "===" this.page}} disabled {{/ifCond}}" href="/advertisement/manage?page={{this.totalPage}}" aria-label="Next">
 			<span aria-hidden="true">&raquo;</span>
 		</a>
 	</li>

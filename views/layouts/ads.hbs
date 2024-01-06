@@ -149,6 +149,14 @@
   });
 </script>
 
+{{! Sidebar active status }}
+<script>
+  document.querySelectorAll('a.list-group-item').forEach((a) => {
+  window.location.pathname.includes(a.getAttribute('href')) ?
+  a.classList.add('active') : (a.classList.contains('active') &&
+  a.classList.remove('active')) })
+</script>
+
 {{{_sections.js}}}
 
 </html>

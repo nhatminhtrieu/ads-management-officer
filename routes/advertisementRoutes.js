@@ -298,4 +298,10 @@ router.get("/find-all", async (req, res) => {
   res.send(list);
 });
 
+router.get("/find-all-by-location/:id", async (req, res) => {
+  const service = new AdvertisementService();
+  const list = await service.getAllAdvertisementsByLocationId(req.params.id);
+  res.send(list);
+});
+
 export default router;

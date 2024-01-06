@@ -93,17 +93,17 @@ passport.serializeUser(function (user, cb) {
 	cb(null, obj);
   });
 
-app.use(function (req, res, next) {
-	if (typeof req.session.isAuthenticated === "undefined") {
-		req.session.isAuthenticated = false;
-		res.redirect("/account/login");
-	} else {
-		if (req.session.authUser) {
-			res.locals.authUser = req.session.authUser;
-		}
-		next();
-	}
-});
+// app.use(function (req, res, next) {
+// 	if (typeof req.session.isAuthenticated === "undefined") {
+// 		req.session.isAuthenticated = false;
+// 		res.redirect("/account/login");
+// 	} else {
+// 		if (req.session.authUser) {
+// 			res.locals.authUser = req.session.authUser;
+// 		}
+// 		next();
+// 	}
+// });
 
 app.use("/static", auth, express.static("static"));
 routesMdw(app);
@@ -113,3 +113,4 @@ app.listen(port, () => {
 });
 
 await Connection();
+await CreateFirstAccount();

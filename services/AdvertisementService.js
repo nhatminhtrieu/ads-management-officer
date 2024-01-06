@@ -124,4 +124,12 @@ export default class AdvertisementService {
       console.log("AdvertisementService.deleteAdvertisement", err);
     }
   }
+
+  async getAllAdvertisementsByLocationId(id) {
+    try {
+      return await this.repository.getAllAdvertisementsByLocationId(id);
+    } catch (err) {
+      console.log("AdvertisementService.getAllAdvertisementsByLocationId", err);
+    }
+  }
 }

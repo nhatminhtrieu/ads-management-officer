@@ -9,36 +9,21 @@ import DistrictService from "../services/DistrictService.js";
 import createRequestRouter from "./createRequestRoute.js";
 import moment from "moment";
 import mongoose from "mongoose";
+import { pagination } from "../utils/pagination.js";
 
 // UI routers declaration
 router.get("/manage", async (req, res) => {
   const service = new AdvertisementService();
   const limit = 20;
 
-  const totalPage = await service.findTotalPages({ limit });
-  let page = req.query.page || 1;
-  if (page < 1) page = 1;
-  if (page > totalPage) page = totalPage;
-
-  const offset = (page - 1) * limit;
-
-  const data = await service.findDataForPage({ offset, limit });
-
-  const pageNumbers = [];
-
-  for (let i = 1; i <= totalPage; i++) {
-    pageNumbers.push({
-      value: i,
-      isActive: i === +page,
-    });
-  }
+  const result = await pagination(req, service, limit);
 
   res.render("vwAds/ads", {
     layout: "ads",
-    list: data,
-    totalPage,
-    page,
-    pageNumbers,
+    list: result.data,
+    totalPage: result.totalPage,
+    page: result.page,
+    pageNumbers: result.pageNumbers,
   });
 });
 
@@ -142,8 +127,8 @@ router.post("/manage/:id", async (req, res) => {
 
 router.post("/manage/delete/:id", async (req, res) => {
   const id = req.params.id;
-  const service = new AdvertisementService()
-  const result = await service.deleteAdvertisement(id)
+  const service = new AdvertisementService();
+  const result = await service.deleteAdvertisement(id);
   res.redirect("/advertisement/manage");
 });
 
@@ -151,30 +136,14 @@ router.get("/ad-location", async (req, res) => {
   const service = new LocationService();
   const limit = 20;
 
-  const totalPage = await service.findTotalPages({ limit });
-  let page = req.query.page || 1;
-  if (page < 1) page = 1;
-  if (page > totalPage) page = totalPage;
-
-  const offset = (page - 1) * limit;
-
-  const data = await service.findDataForPage({ offset, limit });
-
-  const pageNumbers = [];
-
-  for (let i = 1; i <= totalPage; i++) {
-    pageNumbers.push({
-      value: i,
-      isActive: i === +page,
-    });
-  }
+  const result = await pagination(req, service, limit);
 
   res.render("vwAds/vwLocations/locations", {
     layout: "ads",
-    list: data,
-    totalPage,
-    page,
-    pageNumbers,
+    list: result.data,
+    totalPage: result.totalPage,
+    page: result.page,
+    pageNumbers: result.pageNumbers,
   });
 });
 

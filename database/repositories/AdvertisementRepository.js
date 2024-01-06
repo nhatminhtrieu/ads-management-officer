@@ -80,6 +80,19 @@ class AdvertisementRepository {
   async delete(id) {
     return await this.model.deleteOne({ _id: id });
   }
+
+  async getAllAdvertisementsByLocationId(id) {
+    const data = await this.model.find({}).populate("location");
+    let result = [];
+
+    for (const item of data) {
+      if (item.location._id.toString() === id) {
+        result.push(item);
+      }
+    }
+    
+    return result;
+  }
 }
 
 export default AdvertisementRepository;

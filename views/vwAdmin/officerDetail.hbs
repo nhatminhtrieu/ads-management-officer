@@ -1,0 +1,280 @@
+{{#section 'css'}}
+<style>
+    .badge {
+        padding: 1rem 0.8rem
+    }
+
+    .badge-success {
+        background-color: #dcf1e4;
+        color: #0c622e
+    }
+
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+</style>
+{{/section}}
+
+<a href="/admin/officer" class="btn btn-secondary"><i class="bi bi-chevron-left"></i>Quay lại</a>
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                            alt="avatar" class="rounded-circle" style="width: 100%;">
+                        <h5 class="my-3">{{officer.username}}</h5>
+                        <p class="text-muted mb-1">
+                            Chức vụ:
+                            Cán bộ
+                            {{#ifCond officer.role "==" 1}}
+                            phường
+                            {{/ifCond}}
+                            {{#ifCond officer.role "==" 2}}
+                            quận
+                            {{/ifCond}}
+                            {{#ifCond officer.role "==" 3}}
+                            sở
+                            {{/ifCond}}
+                        </p>
+                        <div class="d-flex justify-content-center mb-2"></div>
+                        {{#if officer.status}}
+                        <span class="badge badge-success rounded-pill">Hoạt động</span>
+                        {{else}}
+                        <span class="badge badge-danger rounded-pill">Đã nghỉ</span>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Họ và tên</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{officer.fullname}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Email</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{officer.email}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Ngày sinh</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{officer.dob}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Điện thoại</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{officer.phone}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Địa chỉ</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="text-muted mb-0">{{officer.address}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <p class="mb-0">Phân công khu vực</p>
+                                <button id="editArea" class="btn btn-light">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </div>
+                            <div class="col-sm-4">
+                                <p class="text-muted mb-0">Quận</p>
+                                <form id="frmDistrict">
+                                    <select class="form-select" id="district" aria-label="Default select example"
+                                        disabled>
+                                        {{#ifCond officer.role '!==' 3}}
+                                        {{#each districtList}}
+                                        {{#ifCond1 this._id '===' ../officer.district._id}}
+                                        <option value="{{this._id}}" selected>{{this.district}}</option>
+                                        {{/ifCond1}}
+                                        {{#ifCond1 this._id '!==' ../officer.district._id}}
+                                        <option value="{{this._id}}">{{this.district}}</option>
+                                        {{/ifCond1}}
+                                        {{/each}}
+                                        {{/ifCond}}
+                                        {{#ifCond officer.role '===' 3}}
+                                        <option value="">Không có thông tin</option>
+                                        {{/ifCond}}
+                                    </select>
+                                </form>
+
+                            </div>
+                            <div class="col-sm-4">
+                                <p class="text-muted mb-0">Phường</p>
+                                <form id="frmWard">
+                                    <select class="form-select" id="ward" aria-label="Default select example" disabled>
+                                        {{#ifCond officer.role '!==' 1}}
+                                        <option value="">Không có thông tin</option>
+                                        {{/ifCond}}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="update" class="btn btn-primary" disabled>
+                                Cập nhật
+                            </button>
+
+                            <button id="cancel" class="btn btn-black" disabled>
+                                Hủy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="d-flex">
+                        <div>
+                            <form action="/account/changeStatus/{{officer._id}}" method="post">
+                                <input hidden name="status" value="{{officer.status}}">
+                                {{#if officer.status}}
+                                <button type="submit" class="btn btn-danger">Đánh dấu nghỉ</button>
+                                {{else}}
+                                <button type="submit" class="btn btn-success">Đánh dấu hoạt động</button>
+                                {{/if}}
+                            </form>
+                        </div>
+                        <div>
+                            <button type="button" id="delete" class="btn btn-secondary ms-1">Xóa tài khoản</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{#section 'js'}}
+<script>
+    const role = "{{officer.role}}";
+    role == 2 && $('#ward').attr('disabled', 'disabled');
+    role == 3 && $('#district').attr('disabled', 'disabled') && $('#ward').attr('disabled', 'disabled');
+
+
+    async function fetchData(id) {
+        $.get(`/wards/getWards/${id}`, function (data, status) {
+            if (status == 'success') {
+                $('#ward').empty();
+                const list = data.data
+                if (list.length == 0) {
+                    $('#ward').append(`<option value="">Không có danh sách</option>`);
+                } else {
+                    list.forEach(ward => {
+                        if (ward._id == "{{officer.ward._id}}") {
+                            $('#ward').append(`<option value="${ward._id}" selected>${ward.ward}</option>`);
+                            return;
+                        }
+                        $('#ward').append(`<option value="${ward._id}">${ward.ward}</option>`);
+                    });
+                }
+            }
+        });
+    }
+
+    role == 1 && fetchData("{{officer.district._id}}");
+    $('#district').change(function () {
+        if (role == 1) {
+            const districtSelected = $('#district').val();
+            fetchData(districtSelected);
+        }
+    });
+
+    $('#editArea').click(function () {
+        if (role != 3) {
+            $('#district').removeAttr('disabled');
+
+            if (role == 1) {
+                $('#ward').removeAttr('disabled');
+            }
+
+            $('#update').removeAttr('disabled');
+            $('#cancel').removeAttr('disabled');
+        }
+    });
+
+    $('#cancel').click(function () {
+        $('#district').attr('disabled', 'disabled');
+        $('#frmDistrict')[0].reset()
+
+        $('#ward').attr('disabled', 'disabled');
+
+        if (role == 1) fetchData("{{officer.district._id}}");
+
+        $('#update').attr('disabled', 'disabled');
+        $('#cancel').attr('disabled', 'disabled');
+    });
+
+    $('#update').click(function () {
+        const district = $('#district').val();
+        const ward = $('#ward').val();
+
+        const data = {
+            _id: "{{officer._id}}",
+            district,
+            ward: ward == "" ? null : ward
+        }
+
+        $.ajax({
+            url: `/admin/officer/updateArea`,
+            type: 'PUT',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.success == true) {
+                    alert('Cập nhật thành công');
+                    window.location.reload();
+                }
+            }
+        })
+    })
+
+    $('#delete').click(function () {
+        const data = {
+            _id: "{{officer._id}}"
+        }
+
+        $.ajax({
+            url: `/admin/officer/deleteAccount`,
+            type: 'DELETE',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.success == true) {
+                    alert('Xóa tài khoản thành công');
+                    window.location.href = '/admin/officer';
+                }
+            }
+        })
+    })
+</script>
+{{/section}}

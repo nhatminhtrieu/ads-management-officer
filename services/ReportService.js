@@ -22,4 +22,9 @@ export default class ReportService {
 			console.log("ReportService.getAllReports", err);
 		}
 	}
+
+	async findReportById(id) {
+		const report = await this.repository.findByEntity({ _id: id });
+		return report;
+	}
 }

@@ -32,11 +32,13 @@ const ReportSchema = new Schema(
 		},
 		imgs: [
 			{
-				type: Schema.Types.ObjectId,
-				ref: "Image",
+				type: String,
 				required: true,
 			},
 		],
+		resolvedContent: {
+			type: String,
+		},
 		type: {
 			type: String,
 			enum: ["issued", "resolved"],

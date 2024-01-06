@@ -10,6 +10,7 @@ import passport from "passport";
 
 import Connection from "./database/Connection.js";
 import CreateFirstAccount from "./database/CreateFirstAccount.js";
+import ResidentRouter from "./routes/residentRoutes.js";
 import routesMdw from "./middleware/routes.js";
 import auth from "./middleware/auth.js";
 
@@ -65,7 +66,7 @@ app.engine(
 			debugger(value) {
 				console.log("Value: ", value);
 				return;
-			}
+			},
 		},
 	})
 );
@@ -76,6 +77,11 @@ app.set("trust proxy", 1); // trust first proxy
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
+
+// Expose API use for residents
+app.use("/resident", ResidentRouter);
+
+// Authentication and authorization
 app.use(
 	session({
 		secret: process.env.SESSION_SECRET,
@@ -88,23 +94,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser(function (user, cb) {
 	cb(null, user);
-  });
-  passport.deserializeUser(function (obj, cb) {
+});
+passport.deserializeUser(function (obj, cb) {
 	cb(null, obj);
-  });
+});
+app.use(function (req, res, next) {
+	if (typeof req.session.isAuthenticated === "undefined") {
+		req.session.isAuthenticated = false;
+		res.redirect("/account/login");
+	} else {
+		if (req.session.authUser) {
+			res.locals.authUser = req.session.authUser;
+		}
+		next();
+	}
+});
 
-// app.use(function (req, res, next) {
-// 	if (typeof req.session.isAuthenticated === "undefined") {
-// 		req.session.isAuthenticated = false;
-// 		res.redirect("/account/login");
-// 	} else {
-// 		if (req.session.authUser) {
-// 			res.locals.authUser = req.session.authUser;
-// 		}
-// 		next();
-// 	}
-// });
-
+// Private routes
 app.use("/static", auth, express.static("static"));
 routesMdw(app);
 
@@ -113,4 +119,3 @@ app.listen(port, () => {
 });
 
 await Connection();
-await CreateFirstAccount();

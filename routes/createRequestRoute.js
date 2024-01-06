@@ -2,6 +2,7 @@ import express from "express";
 
 import CreateRequestService from "../services/CreateRequestService.js";
 import LocationService from "../services/LocationService.js";
+import { pagination } from "../utils/pagination.js";
 
 const Router = express.Router();
 const service = new CreateRequestService();
@@ -9,27 +10,17 @@ const locationService = new LocationService();
 
 // UI routers declaration
 Router.get("/", async (req, res) => {
-	const limit = 5;
-	const totalPage = await service.findTotalPages(limit);
-	let page = req.query.page || 1;
-	if (page < 1) page = 1;
-	if (page > totalPage) page = totalPage;
-	const offset = (page - 1) * limit;
-	const list = await service.findDataForPage({ offset, limit });
-	const pageNumbers = [];
-	for (let i = 1; i <= totalPage; i++) {
-		pageNumbers.push({
-			value: i,
-			isActive: i === +page,
-		});
-	}
-	res.render("vwAds/vwCreateRequests/list", {
-		layout: "ads",
-		list,
-		totalPage,
-		page,
-		pageNumbers,
-	});
+  const limit = 5;
+
+  const result = await pagination(req, service, limit);
+
+  res.render("vwAds/vwCreateRequests/list", {
+    layout: "ads",
+    list: result.data,
+    totalPage: result.totalPage,
+    page: result.page,
+    pageNumbers: result.pageNumbers,
+  });
 });
 
 Router.get("/create", async (req, res) => {

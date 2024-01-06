@@ -26,7 +26,6 @@ Router.get("/", async (req, res) => {
 	res.render("vwAds/vwCreateRequests/list", {
 		layout: "ads",
 		list,
-		empty: list.length === 0,
 		totalPage,
 		page,
 		pageNumbers,

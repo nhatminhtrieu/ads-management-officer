@@ -113,4 +113,3 @@ app.listen(port, () => {
 });
 
 await Connection();
-await CreateFirstAccount();

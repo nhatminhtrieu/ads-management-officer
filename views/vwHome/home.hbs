@@ -38,6 +38,9 @@
 
 		// Big card
 		const card = document.createElement("div");
+		card.style.height = "100%";
+		card.style.display = "flex";
+		card.style.flexDirection = "column";
 
 		// Upper card
 		const upperCard = document.createElement("div");
@@ -45,7 +48,7 @@
 		upperCard.innerHTML = `	
 			<div class="card-header" style="display: flex; justify-content: space-between;">
 				<h5> Thông tin chi tiết điểm đặt quảng cáo </h5>
-				<a class="btn btn-primary" href="/advertisement/ad-location/${returnData._id}" role="button">
+				<a class="btn link-primary" href="/advertisement/ad-location/${returnData._id}" role="button">
 					<i class="bi bi-eye"></i>
 					Chi tiết
 				</a>
@@ -61,6 +64,8 @@
 		// Lower card
 		const lowerCard = document.createElement("div");
 		lowerCard.classList.add("card", "mt-2");
+		lowerCard.style.flexGrow = "1";
+		lowerCard.style.overflow = "auto";
 		const lowerCardHeader = document.createElement("h5");
 		lowerCardHeader.classList.add("card-header");
 		lowerCardHeader.innerHTML = "Thông tin các bảng quảng cáo";
@@ -83,7 +88,7 @@
 				<div> <b>Kích thước: </b> ${item.size} </div>
 				<div style="display: flex; justify-content: space-between;">
 					<div></div>
-					<a class="btn btn-primary" href="/advertisement/manage/${item._id}" role="button">
+					<a class="btn link-primary" href="/advertisement/manage/${item._id}" role="button">
 						<i class="bi bi-eye"></i>
 						Chi tiết
 					</a>
@@ -128,7 +133,7 @@
 		</div>
 
 		{{! Right side }}
-		<div class="col-6 p-0 px-2 pt-2">
+		<div class="col-6 p-0 px-2 pt-2" style="height: calc(100vh - 120px)">
 			{{! Button nav }}
 			<div class="btn-group nav nav-tabs w-100" role="group">
 				<button class="btn btn-outline-primary active" id="nav-ads-tab" data-bs-toggle="tab" data-bs-target="#nav-ads" type="button"

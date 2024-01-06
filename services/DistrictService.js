@@ -20,7 +20,6 @@ export default class DistrictService {
   }
 
   async getDistrictById(id) {
-    id = id.trim();
     return await this.repository.getDistrictById(id);
   }
 

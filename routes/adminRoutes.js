@@ -18,7 +18,15 @@ router.get("/", (req, res) => {
 
 router.get("/officer", async (req, res) => {
 	const { _id } = req.session.authUser;
-	const list = (await service.getAllAccount()).filter((item) => item._id != _id);
+	const list = await Promise.all((await service.getAllAccount())
+    			.filter((item) => item._id != _id)
+				.map(async (item) => {
+					const { district, ward } = item;
+					const districtInfo = await districtService.getDistrictById(district);
+					const wardInfo = await wardService.getWardById(ward);
+					item = {...item, districtInfo, wardInfo};
+					return item;
+				}));
 	res.render("vwAdmin/officers", { 
 		length: list.length,
 		list,

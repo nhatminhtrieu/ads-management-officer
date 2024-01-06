@@ -6,13 +6,16 @@ import nodemailer from "nodemailer";
 import moment from "moment";
 import { config } from "dotenv";
 
+import { statusAuthenticated } from "../utils/enum.js";
 import auth from "../middleware/auth.js";
 import AccountService from "../services/AccountService.js";
 import WardService from "../services/WardService.js";
+import DistrictService from "../services/DistrictService.js";
 
 config()
 const router = express.Router();
 const service = new AccountService();
+const districtService = new DistrictService();
 const wardService = new WardService();
 
 passport.use(new FacebookStrategy({
@@ -24,11 +27,11 @@ passport.use(new FacebookStrategy({
     async function (accessToken, refreshToken, profile, cb) {
         const existedAccount = await service.findByLinkAccount(profile.id);
         if (existedAccount) {
-            return cb(null, {...profile, status: "authenticated"});
+            return cb(null, {...profile, status: statusAuthenticated["authenticated"]});
         }
 
         return cb(null, {
-            status: "not authenticated"
+            status: statusAuthenticated["not authenticated"],
         });
     }
 ));
@@ -38,7 +41,11 @@ router.get("/", (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-    res.render("vwAccounts/login", { layout: false });
+    const linkAccount = req.session.failLinkAccount;
+    res.render("vwAccounts/login", { 
+        linkAccount,
+        layout: false 
+    });
 });
 
 router.get("/forgotPassword", async (req, res) => {
@@ -84,17 +91,17 @@ router.get(
     passport.authenticate("facebook", { failureRedirect: "/account/login" }),
     async function (req, res) {
         const { status } = req.user;
-        if (status == "not authenticated") {
+        if (status == statusAuthenticated["not authenticated"]) {
             if (typeof req.session.authUser != "undefined") {
                 const { id } = req.user;
                 const { username } = req.session.authUser;
                 await service.updateLinkAccount(username, id);
                 res.redirect("/account/link");
-                return;
             } else {
+                req.session.failLinkAccount = "Tài khoản chưa được liên kết";
                 res.redirect("/account/login");
-                return;
             }
+            return;
         } 
 
         const user = await service.findByLinkAccount(req.user.id);
@@ -112,7 +119,11 @@ router.post("/login", async (req, res) => {
         if(check.dob != null) {
             check.dob = moment(check.dob).format("DD/MM/YYYY");
         }
-        req.session.authUser = check
+        const districtInfo = await districtService.getDistrictById(check.district);
+        const wardInfo = await wardService.getWardById(check.ward);
+        const data = {...check, districtInfo, wardInfo};
+
+        req.session.authUser = data
         res.redirect("/home");
     } else {
         res.render("vwAccounts/login", { layout: false, err_message: "Invalid email or password" });
@@ -219,7 +230,7 @@ router.post("/changeInfo", auth, async (req, res) => {
     if(user.dob != null) {
         user.dob = moment(user.dob).format("DD/MM/YYYY");
     }
-    req.session.authUser = user;
+    req.session.authUser = {... req.session.authUser, ...user};
     res.redirect("/account/profile");
 })
 

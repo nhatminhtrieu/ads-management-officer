@@ -30,6 +30,7 @@
 					<li class="nav-item">
 						<a class="nav-link active" aria-current="page" href="/home">Trang chủ</a>
 					</li>
+					{{#ifCond authUser.role '==' '3'}}
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="javascript:;" id="navbarDropdown" role="button"
 							data-bs-toggle="dropdown" aria-expanded="false">
@@ -43,6 +44,7 @@
 							<li><a class="dropdown-item" href="/admin/area">Khu vực</a></li>
 						</ul>
 					</li>
+					{{/ifCond}}
 
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="javascript:;" id="navbarDropdown" role="button"
@@ -77,10 +79,12 @@
 							<hr class="dropdown-divider" />
 						</li>
 						<li>
-							<a class="dropdown-item text-danger" href="javascript:;">
-								<i class="fa fa-sign-out" aria-hidden="true"></i>
-								Đăng xuất
-							</a>
+							<form method="post" action="/account/logout">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                    Đăng xuất
+                                </button>
+                            </form>
 						</li>
 					</ul>
 				</div>

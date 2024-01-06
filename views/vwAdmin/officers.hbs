@@ -28,6 +28,7 @@
     <tr>
       <th>Tên tài khoản</th>
       <th>Chức vụ</th>
+      <th>Khu vực</th>
       <th>Tình trạng</th>
       <th>Chi tiết</th>
     </tr>
@@ -38,7 +39,6 @@
     <tr>
       <td>
         <div class="d-flex align-items-center">
-          <i class="bi bi-person-circle" style="font-size: 40px"></i>
           <div class="ms-3">
             <p class="fw-bold mb-1">{{username}}</p>
             {{#if email}}
@@ -58,6 +58,33 @@
         {{/ifCond}}
         {{#ifCond role "==" 3}}
           Cán bộ sở
+        {{/ifCond}}
+      </td>
+      <td>
+        {{#ifCond role "==" 1}}
+          {{#if districtInfo}}
+            {{districtInfo.district}}
+          {{else}}
+            Không có thông tin quận
+          {{/if}}
+
+          {{#if wardInfo}}
+            , {{wardInfo.ward}}
+          {{else}}
+            , Không có thông tin phường
+          {{/if}}
+        {{/ifCond}}
+
+        {{#ifCond role "==" 2}}
+          {{#if districtInfo}}
+            {{districtInfo.district}}
+          {{else}}
+            Không có thông tin quận
+          {{/if}}
+        {{/ifCond}}
+      
+        {{#ifCond role "==" 3}}
+          Không có thông tin khu vực
         {{/ifCond}}
       </td>
       <td>

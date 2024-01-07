@@ -47,7 +47,7 @@
 		upperCard.classList.add("card");
 		upperCard.innerHTML = `	
 			<div class="card-header" style="display: flex; justify-content: space-between;">
-				<h5> Thông tin chi tiết điểm đặt quảng cáo </h5>
+				<h5> Thông tin điểm đặt quảng cáo </h5>
 				<a class="btn link-primary" href="/advertisement/ad-location/${returnData._id}" role="button">
 					<i class="bi bi-eye"></i>
 					Chi tiết
@@ -74,6 +74,7 @@
 		const lowerCardBody = document.createElement("div");
 		lowerCardBody.classList.add("card-body");
 		lowerCardBody.style.overflowY = "scroll";
+		lowerCardBody.style.padding = "0px";
 		const rowBody = document.createElement("div");
 		rowBody.classList.add("d-flex", "flex-wrap");
 
@@ -83,8 +84,9 @@
 			unitCard.style.width = 'calc(50% - 16px)';
 			unitCard.classList.add("card");
 			unitCard.innerHTML = `
-				<div> <b>Loại bảng quảng cáo: </b> ${item.typeBoard} </div>
+				<h5> ${item.typeBoard} </h5>
 				<div> <b>Số lượng: </b> ${item.number} </div>
+				<div> <b>Kích thước: </b> ${item.size} </div>
 				<div> <b>Kích thước: </b> ${item.size} </div>
 				<div style="display: flex; justify-content: space-between;">
 					<div></div>
@@ -95,6 +97,14 @@
 			</div>
 			`;
 			rowBody.appendChild(unitCard);
+		}
+
+		if (adsData.length === 0)
+		{
+			const emptyCard = document.createElement("div");
+			emptyCard.classList.add("p-2", "m-2");
+			emptyCard.innerHTML = "Chưa có thông tin về bảng quảng cáo";
+			rowBody.appendChild(emptyCard);
 		}
 
 		lowerCardBody.appendChild(rowBody);

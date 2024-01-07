@@ -59,7 +59,7 @@ const CreateRequestSchema = new mongoose.Schema(
 		createdBy: {
 			type: Schema.Types.ObjectId,
 			ref: "Account",
-			required: false,
+			required: true,
 		},
 		accepted: {
 			type: String,

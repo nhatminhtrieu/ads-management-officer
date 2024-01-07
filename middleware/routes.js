@@ -25,5 +25,8 @@ export default function (app) {
 	app.use("/report-type", ReportTypeRouter);
 	app.use("/location", LocationRouter);
 	app.use("/districts", DistrictRouter);
-	app.use("/wards", WardRouter)
+	app.use("/wards", WardRouter);
+	app.get("/no-authorize", (req, res) => {
+		res.render("vwHome/noAuth");
+	});
 }

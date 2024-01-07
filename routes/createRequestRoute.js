@@ -10,17 +10,20 @@ const locationService = new LocationService();
 
 // UI routers declaration
 Router.get("/", async (req, res) => {
-  const limit = 5;
+	const limit = 5;
+	let empty = true;
 
-  const result = await pagination(req, service, limit);
+	const result = await pagination(req, service, limit);
+	if (result.data.length) empty = false;
 
-  res.render("vwAds/vwCreateRequests/list", {
-    layout: "ads",
-    list: result.data,
-    totalPage: result.totalPage,
-    page: result.page,
-    pageNumbers: result.pageNumbers,
-  });
+	res.render("vwAds/vwCreateRequests/createRequests", {
+		layout: "ads",
+		empty,
+		list: result.data,
+		totalPage: result.totalPage,
+		page: result.page,
+		pageNumbers: result.pageNumbers,
+	});
 });
 
 Router.get("/create", async (req, res) => {

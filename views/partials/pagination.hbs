@@ -1,0 +1,20 @@
+<ul class="pagination justify-content-center">
+    <li class="page-item">
+        <a class="page-link {{#ifCond page "==" 1}} disabled {{/ifCond}}" href="{{href}}?page=1" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+    </li>
+
+    {{#each pageNumbers}}
+    <li class="page-item">
+        <a class="page-link {{#if isActive}} disabled {{/if}}" href="{{href}}?page={{value}}">{{value}}</a>
+    </li>
+    {{/each}}
+
+    <li class="page-item">
+        <a class="page-link {{#ifCond totalPage "==" page}} disabled {{/ifCond}}" href="{{href}}?page={{totalPage}}"
+            aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>
+</ul>

@@ -28,23 +28,4 @@
 		{{/each}}
 	</tbody>
 </table>
-
-<ul class="pagination justify-content-center">
-	<li class="page-item">
-		<a class="page-link {{#ifCond this.page "===" 1}} disabled {{/ifCond}}" href="/advertisement/ad-location?page=1" aria-label="Previous">
-			<span aria-hidden="true">&laquo;</span>
-		</a>
-	</li>
-
-	{{#each this.pageNumbers}}
-		<li class="page-item">
-			<a class="page-link {{#if isActive}} disabled {{/if}}" href="/advertisement/ad-location?page={{value}}">{{value}}</a>
-		</li>
-	{{/each}}
-	
-	<li class="page-item">
-		<a class="page-link {{#ifCond this.totalPage "===" this.page}} disabled {{/ifCond}}" href="/advertisement/ad-location?page={{this.totalPage}}" aria-label="Next">
-			<span aria-hidden="true">&raquo;</span>
-		</a>
-	</li>
-</ul>
+{{> pagination href="/advertisement/ad-location" page=page totalPage=totalPage pageNumbers=pageNumbers}}

@@ -38,7 +38,7 @@ export default class CreateRequestService {
 		return list;
 	}
 
-	async findTotalPages(limit) {
+	async findTotalPages({ limit }) {
 		try {
 			const totalItems = await this.repository.countAll();
 			const totalPages = Math.ceil(totalItems / limit);

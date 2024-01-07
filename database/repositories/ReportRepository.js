@@ -24,6 +24,10 @@ class ReportRepository {
 			throw err;
 		}
 	}
+
+	async findByEntity(entity) {
+		return await this.model.findOne(entity).lean();
+	}
 }
 
 export default ReportRepository;

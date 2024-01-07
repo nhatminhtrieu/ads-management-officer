@@ -1,6 +1,6 @@
 export async function pagination(req, service, limit) {
   let totalPage = (await service.findTotalPages({ limit })) || 1;
-  let page = req.query.page || 1;
+  let page = Number(req.query.page) || 1;
   if (page < 1) page = 1;
   if (page > totalPage) page = totalPage;
 

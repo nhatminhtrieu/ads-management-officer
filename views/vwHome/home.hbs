@@ -99,6 +99,14 @@
 			rowBody.appendChild(unitCard);
 		}
 
+		if (adsData.length === 0)
+		{
+			const emptyCard = document.createElement("div");
+			emptyCard.classList.add("p-2", "m-2");
+			emptyCard.innerHTML = "Chưa có thông tin về bảng quảng cáo";
+			rowBody.appendChild(emptyCard);
+		}
+
 		lowerCardBody.appendChild(rowBody);
 		lowerCard.appendChild(lowerCardBody);
 

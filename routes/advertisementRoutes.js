@@ -7,6 +7,7 @@ import LocationService from "../services/LocationService.js";
 import WardService from "../services/WardService.js";
 import DistrictService from "../services/DistrictService.js";
 import createRequestRouter from "./createRequestRoute.js";
+import editRequestRouter from "./editRequestRoutes.js";
 import moment from "moment";
 import mongoose from "mongoose";
 import { pagination } from "../utils/pagination.js";
@@ -260,9 +261,7 @@ router.post("/ad-location/delete/:id", async (req, res) => {
   res.redirect("/advertisement/ad-location");
 });
 
-router.get("/edit-request", (req, res) => {
-  res.render("vwAds/editRequests", { layout: "ads" });
-});
+router.use("/edit-request", editRequestRouter);
 
 router.use("/create-request", createRequestRouter);
 

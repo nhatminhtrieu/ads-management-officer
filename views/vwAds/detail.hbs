@@ -137,18 +137,18 @@
     }
 
     $('input#file').on('change', async (e) => { 
-		const files = Array.from(e.currentTarget.files); 
-		if (files.length) { 
-			checkFilesSize(files)
-			const images = await Promise.all(files.map((file) => {
-				return readAsDataURL(file)
-			}))
-      
-      imgsArr.push(images)
-      updatePreview(imgsArr, false)
-      updateHidden(imgsArr)
-		} 
-	})
+      const files = Array.from(e.currentTarget.files); 
+      if (files.length) { 
+        checkFilesSize(files)
+        const images = await Promise.all(files.map((file) => {
+          return readAsDataURL(file)
+        }))
+        
+        imgsArr.push(images)
+        updatePreview(imgsArr, false)
+        updateHidden(imgsArr)
+      } 
+    })
   </script>
 {{/section}}
 

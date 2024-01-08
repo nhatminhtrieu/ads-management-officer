@@ -7,9 +7,6 @@ router.get("/", async (req, res) => {
 	const service = new LocationService();
 	let locations = [];
 
-	console.log(req.session.authUser)
-	// console.log(typeof req.session.role)
-
 	// Role: Department Officer
 	if (req.session.authUser.role === 3) {
 		locations = await service.findAllLocations();
@@ -29,7 +26,6 @@ router.get("/", async (req, res) => {
 			}
 		});
 	}
-	console.log(locations)
 	
 	res.render("vwHome/home", { layout: "main", locations });
 });

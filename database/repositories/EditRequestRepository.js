@@ -26,7 +26,7 @@ export default class EditRequestRepository {
     return await this.model
       .findOne(entity)
       .lean()
-      .populate('rawLocation')
+      .populate("rawLocation")
       .populate({ path: "location", populate: { path: "format" } });
   }
 
@@ -34,9 +34,9 @@ export default class EditRequestRepository {
     return await this.model.updateOne({ _id: id }, newEntity);
   }
 
-  async findDataForPage({ offset, limit }) {
+  async findDataForPage({ offset, limit }, entity = {}) {
     const data = await this.model
-      .find()
+      .find(entity)
       .populate("rawLocation")
       .populate("rawAdvertisement")
       .skip(offset)
@@ -44,7 +44,7 @@ export default class EditRequestRepository {
     return data;
   }
 
-  async countAll() {
-    return await this.model.countDocuments();
+  async countAll(entity = {}) {
+    return await this.model.countDocuments(entity);
   }
 }

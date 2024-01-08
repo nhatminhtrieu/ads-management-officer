@@ -45,7 +45,7 @@ const EditRequestSchema = new mongoose.Schema(
       type: Date,
       require: true,
     },
-    createdBy: {
+    createBy: {
       type: Schema.Types.ObjectId,
       ref: "Account",
       required: false,

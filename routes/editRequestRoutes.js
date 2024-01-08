@@ -7,6 +7,10 @@ import AdsTypesService from "../services/AdsTypeService.js";
 import AdvertisementService from "../services/AdvertisementService.js";
 
 import { pagination } from "../utils/pagination.js";
+import {
+  authDepartmentRole,
+  authNotDepartmentRole,
+} from "../middleware/auth.js";
 
 const Router = express.Router();
 const service = new EditRequestService();
@@ -17,7 +21,11 @@ const advertisementService = new AdvertisementService();
 // UI routers declaration
 Router.get("/", async (req, res) => {
   const limit = 10;
-  const result = await pagination(req, service, limit);
+  let options = {};
+  if (req.session.authUser.role < 3) {
+    options = { createBy: req.session.authUser._id };
+  }
+  const result = await pagination(req, service, limit, options);
 
   res.render("vwAds/vwEditRequests/editRequests", {
     layout: "ads",
@@ -29,7 +37,7 @@ Router.get("/", async (req, res) => {
   });
 });
 
-Router.get("/create/location", async (req, res) => {
+Router.get("/create/location", authNotDepartmentRole, async (req, res) => {
   const locations = await locationService.findAllLocations();
   const types = [
     "Đất công/Công viên/Hành lang an toàn giao thông",
@@ -49,7 +57,7 @@ Router.get("/create/location", async (req, res) => {
   });
 });
 
-Router.post("/create/location", async (req, res) => {
+Router.post("/create/location", authNotDepartmentRole, async (req, res) => {
   const data = req.body;
   const entity = {
     rawLocation: data.rawLocation,
@@ -58,7 +66,7 @@ Router.post("/create/location", async (req, res) => {
       format: data.format,
     },
     createAt: new Date(),
-    createBy: res.locals.authUser._id,
+    createBy: req.session.authUser._id,
     reason: data.reason,
     for: "location",
     accepted: "pending",
@@ -69,7 +77,7 @@ Router.post("/create/location", async (req, res) => {
   res.redirect("/advertisement/edit-request");
 });
 
-Router.get("/create/advertisement", async (req, res) => {
+Router.get("/create/advertisement", authNotDepartmentRole, async (req, res) => {
   const locations = await locationService.findAllLocations();
   const list = [
     "Trụ bảng hiflex",
@@ -105,7 +113,7 @@ Router.post("/create/advertisement", async (req, res) => {
       end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
     },
     createAt: new Date(),
-    createBy: res.locals.authUser._id,
+    createBy: req.session.authUser._id,
     reason: data.reason,
     for: "advertisement",
     accepted: "pending",
@@ -136,7 +144,7 @@ Router.post("/delete", async (req, res) => {
   res.redirect("/advertisement/edit-request");
 });
 
-Router.post("/approve", async (req, res) => {
+Router.post("/approve", authDepartmentRole, async (req, res) => {
   const request = await service.findById(req.body.id);
 
   if (request.for == "location") {
@@ -160,7 +168,7 @@ Router.post("/approve", async (req, res) => {
   res.redirect("/advertisement/edit-request");
 });
 
-Router.post("/reject", async (req, res) => {
+Router.post("/reject", authDepartmentRole, async (req, res) => {
   await service.rejectEditRequest(req.body.id);
   res.redirect("/advertisement/edit-request");
 });

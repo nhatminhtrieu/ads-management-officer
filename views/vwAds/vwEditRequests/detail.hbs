@@ -201,10 +201,11 @@
   />
 
   <div class="text-end">
-    {{#ifCond authUser.role "!=" '3'}}
+    {{#ifCond request.createdBy '==' authUser._id}}
     <button
         class="btn btn-danger mt-3"
         formaction="/advertisement/edit-request/delete"
+        {{#ifCond request.accepted '!==' 'pending' }} disabled {{/ifCond}}
     >
         Hủy yêu cầu
     </button>
@@ -215,6 +216,7 @@
         class="btn btn-danger"
         style="width: 150px"
         formaction="/advertisement/edit-request/reject"
+        {{#ifCond request.accepted '!==' 'pending' }} disabled {{/ifCond}}
         >
         Từ chối
         </button>
@@ -222,6 +224,7 @@
         class="btn btn-success ms-2"
         style="width: 150px"
         formaction="/advertisement/edit-request/approve"
+        {{#ifCond request.accepted '!==' 'pending' }} disabled {{/ifCond}}
         >
         Đồng ý
         </button>

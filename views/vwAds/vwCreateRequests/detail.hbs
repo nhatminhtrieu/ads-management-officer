@@ -109,17 +109,23 @@
     </div>
     {{/with}}
     <input id="hidden-id-input" class="d-none" value="{{this.request._id}}" name="id" readonly />
-    <button name="" id="" class="btn btn-danger" formaction="/advertisement/create-request/delete">
+    {{#ifCond request.createdBy '==' authUser._id}}
+    <button name="" id="" class="btn btn-danger" formaction="/advertisement/create-request/delete" {{#ifCond
+        request.accepted '!==' 'pending' }} disabled {{/ifCond}}>
         Hủy yêu cầu
     </button>
+    {{/ifCond}}
+    {{#ifCond authUser.role '==' '3'}}
     <div class="d-flex">
         <button name="" id="" class="btn btn-danger" style="width: 150px"
-            formaction="/advertisement/create-request/reject">
+            formaction="/advertisement/create-request/reject" {{#ifCond request.accepted '!==' 'pending' }} disabled
+            {{/ifCond}}>
             Từ chối
         </button>
-        <button name="" id="" class="btn btn-success ms-2" style="width: 150px"
-            formaction="/advertisement/create-request/approve">
+        <button name="" id="" class="btn btn-success ms-2" style="width: 150px" {{#ifCond
+            request.accepted '!==' 'pending' }} disabled {{/ifCond}} formaction="/advertisement/create-request/approve">
             Đồng ý
         </button>
     </div>
+    {{/ifCond}}
 </form>

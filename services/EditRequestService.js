@@ -18,9 +18,9 @@ export default class EditRequestService {
     return list;
   }
 
-  async findTotalPages({ limit }) {
+  async findTotalPages({ limit }, createdBy = {}) {
     try {
-      const totalItems = await this.repository.countAll();
+      const totalItems = await this.repository.countAll(createdBy);
       const totalPages = Math.ceil(totalItems / limit);
       return totalPages;
     } catch (err) {
@@ -28,9 +28,12 @@ export default class EditRequestService {
     }
   }
 
-  async findDataForPage({ offset, limit }) {
+  async findDataForPage({ offset, limit }, createdBy = {}) {
     try {
-      const rawData = await this.repository.findDataForPage({ offset, limit });
+      const rawData = await this.repository.findDataForPage(
+        { offset, limit },
+        createdBy
+      );
       const data = rawData.map((item, index) => {
         const newItem = item;
         newItem["index"] = offset + index + 1;

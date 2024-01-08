@@ -32,4 +32,4 @@ jobs:
           git pull
           npm i
           pm2 delete AMO
-          pm2 start app.js -- name AMO
+          pm2 start app.js --name AMO

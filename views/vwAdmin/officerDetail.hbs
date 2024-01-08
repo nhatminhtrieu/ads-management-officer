@@ -20,6 +20,40 @@
 </style>
 {{/section}}
 
+<div class="modal fade" id="successUpdate" tabindex="-1" aria-labelledby="successUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" id="successUpdateModalLabel">Phân công khu vực</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Cập nhật phân công khu vực cho cán bộ thành công</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick=" window.location.reload()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="successDelete" tabindex="-1" aria-labelledby="successDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" id="successDeleteModalLabel">Xóa tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Xóa tài khoản của cán bộ thành công</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="window.location.href = '/admin/officers'">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <a href="/admin/officers" class="btn p-0 link-primary mb-4" role="button">
     <i class="bi bi-caret-left"></i>
 	Trở về
@@ -262,8 +296,7 @@
             contentType: 'application/json',
             success: function (data) {
                 if (data.success == true) {
-                    alert('Cập nhật thành công');
-                    window.location.reload();
+                    $('#successUpdate').modal('show');
                 }
             }
         })
@@ -281,8 +314,7 @@
             contentType: 'application/json',
             success: function (data) {
                 if (data.success == true) {
-                    alert('Xóa tài khoản thành công');
-                    window.location.href = '/admin/officer';
+                    $('#successDelete').modal('show');
                 }
             }
         })

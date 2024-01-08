@@ -22,9 +22,11 @@
 						Danh sách báo cáo
 					</a>
 					{{! Chỉ cho phân hệ cán bộ sở }}
+					{{#ifCond authUser.role '==' '3'}}
 					<a class="list-group-item list-group-item-action" href="/report/type-report">
 						Hình thức báo cáo
 					</a>
+					{{/ifCond}}
 					<a class="list-group-item list-group-item-action" href="/report/statistic">
 						Thống kê
 					</a>

@@ -20,11 +20,11 @@
       <div class="col-3 border-end border-2 p-4">
         <h4>Quảng cáo</h4>
         <ul class="list-group list-group-flush">
-          <a class="list-group-item list-group-item-action" href="/advertisement/ad-location">
-            Điểm đặt quảng cáo
-          </a>
           <a class="list-group-item list-group-item-action" href="/advertisement/manage">
             Bảng quảng cáo
+          </a>
+          <a class="list-group-item list-group-item-action" href="/advertisement/ad-location">
+            Điểm đặt quảng cáo
           </a>
           <a class="list-group-item list-group-item-action d-flex justify-content-between"
             href="/advertisement/create-request">
@@ -38,9 +38,11 @@
             {{! Thể hiện số yêu cầu chưa được phê duyệt, hoặc tạo mới chưa xem gì đó }}
             <span class="badge rounded-pill text-bg-success">5</span>
           </a>
+          {{#ifCond authUser.role '==' '3'}}
           <a class="list-group-item list-group-item-action" href="/advertisement/type-ad">
             Loại hình quảng cáo
           </a>
+          {{/ifCond}}
         </ul>
       </div>
       <div class="col-9 border-left border-2 p-4">

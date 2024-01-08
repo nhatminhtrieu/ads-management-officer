@@ -10,6 +10,7 @@ import createRequestRouter from "./createRequestRoute.js";
 import moment from "moment";
 import mongoose from "mongoose";
 import { pagination } from "../utils/pagination.js";
+import { authDepartmentRole } from "../middleware/auth.js";
 
 // UI routers declaration
 router.get("/manage", async (req, res) => {
@@ -266,7 +267,7 @@ router.get("/edit-request", (req, res) => {
 
 router.use("/create-request", createRequestRouter);
 
-router.get("/type-ad", async (req, res) => {
+router.get("/type-ad", authDepartmentRole,  async (req, res) => {
   const service = new AdsTypesService();
   const list = await service.findAllAdsType();
   res.render("vwAds/typeAds", {

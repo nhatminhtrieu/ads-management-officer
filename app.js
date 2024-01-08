@@ -92,11 +92,11 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-passport.serializeUser(function (user, cb) {
-	cb(null, user);
+passport.serializeUser(function (user, done) {
+	done(null, user);
 });
-passport.deserializeUser(function (obj, cb) {
-	cb(null, obj);
+passport.deserializeUser(function (obj, done) {
+	done(null, obj);
 });
 app.use(function (req, res, next) {
 	if (typeof req.session.isAuthenticated === "undefined") {
@@ -114,8 +114,19 @@ app.use(function (req, res, next) {
 app.use("/static", auth, express.static("static"));
 routesMdw(app);
 
-app.listen(port, () => {
-	console.log(`Example app listening on http://127.0.0.1:${port}`);
-});
+// SSL and HTTPS configuration
+import fs from "fs";
+import https from "https";
 
-await Connection();
+const privateKey = fs.readFileSync("./sslcert/private.key", "utf8");
+const certificate = fs.readFileSync("./sslcert/certificate.crt", "utf8");
+const ca = fs.readFileSync("./sslcert/ca_bundle.crt", "utf8");
+
+const credentials = { key: privateKey, cert: certificate, ca: ca };
+const httpsServer = https.createServer(credentials, app);
+
+Connection().then(() => {
+	httpsServer.listen(port, () => {
+		console.log(`App is running on https://127.0.0.1:${port}`);
+	});
+});

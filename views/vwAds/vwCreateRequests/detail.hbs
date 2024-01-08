@@ -117,7 +117,7 @@
     </div>
     {{/with}}
     <input id="hidden-id-input" class="d-none" value="{{this.request._id}}" name="id" readonly />
-    {{#ifCond request.createdBy '==' userAuth._id}}
+    {{#ifCond request.createdBy '==' authUser._id}}
     <button name="" id="" class="btn btn-danger" formaction="/advertisement/create-request/delete" {{#ifCond
         request.accepted '!==' 'pending' }} disabled {{/ifCond}}>
         Hủy yêu cầu

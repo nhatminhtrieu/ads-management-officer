@@ -2,7 +2,7 @@ import express from "express";
 
 import CreateRequestService from "../services/CreateRequestService.js";
 import LocationService from "../services/LocationService.js";
-import { isAdmin } from "../middleware/auth.js";
+import { authDepartmentRole, authNotDepartmentRole } from "../middleware/auth.js";
 import { pagination } from "../utils/pagination.js";
 
 const Router = express.Router();
@@ -30,7 +30,7 @@ Router.get("/", async (req, res) => {
 	});
 });
 
-Router.get("/create", async (req, res) => {
+Router.get("/create", authNotDepartmentRole, async (req, res) => {
 	const locations = await locationService.findAllLocations();
 	res.render("vwAds/vwCreateRequests/create", { layout: "ads", locations });
 });
@@ -45,7 +45,7 @@ Router.get("/detail", async (req, res) => {
 });
 
 // Data routers declaration
-Router.post("/create", async (req, res) => {
+Router.post("/create", authNotDepartmentRole, async (req, res) => {
 	const data = req.body;
 	data.createdBy = req.session.authUser._id;
 	await service.createRequest(data);
@@ -57,12 +57,12 @@ Router.post("/delete", async (req, res) => {
 	res.redirect("/advertisement/create-request");
 });
 
-Router.post("/approve", isAdmin, async (req, res) => {
+Router.post("/approve", authDepartmentRole, async (req, res) => {
 	await service.approveCreateRequest(req.body.id);
 	res.redirect("/advertisement/create-request");
 });
 
-Router.post("/reject", isAdmin, async (req, res) => {
+Router.post("/reject", authDepartmentRole, async (req, res) => {
 	await service.rejectCreateRequest(req.body.id);
 	res.redirect("/advertisement/create-request");
 });

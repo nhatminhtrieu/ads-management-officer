@@ -31,5 +31,5 @@ jobs:
           cd ~/ads-management-officer/
           git pull
           npm i
-          pm2 delete app
-          pm2 start app.js
+          pm2 delete AMO
+          pm2 start app.js --name AMO

@@ -1,5 +1,4 @@
 import express from "express";
-import auth from "../middleware/auth.js";
 import { formatDate } from "../utils/time.js";
 
 import AccountService from "../services/AccountService.js";
@@ -16,7 +15,7 @@ router.get("/", (req, res) => {
 	res.redirect("/officers");
 });
 
-router.get("/officer", async (req, res) => {
+router.get("/officers", async (req, res) => {
 	const { _id } = req.session.authUser;
 	const list = await Promise.all((await service.getAllAccount())
     			.filter((item) => item._id != _id)
@@ -105,7 +104,7 @@ router.post("/createAccount", async (req, res) => {
 	const result = await service.createAccount({username, password, role, district, ward});
 	
 	req.session.createAccount = result == true ? true : false;
-	res.redirect("/createAccount");
+	res.redirect("/admin/createAccount");
 })
 
 router.put("/officer/updateArea", async (req, res) => {

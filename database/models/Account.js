@@ -19,6 +19,7 @@ const AccountSchema = new mongoose.Schema({
     },
     account_link:{
         type: Array,
+        default: [],
     },
     createdat: { 
         type: Date, 

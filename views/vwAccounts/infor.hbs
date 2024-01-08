@@ -42,10 +42,18 @@
         <label class="form-label" for="location"><b>Khu vực</b></label>
         <input type="text" id="location" class="form-control border-2" 
             {{#ifCond authUser.role '==' '1'}}
-                value="{{authUser.districtInfo.district}}, {{authUser.wardInfo.ward}}"
+                {{#if authUser.wardInfo}}
+                    value="{{authUser.districtInfo.district}}, {{authUser.wardInfo.ward}}"
+                {{else}}
+                    placeholder="Chưa có thông tin khu vực"
+                {{/if}}
             {{/ifCond}}
             {{#ifCond authUser.role '==' '2'}}
-                value="{{authUser.districtInfo.district}}"
+                {{#if authUser.districtInfo}}
+                    value="{{authUser.districtInfo.district}}"
+                {{else}}
+                    placeholder="Chưa có thông tin khu vực"
+                {{/if}}
             {{/ifCond}}
             disabled 
         />
@@ -105,13 +113,13 @@
         />
     </div>
 
-    {{#if wardList}}
+    {{#ifCond authUser.role '==' '2'}}
      <div class="form-outline">
         <label class="form-label" for="txtDoB"><b>Các phường quan tâm</b></label>
         <div class="dropdown" disabled>
+            {{#ifCond lengthWardList '!=' '0'}}
             <button disabled id="multiSelectDropdown" class="btn btn-light dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
                 Chưa có thông tin
-                
             </button>
             <ul class="dropdown-menu">
                 <li>
@@ -126,12 +134,17 @@
                         <label class="form-check-label" for="{{_id}}">
                             {{ward}}
                         </label>
-                    </li>
                 {{/each}}
             </ul>
+            {{/ifCond}}
+            {{#ifCond lengthWardList '==' '0'}}
+            <button disabled id="empty" class="btn btn-light dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
+                không có thông tin của phường
+            </button>
+            {{/ifCond}}
         </div>
     </div>
-    {{/if}}
+    {{/ifCond}}
 
     <div class="d-flex gap-2">
         <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
@@ -151,8 +164,8 @@
         });
 
         $('#edit').click(function() {
-            $('input:not(#role, #location)').removeAttr('disabled');
-            $('button').removeAttr('disabled');
+            $('input:not(#role, #location, #empty)').removeAttr('disabled');
+            $('button:not(#empty)').removeAttr('disabled');
         });
 
 
@@ -174,6 +187,7 @@
        
         let selectedItems = [];
         let selectedContent = [];
+        const lengthWardList = '{{lengthWardList}}';
         function initSelectedItems() {
             const favList = '{{authUser.fav_list}}';
             if (favList) {
@@ -241,7 +255,10 @@
             $('#multiSelectDropdown').text(selectedContent.length > 0 ? displayText : 'Chưa có thông tin');
         }
        
-        initSelectedItems();
+        if(lengthWardList != 0) {
+            initSelectedItems();
+        }
+            
         $('.dropdown-menu').on('change', handleCB);
     </script>
 {{/section}}

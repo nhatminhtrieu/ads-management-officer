@@ -201,12 +201,15 @@
   />
 
   <div class="text-end">
+    {{#ifCond authUser.role "!=" '3'}}
     <button
         class="btn btn-danger mt-3"
         formaction="/advertisement/edit-request/delete"
     >
         Hủy yêu cầu
     </button>
+    {{/ifCond}}
+    {{#ifCond authUser.role '==' '3'}}
     <div class="mt-3">
         <button
         class="btn btn-danger"
@@ -223,5 +226,6 @@
         Đồng ý
         </button>
     </div>
+    {{/ifCond}}
   </div>
 </form>

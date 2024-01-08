@@ -92,11 +92,11 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-passport.serializeUser(function (user, cb) {
-	cb(null, user);
+passport.serializeUser(function (user, done) {
+	done(null, user);
 });
-passport.deserializeUser(function (obj, cb) {
-	cb(null, obj);
+passport.deserializeUser(function (obj, done) {
+	done(null, obj);
 });
 app.use(function (req, res, next) {
 	if (typeof req.session.isAuthenticated === "undefined") {

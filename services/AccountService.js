@@ -96,8 +96,8 @@ export default class AccountService {
         await this.repository.patch(_id, password)
     }
 
-    async updateLinkAccount(username, id) {
-        await this.repository.patchLinkAccount(username, id)
+    async updateLinkAccount(_id, id) {
+        await this.repository.patchLinkAccount(_id, id)
     }
 
     async updateProfile(_id, data) {

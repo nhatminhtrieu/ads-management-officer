@@ -23,7 +23,11 @@ export default class EditRequestRepository {
   }
 
   async findByEntity(entity) {
-    return await this.model.findOne(entity).lean();
+    return await this.model
+      .findOne(entity)
+      .lean()
+      .populate('rawLocation')
+      .populate({ path: "location", populate: { path: "format" } });
   }
 
   async update(id, newEntity) {

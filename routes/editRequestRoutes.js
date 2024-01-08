@@ -4,6 +4,7 @@ import moment from "moment";
 import LocationService from "../services/LocationService.js";
 import EditRequestService from "../services/EditRequestService.js";
 import AdsTypesService from "../services/AdsTypeService.js";
+import AdvertisementService from "../services/AdvertisementService.js";
 
 import { pagination } from "../utils/pagination.js";
 
@@ -11,6 +12,7 @@ const Router = express.Router();
 const service = new EditRequestService();
 const locationService = new LocationService();
 const adsTypeService = new AdsTypesService();
+const advertisementService = new AdvertisementService();
 
 // UI routers declaration
 Router.get("/", async (req, res) => {
@@ -54,7 +56,6 @@ Router.post("/create/location", async (req, res) => {
     location: {
       type: data.type,
       format: data.format,
-      zoning: false,
     },
     createAt: new Date(),
     createBy: res.locals.authUser._id,
@@ -115,34 +116,53 @@ Router.post("/create/advertisement", async (req, res) => {
   res.redirect("/advertisement/edit-request");
 });
 
-// Router.get("/detail", async (req, res) => {
-//   const id = req.query.id;
-//   const request = await service.findById(id);
-//   if (request === null) res.redirect("/advertisement/create-request");
-//   else {
-//     res.render("vwAds/vwCreateRequests/detail", { layout: "ads", request });
-//   }
-// });
+Router.get("/detail", async (req, res) => {
+  const id = req.query.id;
+  const request = await service.findById(id);
+  if (request === null) res.redirect("/advertisement/edit-request");
+  else {
+    res.render("vwAds/vwEditRequests/detail", {
+      layout: "ads",
+      request,
+      location: request.rawLocation,
+    });
+  }
+});
 
-// // Data routers declaration
-// Router.post("/create", async (req, res) => {
-//   await service.createRequest(req.body);
-//   res.redirect("/advertisement/create-request");
-// });
+// Data routers declaration
 
-// Router.post("/delete", async (req, res) => {
-//   await service.deleteCreateRequest(req.body.id);
-//   res.redirect("/advertisement/create-request");
-// });
+Router.post("/delete", async (req, res) => {
+  await service.deleteEditRequest(req.body.id);
+  res.redirect("/advertisement/edit-request");
+});
 
-// Router.post("/approve", async (req, res) => {
-//   await service.approveCreateRequest(req.body.id);
-//   res.redirect("/advertisement/create-request");
-// });
+Router.post("/approve", async (req, res) => {
+  const request = await service.findById(req.body.id);
 
-// Router.post("/reject", async (req, res) => {
-//   await service.rejectCreateRequest(req.body.id);
-//   res.redirect("/advertisement/create-request");
-// });
+  if (request.for == "location") {
+    await locationService.updateLocation(request.rawLocation, request.location);
+  } else {
+    const entity = {
+      ...request.advertisement,
+      start: moment(request.advertisement.start, "DD/MM/YYYY").format(
+        "YYYY-MM-DD"
+      ),
+      end: moment(request.advertisement.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
+    };
+
+    await advertisementService.updateAdvertisement(
+      request.rawAdvertisement,
+      entity
+    );
+  }
+
+  await service.approveEditRequest(req.body.id);
+  res.redirect("/advertisement/edit-request");
+});
+
+Router.post("/reject", async (req, res) => {
+  await service.rejectEditRequest(req.body.id);
+  res.redirect("/advertisement/edit-request");
+});
 
 export default Router;

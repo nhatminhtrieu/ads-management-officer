@@ -44,7 +44,7 @@ export default class EditRequestService {
 
   async findById(_id) {
     let request = await this.repository.findByEntity({ _id });
-    if (request) {
+    if (request && request.for == "advertisement") {
       request.advertisement.start = moment(request.advertisement.start).format(
         "DD/MM/YYYY"
       );
@@ -64,7 +64,6 @@ export default class EditRequestService {
   }
 
   async approveEditRequest(id) {
-    // Chờ service của location để tạo bảng quảng cáo mới
     return await this.repository.update(id, { accepted: "approved" });
   }
 

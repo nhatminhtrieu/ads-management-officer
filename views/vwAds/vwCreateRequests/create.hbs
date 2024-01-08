@@ -2,6 +2,7 @@
 <script type="module">
 	import CustomMap from "/static/js/map/CustomMap.js";
 	import { contentAd } from "/static/js/loadMarker.js";
+	import { readAsDataURL, checkFilesSize, updateHidden, updatePreview } from '/static/js/handleImgs.js'; 
 	function onMapChange(returnData) {
 		// Hide alert 
 		$('#alert').prop("hidden", true);
@@ -30,77 +31,23 @@
 			$('button[type="submit"]').addClass('disabled')
 		});
 	})
+
+	$('input#file').on('change', async function (e) {
+		var files = Array.from(e.currentTarget.files);
+		if (files.length && checkFilesSize([], files)) {
+			var images = await Promise.all(files.map((file) => {
+				return readAsDataURL(file);
+			}));
+
+			updatePreview(images)
+			updateHidden(images)
+		}
+	});
 </script>
 <script>
 	$(".disabled").on('keydown paste focus mousedown', function (e) {
 		if (e.keyCode != 9) // ignore tab 
 			e.preventDefault();
-	});
-</script>
-<script>
-	function readAsDataURL(file) {
-		return new Promise((resolve, reject) => {
-			let fileReader = new FileReader();
-			fileReader.onload = function () {
-				return resolve(fileReader.result);
-			}
-			fileReader.readAsDataURL(file);
-		})
-	}
-
-	function checkFilesSize(files) {
-		let sum = 0;
-		$.each(files, function (index, file) {
-			sum += file.size / 1024 / 1024;
-		});
-		const $imgsInput = $('input#file');
-		const $submitBtn = $('button[type="submit"]');
-		if (sum > 10) {
-			$imgsInput.addClass('is-invalid');
-			if (!$submitBtn.hasClass('disabled')) {
-				$submitBtn.addClass('disabled');
-			}
-		} else {
-			if ($imgsInput.hasClass('is-invalid')) {
-				$imgsInput.removeClass('is-invalid');
-			}
-			if ($submitBtn.hasClass('disabled')) {
-				$submitBtn.removeClass('disabled');
-			}
-		}
-	}
-
-	var $container = $('#preview');
-	var $hiddenDiv = $('#hiddenImgsInput');
-
-	$('input#file').on('change', async function (e) {
-		var files = Array.from(e.currentTarget.files);
-		if (files.length) {
-			checkFilesSize(files);
-			var images = await Promise.all(files.map((file) => {
-				return readAsDataURL(file);
-			}));
-			$.each(images, function (index, file) {
-				var $div = $('<div>').addClass('col-3').css({
-					position: 'relative',
-					'max-height': '300px'
-				});
-				var $img = $('<img>').attr('src', file).css({
-					width: '100%',
-					'object-fit': 'cover',
-					'border-radius': '0.375rem'
-				});
-				$div.append($img);
-				$container.append($div);
-
-				var $input = $('<input>').attr({
-					type: 'hidden',
-					name: 'imgs[]',
-					value: file
-				});
-				$hiddenDiv.append($input);
-			});
-		}
 	});
 </script>
 <script
@@ -256,8 +203,8 @@
 	</div>
 	<div class="text-end">
 		<button type="submit" class="btn btn-primary disabled">
-			<i class="bi bi-plus-lg"></i>
-			Tạo mới
+			<i class="bi bi-send"></i>
+      		Gửi yêu cầu
 		</button>
 	</div>
 </form>

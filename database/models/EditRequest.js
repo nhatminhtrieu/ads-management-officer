@@ -18,9 +18,6 @@ const EditRequestSchema = new mongoose.Schema(
         type: Schema.Types.ObjectId,
         ref: "adsTypes",
       },
-      zoning: {
-        type: Boolean,
-      },
     },
     advertisement: {
       typeBoard: {

@@ -26,7 +26,7 @@ class ReportRepository {
 	}
 
 	async findByEntity(entity) {
-		return await this.model.findOne(entity).lean();
+		return await this.model.find(entity);
 	}
 
 	async findTotalPages() {

@@ -36,6 +36,7 @@ router.get("/", async (req, res) => {
 		prev_disabled: paginatedReports.page === 1,
 		next_disabled: paginatedReports.page === paginatedReports.totalPage,
 	});
+
 });
 
 router.get('/manage/:id', async (req, res) => {
@@ -43,7 +44,7 @@ router.get('/manage/:id', async (req, res) => {
 	var report = await reportService.findReportById(id);
 	const reportTypes = await reportTypeService.getAllReportTypes();
 	report.typeReport = await reportTypeService.getReportTypeById(report.typeReport);
-	report.typeReportName = report.typeReport.name;
+	report.typeReportName = "report.typeReport.name"
 	const statusReports = ['Chưa xử lý', 'Đã xử lý'];
 
 	const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${report.coordinate.lat},${report.coordinate.lng}&key=${apiKey}`);
@@ -134,7 +135,7 @@ router.get("/statistic", (req, res) => {
 
 // Data routers declaration
 router.get("/all", async (req, res) => {
-	const list = await reportTypeService.getAllReports();
+	const list = await reportService.getAllReports();
 	res.send(list);
 });
 

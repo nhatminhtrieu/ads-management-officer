@@ -23,6 +23,11 @@ export default class ReportService {
 		}
 	}
 
+	async find(entity) {
+		const report = await this.repository.findByEntity(entity);
+		return report;
+	}
+
 	async findReportById(id) {
 		const report = await this.repository.findByEntity({ _id: id });
 		return report;

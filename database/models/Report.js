@@ -40,12 +40,16 @@ const ReportSchema = new Schema(
 		type: {
 			type: String,
 			enum: ["Đã tiếp nhận", "Đã xử lý"],
-			default: "issue",
+			default: "Đã tiếp nhận",
 			required: true,
 		},
 		createAt: {
 			type: Date,
 			default: Date.now,
+			required: true,
+		},
+		area: {
+			type: Object,
 			required: true,
 		},
 	},

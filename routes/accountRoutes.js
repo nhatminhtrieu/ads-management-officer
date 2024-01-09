@@ -7,6 +7,7 @@ import moment from "moment";
 import { config } from "dotenv";
 
 import { statusAuthenticated } from "../utils/enum.js";
+import { formatDate } from "../utils/time.js";
 import auth from "../middleware/auth.js";
 import AccountService from "../services/AccountService.js";
 import WardService from "../services/WardService.js";
@@ -35,10 +36,7 @@ passport.use(new FacebookStrategy({
             return done(null, {...data, status: statusAuthenticated["authenticated"]});
         }
 
-        return done(null, {
-            ...data,
-            status: statusAuthenticated["not authenticated"]
-        });
+        return done(null, {...data, status: statusAuthenticated["not authenticated"]});
     }
 ));
 
@@ -103,16 +101,22 @@ router.get(
             if (typeof authUser != "undefined") {
                 const { _id } = authUser
                 await service.updateLinkAccount(_id, id);
-                const user = await service.findById(_id);
+                var user = (await service.findById(_id)).toObject();
+                if(user.dob != null) {
+                    user.dob = formatDate(user.dob);
+                }
                 req.session.isAuthenticated = true;
-                req.session.authUser = user;
+                req.session.authUser = {...authUser, ...user};
                 return res.redirect("/account/link");
             }
             req.session.linkAccount = "Tài khoản chưa được liên kết"
             return res.redirect("/account/login");
         }
 
-        const user = await service.findByLinkAccount(id);
+        var user = (await service.findByLinkAccount(id)).toObject();
+        if(user.dob != null) {
+            user.dob = formatDate(user.dob);
+        }
         if (typeof authUser != "undefined") {
             if(user._id != authUser._id) {
                 req.session.isAuthenticated = true;
@@ -123,7 +127,10 @@ router.get(
         }
 
         req.session.isAuthenticated = true;
-        req.session.authUser = user;
+        const districtInfo = await districtService.getDistrictById(user.district);
+        const wardInfo = await wardService.getWardById(user.ward);
+        const data  = {...user, districtInfo, wardInfo};
+        req.session.authUser = data;                   
         res.redirect("/home");
     }
 );
@@ -134,7 +141,7 @@ router.post("/login", async (req, res) => {
     if (check) {
         req.session.isAuthenticated = true;
         if(check.dob != null) {
-            check.dob = moment(check.dob).format("DD/MM/YYYY");
+            check.dob = formatDate(check.dob);
         }
         const districtInfo = await districtService.getDistrictById(check.district);
         const wardInfo = await wardService.getWardById(check.ward);

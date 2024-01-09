@@ -11,6 +11,7 @@ import {
   authDepartmentRole,
   authNotDepartmentRole,
 } from "../middleware/auth.js";
+import mongoose from "mongoose";
 
 const Router = express.Router();
 const service = new EditRequestService();
@@ -38,7 +39,13 @@ Router.get("/", async (req, res) => {
 });
 
 Router.get("/create/location", authNotDepartmentRole, async (req, res) => {
-  const locations = await locationService.findAllLocations();
+  const user = req.session.authUser;
+  const option = {
+    "area.district": new mongoose.Types.ObjectId(user.district),
+  };
+  if (user.role == "1") option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
+
+  const locations = await locationService.findAllLocations(option);
   const types = [
     "Đất công/Công viên/Hành lang an toàn giao thông",
     "Đất tư nhân/Nhà ở riêng lẻ",
@@ -78,7 +85,13 @@ Router.post("/create/location", authNotDepartmentRole, async (req, res) => {
 });
 
 Router.get("/create/advertisement", authNotDepartmentRole, async (req, res) => {
-  const locations = await locationService.findAllLocations();
+  const user = req.session.authUser;
+  const option = {
+    "area.district": new mongoose.Types.ObjectId(user.district),
+  };
+  if (user.role == "1") option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
+
+  const locations = await locationService.findAllLocations(option);
   const list = [
     "Trụ bảng hiflex",
     "Trụ màn hình điện tử LED",

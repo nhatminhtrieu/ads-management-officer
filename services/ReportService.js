@@ -1,4 +1,5 @@
 import ReportRepository from "../database/repositories/ReportRepository.js";
+import ReportTypeService from "./ReportTypeService.js";
 
 export default class ReportService {
 	constructor() {
@@ -16,7 +17,16 @@ export default class ReportService {
 
 	async getAllReports() {
 		try {
-			const reports = await this.repository.getAllReports();
+			const reportTypeService = new ReportTypeService();
+			let reports = await this.repository.getAllReports();
+			reports = await Promise.all(reports.map(async (report) => {
+				const reportType = (await reportTypeService.getReportTypeById(report.typeReport)).toObject();
+				const newItem = {
+					...report.toObject(),
+					typeReportName: reportType.name,
+				};
+				return newItem;
+			}));
 			return reports;
 		} catch (err) {
 			console.log("ReportService.getAllReports", err);

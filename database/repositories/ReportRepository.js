@@ -18,7 +18,7 @@ class ReportRepository {
 
 	async getAllReports() {
 		try {
-			return await this.model.find({});
+			return await this.model.find({})
 		} catch (err) {
 			console.log("getAllReports", err);
 			throw err;

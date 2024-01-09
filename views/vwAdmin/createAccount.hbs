@@ -33,7 +33,28 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {{/if}}
-<a href="/admin/officer" class="btn btn-secondary"><i class="bi bi-chevron-left"></i>Quay lại</a>
+
+<div class="modal fade" id="failConfirmPwd" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title" id="failModalLabel">Lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Mật khẩu không trùng khớp</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="/admin/officers" class="btn p-0 link-primary mb-4" role="button">
+    <i class="bi bi-caret-left"></i>
+	Trở về
+</a>
 <section style="background-color: #eee;">
     <div class="container py-5">
         <div class="card mb-4">
@@ -151,7 +172,8 @@
         const password = $('#password').val();
         const confirmpwd = $('#confirmpwd').val();
         if (password != confirmpwd) {
-            alert('Mật khẩu không khớp');
+            $('#failConfirmPwd').modal('show');
+            event.preventDefault();
             return;
         }
 

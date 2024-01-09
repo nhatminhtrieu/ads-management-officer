@@ -26,7 +26,7 @@ export default class AccountRepository {
         return await this.model.updateOne(entity, data);
     }
 
-    async patchLinkAccount(username, id) {
-        return await this.model.updateOne({ username }, { $push: { account_link: id } });
+    async patchLinkAccount(_id, id) {
+        return await this.model.updateOne({ _id }, { $push: { account_link: id } });
     }
 }

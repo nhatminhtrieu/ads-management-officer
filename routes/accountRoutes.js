@@ -7,6 +7,7 @@ import moment from "moment";
 import { config } from "dotenv";
 
 import { statusAuthenticated } from "../utils/enum.js";
+import { formatDate } from "../utils/time.js";
 import auth from "../middleware/auth.js";
 import AccountService from "../services/AccountService.js";
 import WardService from "../services/WardService.js";
@@ -22,17 +23,20 @@ passport.use(new FacebookStrategy({
     clientID: process.env.FB_CLIENT_ID,
     clientSecret: process.env.FB_CLIENT_SECRET,
     callbackURL: process.env.FB_CALLBACK_URL,
-    profileFields: ['id', 'emails', 'name', 'displayName']
+    profileFields: ['id', 'emails', 'name', 'displayName'],
+    passReqToCallback: true
 },
-    async function (accessToken, refreshToken, profile, cb) {
+    async function (req, accessToken, refreshToken, profile, done) {
         const existedAccount = await service.findByLinkAccount(profile.id);
+        var data = {
+            ...profile,
+            authUser: req.session.authUser,
+        }
         if (existedAccount) {
-            return cb(null, {...profile, status: statusAuthenticated["authenticated"]});
+            return done(null, {...data, status: statusAuthenticated["authenticated"]});
         }
 
-        return cb(null, {
-            status: statusAuthenticated["not authenticated"],
-        });
+        return done(null, {...data, status: statusAuthenticated["not authenticated"]});
     }
 ));
 
@@ -41,9 +45,9 @@ router.get("/", (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-    const linkAccount = req.session.failLinkAccount;
-    res.render("vwAccounts/login", { 
-        linkAccount,
+    const linkAccount = req.session?.linkAccount;
+    res.render("vwAccounts/login", {
+        err_message: linkAccount, 
         layout: false 
     });
 });
@@ -73,7 +77,9 @@ router.get("/profile", auth, async (req, res) => {
 });
 
 router.get("/link", auth, (req, res) => {
+    const linkAccount = req.session?.linkAccount;
     res.render("vwAccounts/link", {
+        err_message: linkAccount,
         layout: "profile.hbs",
     });
 })
@@ -90,23 +96,41 @@ router.get(
     "/facebook/callback",
     passport.authenticate("facebook", { failureRedirect: "/account/login" }),
     async function (req, res) {
-        const { status } = req.user;
+        const { status, authUser, id } = req.user;
         if (status == statusAuthenticated["not authenticated"]) {
-            if (typeof req.session.authUser != "undefined") {
-                const { id } = req.user;
-                const { username } = req.session.authUser;
-                await service.updateLinkAccount(username, id);
-                res.redirect("/account/link");
-            } else {
-                req.session.failLinkAccount = "Tài khoản chưa được liên kết";
-                res.redirect("/account/login");
+            if (typeof authUser != "undefined") {
+                const { _id } = authUser
+                await service.updateLinkAccount(_id, id);
+                var user = (await service.findById(_id)).toObject();
+                if(user.dob != null) {
+                    user.dob = formatDate(user.dob);
+                }
+                req.session.isAuthenticated = true;
+                req.session.authUser = {...authUser, ...user};
+                return res.redirect("/account/link");
             }
-            return;
-        } 
+            req.session.linkAccount = "Tài khoản chưa được liên kết"
+            return res.redirect("/account/login");
+        }
 
-        const user = await service.findByLinkAccount(req.user.id);
+        var user = (await service.findByLinkAccount(id)).toObject();
+        if(user.dob != null) {
+            user.dob = formatDate(user.dob);
+        }
+        if (typeof authUser != "undefined") {
+            if(user._id != authUser._id) {
+                req.session.isAuthenticated = true;
+                req.session.authUser = authUser;
+                req.session.linkAccount = "Tài khoản facebook của bạn đã được liên kết với tài khoản khác"
+                return res.redirect("/account/link");
+            }
+        }
+
         req.session.isAuthenticated = true;
-        req.session.authUser = user;
+        const districtInfo = await districtService.getDistrictById(user.district);
+        const wardInfo = await wardService.getWardById(user.ward);
+        const data  = {...user, districtInfo, wardInfo};
+        req.session.authUser = data;                   
         res.redirect("/home");
     }
 );
@@ -117,7 +141,7 @@ router.post("/login", async (req, res) => {
     if (check) {
         req.session.isAuthenticated = true;
         if(check.dob != null) {
-            check.dob = moment(check.dob).format("DD/MM/YYYY");
+            check.dob = formatDate(check.dob);
         }
         const districtInfo = await districtService.getDistrictById(check.district);
         const wardInfo = await wardService.getWardById(check.ward);
@@ -243,8 +267,12 @@ router.post("/changeStatus/:id", async (req, res) => {
 
 
 router.post("/logout", auth, (req, res) => {
-    req.session.isAuthenticated = false;
-    req.session.authUser = null;
-    res.redirect("/account/login");
+    req.session.destroy(function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect("/account/login");
+        }
+    });
 })
 export default router;

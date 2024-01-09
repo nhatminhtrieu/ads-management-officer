@@ -24,6 +24,7 @@ export default class CreateRequestService {
 		const newRequest = {
 			advertisement,
 			location: newReq.location,
+			createdBy: newReq.createdBy,
 			company,
 		};
 		const isExist = await this.repository.findByEntity(newReq);
@@ -38,9 +39,9 @@ export default class CreateRequestService {
 		return list;
 	}
 
-	async findTotalPages({ limit }) {
+	async findTotalPages({ limit }, createdBy = {}) {
 		try {
-			const totalItems = await this.repository.countAll();
+			const totalItems = await this.repository.countAll(createdBy);
 			const totalPages = Math.ceil(totalItems / limit);
 			return totalPages;
 		} catch (err) {
@@ -48,9 +49,9 @@ export default class CreateRequestService {
 		}
 	}
 
-	async findDataForPage({ offset, limit }) {
+	async findDataForPage({ offset, limit }, createdBy = {}) {
 		try {
-			const rawData = await this.repository.findDataForPage({ offset, limit });
+			const rawData = await this.repository.findDataForPage({ offset, limit }, createdBy);
 			const data = rawData.map((item, index) => {
 				const newItem = item;
 				newItem["index"] = offset + index;
@@ -69,10 +70,6 @@ export default class CreateRequestService {
 			request.advertisement.end = moment(request.advertisement.end).format("DD/MM/YYYY");
 		}
 		return request;
-	}
-
-	async findRequestsByUser(user_id) {
-		return await this.repository.findAllByEntity({ createdBy: user_id });
 	}
 
 	async deleteCreateRequest(id) {

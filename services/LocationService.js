@@ -49,9 +49,9 @@ export default class LocationService {
     }
   }
 
-  async findAllLocations() {
+  async findAllLocations(entity={}) {
     try {
-      return await this.repository.findAll();
+      return await this.repository.findAll(entity);
     } catch (err) {
       console.log("LocationService.getAllLocations", err);
     }

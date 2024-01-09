@@ -25,7 +25,7 @@ function contentReport(report) {
 
 async function getLocations() {
 	try {
-		const response = await fetch("http://localhost:3000/location/find-all");
+		const response = await fetch("https://localhost:3000/location/find-all");
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
@@ -45,7 +45,7 @@ export async function loadAdMarkers(map) {
 
 export async function loadReportMarkers(map) {
 	try {
-		const response = await fetch("http://localhost:3000/report/all");
+		const response = await fetch("https://localhost:3000/report/all");
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}

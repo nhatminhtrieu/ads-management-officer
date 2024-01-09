@@ -13,9 +13,22 @@ router.get("/", async (req, res) => {
 	}
 	// Role: District Officer
 	if (req.session.authUser.role === 2) {
-		locations = await service.find({ 
-			"area.district": new mongoose.Types.ObjectId(req.session.authUser.district)
-		});
+		// Fav_list == [] -> all
+		if (req.session.authUser.fav_list.length === 0)
+			locations = await service.find({
+				"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+			});
+		else {
+			let fav_list_ids = [];
+			req.session.authUser.fav_list.forEach((id) => {
+				fav_list_ids.push(new mongoose.Types.ObjectId(id));
+			});
+
+			locations = await service.find({
+				"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+				"area.ward": { $in: fav_list_ids },
+			});
+		}
 	}
 	// Role: Ward Officer
 	else if (req.session.authUser.role === 1) {

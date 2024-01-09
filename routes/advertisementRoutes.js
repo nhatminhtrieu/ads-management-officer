@@ -24,9 +24,23 @@ router.get("/manage", async (req, res) => {
     result = await pagination(req, service, limit);
   // Role: District Officer
   else if (req.session.authUser.role === 2) {
-    result = await pagination(req, service, limit, {
-      "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
-    });
+    // Fav_list == [] -> all
+    if (req.session.authUser.fav_list.length === 0)
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+      });
+    else 
+    {
+      let fav_list_ids = [];
+      req.session.authUser.fav_list.forEach((id) => {
+        fav_list_ids.push(new mongoose.Types.ObjectId(id));
+      });
+      
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.ward": { $in: fav_list_ids },
+      });
+    }
   }
   // Role: Ward Officer
   else if (req.session.authUser.role === 1) {
@@ -37,6 +51,8 @@ router.get("/manage", async (req, res) => {
       },
     });
   }
+
+  console.log(req.session.authUser)
 
   res.render("vwAds/ads", {
     layout: "ads",
@@ -163,9 +179,23 @@ router.get("/ad-location", async (req, res) => {
     result = await pagination(req, service, limit);
   // Role: District Officer
   else if (req.session.authUser.role === 2) {
-    result = await pagination(req, service, limit, 
-      { "area.district": new mongoose.Types.ObjectId(req.session.authUser.district) },
-    );
+    // Fav_list == [] -> all
+    if (req.session.authUser.fav_list.length === 0)
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+      });
+    else 
+    {
+      let fav_list_ids = [];
+      req.session.authUser.fav_list.forEach((id) => {
+        fav_list_ids.push(new mongoose.Types.ObjectId(id));
+      });
+      
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.ward": { $in: fav_list_ids },
+      });
+    }
   // Role: Ward Officer
   } else if (req.session.authUser.role === 1) {
     result = await pagination(req, service, limit, {

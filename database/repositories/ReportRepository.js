@@ -43,6 +43,10 @@ class ReportRepository {
 			throw err;
 		}
 	}
+
+	async update(id, entity) {
+		return await this.model.updateOne({ _id: id }, entity);
+	}
 }
 
 export default ReportRepository;

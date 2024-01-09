@@ -56,12 +56,29 @@ class AdvertisementRepository {
 		}
 	}
 
-	async countAll() {
-		return await this.model.countDocuments();
+	async countAll(options = {}) {
+		const locationRepository = new LocationRepository();
+		const locations = await locationRepository.find(options);
+
+		let locationIds = [];
+		for (const location of locations) {
+			locationIds.push(location._id);
+		}
+
+		const data = await this.model.find({ location: {$in: locationIds} });
+		return data.length;
 	}
 
-	async findDataForPage({ offset, limit }) {
-		const data = await this.model.find().populate("location").skip(offset).limit(limit);
+	async findDataForPage({ offset, limit }, options = {}) {
+		const locationRepository = new LocationRepository();
+		const locations = await locationRepository.find(options);
+		
+		let locationIds = [];
+		for (const location of locations) {
+			locationIds.push(location._id);
+		}
+
+		const data = await this.model.find({ location: {$in: locationIds} }).populate("location").skip(offset).limit(limit);
 		return data;
 	}
 

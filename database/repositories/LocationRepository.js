@@ -12,17 +12,17 @@ export default class LocationRepository {
     return await newEntity.save();
   }
 
-  async findDataForPage({ offset, limit }) {
+  async findDataForPage({ offset, limit }, options = {}) {
     const data = await this.model
-      .find()
+      .find(options)
       .populate("format")
       .skip(offset)
       .limit(limit);
     return data;
   }
 
-  async countAll() {
-    return await this.model.countDocuments();
+  async countAll(options = {}) {
+    return await this.model.countDocuments(options);
   }
 
   async find(entity) {

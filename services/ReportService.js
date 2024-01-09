@@ -58,4 +58,13 @@ export default class ReportService {
 			console.log("ReportService.findDataForPage", err);
 		}
 	}
+
+	async updateReport(id, data) {
+		try {
+			const report = await this.repository.update(id, data);
+			return report;
+		} catch (err) {
+			console.log("ReportService.updateReport", err);
+		}
+	}
 }

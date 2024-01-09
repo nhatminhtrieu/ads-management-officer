@@ -11,13 +11,47 @@ import editRequestRouter from "./editRequestRoutes.js";
 import moment from "moment";
 import mongoose from "mongoose";
 import { pagination } from "../utils/pagination.js";
+import { authDepartmentRole } from "../middleware/auth.js";
 
 // UI routers declaration
 router.get("/manage", async (req, res) => {
   const service = new AdvertisementService();
   const limit = 20;
 
-  const result = await pagination(req, service, limit);
+  let result = [];
+
+  // Role: Department Officer
+  if (req.session.authUser.role === 3)
+    result = await pagination(req, service, limit);
+  // Role: District Officer
+  else if (req.session.authUser.role === 2) {
+    // Fav_list == [] -> all
+    if (req.session.authUser.fav_list.length === 0)
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+      });
+    else 
+    {
+      let fav_list_ids = [];
+      req.session.authUser.fav_list.forEach((id) => {
+        fav_list_ids.push(new mongoose.Types.ObjectId(id));
+      });
+      
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.ward": { $in: fav_list_ids },
+      });
+    }
+  }
+  // Role: Ward Officer
+  else if (req.session.authUser.role === 1) {
+    result = await pagination(req, service, limit, {
+      "area": {
+        district: new mongoose.Types.ObjectId(req.session.authUser.district),
+        ward: new mongoose.Types.ObjectId(req.session.authUser.ward),
+      },
+    });
+  }
 
   res.render("vwAds/ads", {
     layout: "ads",
@@ -28,7 +62,7 @@ router.get("/manage", async (req, res) => {
   });
 });
 
-router.get("/manage/new", async (req, res) => {
+router.get("/manage/new", authDepartmentRole, async (req, res) => {
   const list = [
     "Trụ bảng hiflex",
     "Trụ màn hình điện tử LED",
@@ -137,7 +171,39 @@ router.get("/ad-location", async (req, res) => {
   const service = new LocationService();
   const limit = 20;
 
-  const result = await pagination(req, service, limit);
+  let result = [];
+
+  // Role: Department Officer
+  if (req.session.authUser.role === 3) 
+    result = await pagination(req, service, limit);
+  // Role: District Officer
+  else if (req.session.authUser.role === 2) {
+    // Fav_list == [] -> all
+    if (req.session.authUser.fav_list.length === 0)
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+      });
+    else 
+    {
+      let fav_list_ids = [];
+      req.session.authUser.fav_list.forEach((id) => {
+        fav_list_ids.push(new mongoose.Types.ObjectId(id));
+      });
+      
+      result = await pagination(req, service, limit, {
+        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.ward": { $in: fav_list_ids },
+      });
+    }
+  // Role: Ward Officer
+  } else if (req.session.authUser.role === 1) {
+    result = await pagination(req, service, limit, {
+        area: {
+          district: new mongoose.Types.ObjectId(req.session.authUser.district),
+          ward: new mongoose.Types.ObjectId(req.session.authUser.ward),
+        },
+    });
+  }
 
   res.render("vwAds/vwLocations/locations", {
     layout: "ads",
@@ -148,7 +214,7 @@ router.get("/ad-location", async (req, res) => {
   });
 });
 
-router.get("/ad-location/new", async (req, res) => {
+router.get("/ad-location/new", authDepartmentRole, async (req, res) => {
   const adsTypeService = new AdsTypesService();
   const locationService = new LocationService();
   const list = await adsTypeService.findAllAdsType();
@@ -265,7 +331,7 @@ router.use("/edit-request", editRequestRouter);
 
 router.use("/create-request", createRequestRouter);
 
-router.get("/type-ad", async (req, res) => {
+router.get("/type-ad", authDepartmentRole,  async (req, res) => {
   const service = new AdsTypesService();
   const list = await service.findAllAdsType();
   res.render("vwAds/typeAds", {

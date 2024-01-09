@@ -53,17 +53,17 @@ export default class AdvertisementService {
 		}
 	}
 
-	async countAll() {
+	async countAll(options = {}) {
 		try {
-			return await this.repository.countAll();
+			return await this.repository.countAll(options);
 		} catch (err) {
 			console.log("AdvertisementService.countAll", err);
 		}
 	}
 
-	async findTotalPages({ limit }) {
+	async findTotalPages({ limit }, options = {}) {
 		try {
-			const totalItems = await this.countAll();
+			const totalItems = await this.countAll(options);
 			const totalPages = Math.ceil(totalItems / limit);
 			return totalPages;
 		} catch (err) {
@@ -71,9 +71,9 @@ export default class AdvertisementService {
 		}
 	}
 
-	async findDataForPage({ offset, limit }) {
+	async findDataForPage({ offset, limit }, options = {}) {
 		try {
-			const rawData = await this.repository.findDataForPage({ offset, limit });
+			const rawData = await this.repository.findDataForPage({ offset, limit }, options);
 			const data = rawData.map((item, index) => {
 				const newItem = {
 					_id: item._id,

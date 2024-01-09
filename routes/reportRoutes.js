@@ -1,13 +1,15 @@
-import express from "express";
+import express, { response } from "express";
 const router = express.Router();
 import ReportTypeService from "../services/ReportTypeService.js";
 import ReportService from "../services/ReportService.js";
 import { pagination } from "../utils/pagination.js";
 import moment from "moment";
+import nodemailer from "nodemailer";
 
 const apiKey = process.env.GOOGLE_API_KEY;
 const reportService = new ReportService();
 const reportTypeService = new ReportTypeService();
+import { authDepartmentRole, authNotDepartmentRole } from "../middleware/auth.js";
 
 // UI routers declaration
 router.get("/", async (req, res) => {
@@ -38,10 +40,11 @@ router.get("/", async (req, res) => {
 
 router.get('/manage/:id', async (req, res) => {
 	const id = req.params.id;
-	const report = await reportService.findReportById(id);
+	var report = await reportService.findReportById(id);
 	const reportTypes = await reportTypeService.getAllReportTypes();
 	report.typeReport = await reportTypeService.getReportTypeById(report.typeReport);
 	report.typeReportName = report.typeReport.name;
+	const statusReports = ['Chưa xử lý', 'Đã xử lý'];
 
 	const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${report.coordinate.lat},${report.coordinate.lng}&key=${apiKey}`);
 	const data = await response.json();
@@ -49,23 +52,75 @@ router.get('/manage/:id', async (req, res) => {
 		report.address = data.results[0].formatted_address;
 	}
 
-	console.log(report.imgs);
-
 	res.render('vwReports/detail', {
 		layout: 'report',
 		report,
 		reportTypes,
+		statusReports,
+		isSelected: report.typeReport._id,
 		formatDays: {
 			createDate: moment(report.createAt).format('DD/MM/YYYY'),
-		}
+		},
 	});
 });
 
-router.post('/manage/:id', async (req, res) => {
+router.post('/manage/:id', authNotDepartmentRole, async (req, res) => {
+	const id = req.params.id;
+	const { typeReport, statusReport, resolvedContent } = req.body;
 
+	var report = await reportService.findReportById(id);
+
+	if (typeReport) {
+		report.typeReport = await reportTypeService.getReportTypeById(typeReport);
+	}
+
+	if (statusReport) {
+		report.type = statusReport;
+	}
+
+	if (resolvedContent) {
+		report.resolvedContent = resolvedContent;
+	}
+
+	await reportService.updateReport(id, report);
+
+	var transporter = nodemailer.createTransport({ // config mail server
+		service: 'Gmail',
+		auth: {
+			user: 'bddquan@gmail.com',
+			pass: 'wjge iflg rmzs nghh'
+		}
+	});
+	var mainOptions = {
+		from: 'JCXDC Team',
+		to: report.email,
+		subject: 'Cập nhật báo cáo',
+		text: 'Bạn nhận được tin nhắn này từ đội ngũ phát triển website - JCXDC team ',
+		html:
+			'<div style="border-bottom:1px solid #eee"> \
+                <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
+            </div> \
+            <p style="font-size:1.1em">Xin chào,</p> \
+            <p>Báo cáo của bạn đã thay đổi sang tình trạng</p> \
+            <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">'
+			+
+			report.resolvedContent + '</h2> \
+            <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
+            <hr style="border:none;border-top:1px solid #eee" /> \
+            <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
+                <p>JCXDC team</p> \
+                <p>HCM City</p> \
+            </div>'
+	}
+	transporter.sendMail(mainOptions, (err, info) => {
+		if (err) console.log(err);
+		else {
+			res.redirect(`/report/manage/${id}`);
+		}
+	})
 });
 
-router.get("/type-report", async (req, res) => {
+router.get("/type-report", authDepartmentRole, async (req, res) => {
 	const list = await reportTypeService.getAllReportTypes();
 	res.render("vwReports/typeReport", {
 		layout: "report",

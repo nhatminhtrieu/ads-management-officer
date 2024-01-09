@@ -1,14 +1,4 @@
 {{#section "js"}}
-<script type="module">
-    import CustomMap from "/static/js/map/CustomMap.js";
-    import { contentAd } from "/static/js/loadMarker.js";
-    const HomeMap = new CustomMap();
-    HomeMap.init().then(() => {
-        const contentString = contentAd({{{ json location }}});
-    HomeMap.pushAdMarker({{{ json location }}}, {{{ json location.address }}}, contentString);
-    HomeMap.setCenter({{{ json location.coordinate }}}); 
-    });
-</script>
 <script>
     function updatePreview(list, hidden = true) {
         const previewDiv = document.querySelector('#preview')
@@ -48,7 +38,7 @@
         })
     }
 
-    let imgsArr = {{{ json ad.imgs }}}
+    let imgsArr = {{{ json report.imgs }}}
 
     window.onload = function () {
         updatePreview(imgsArr)
@@ -68,6 +58,8 @@
     $("#edit").click(function () {
         $('#typeReport').prop("disabled", false);
         $('#typeReport').prop("required", true);
+        $('#resolvedContent').prop("disabled", false);
+        $('#statusReport').prop("disabled", false);
         $('#number').prop("disabled", false);
         $('#size').prop("disabled", false);
         $('#file').prop("disabled", false);
@@ -151,20 +143,20 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
 {{/section}}
 
-<a class="btn p-0 link-primary" href="/advertisement/manage" role="button">
+<a class="btn p-0 link-primary" href="/report">
     <i class="bi bi-caret-left"></i>
     Trở về
 </a>
 
-<div id="map" style="height: 400px; width: 100%;" class="mt-3"></div>
-
 <div class="d-flex justify-content-between">
     <div class="mt-3" style="display: flex; align-items: center;">
         <h4>Thông tin chi tiết báo cáo </h4>
+        {{#ifCond authUser.role '!==' 3}}
         <div id="edit" style="margin-left: 16px; cursor: pointer">
             <i class="bi bi-pencil-square"></i>
             Chỉnh sửa
         </div>
+        {{/ifCond}}
     </div>
 
     <div class="mt-3">
@@ -181,33 +173,29 @@
         <input type="text" id="address" class="form-control border-2" value="{{report.address}}" disabled />
     </div>
 
-    <div id="hiddenImgsInput"></div>
-
     <div class="form-outline mt-3">
         <label class="form-label" for="typeReport">Loại báo cáo</label>
         <select id="typeReport" class="form-select border-2" name="typeReport" value="{{report.typeReportName}}"
             required disabled>
             {{#each reportTypes}}
-            <option value="{{this}}" {{#if isSelected}}selected{{/if}}>{{this.name}}</option>
+            <option value="{{this._id}}" {{#ifCond this.name "==" ../report.typeReportName}}selected{{/ifCond}}>
+                {{this.name}}
+            </option>
             {{/each}}
         </select>
     </div>
 
     <div class="form-outline mt-3">
         <label class="form-label" for="type">Hình ảnh báo cáo</label>
-        <input type="file" id="file" class="form-control border-2" name="file" aria-describedby="fileHelp"
-            accept="image/*" multiple disabled hidden />
-        <div id="fileHelp" class="invalid-feedback">
-            Tổng dung lượng các hình tối đa 10MB.
-        </div>
         <div class="mt-3 row flex-nowrap overflow-auto" id="preview">
             {{#each report.imgs}}
             <div class="col-4" style="position: relative; height: 300px;">
-                <img src="{{this}}" alt="Report Image">
+                <img src="{{this}}" alt="Ảnh báo cáo" />
             </div>
             {{/each}}
         </div>
     </div>
+
     <div class="form-outline mt-3">
         <div class="row g-3">
             <div class="col" id="createDateDiv">
@@ -217,14 +205,26 @@
             </div>
         </div>
     </div>
+
     <div class="form-outline mt-3">
-        <label class="form-label" for="typeReport">Trạng thái báo cáo</label>
-        <select id="type" class="form-select border-2" name="type" required disabled>
-            {{#each report.type}}
-            <option value="{{name}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
+        <label class="form-label" for="statusReport">Trạng thái báo cáo</label>
+        <select id="statusReport" class="form-select border-2" name="statusReport" required disabled>
+            {{#each statusReports}}
+            <option value="{{this}}" {{#ifCond this "===" ../report.type}}selected{{/ifCond}}>{{this}}</option>
             {{/each}}
         </select>
     </div>
+
+    <div class="form-outline mt-3">
+        <div class="row g-3">
+            <div class="col">
+                <label class="form-label" for="resolvedContent">Cách thức xử lý</label>
+                <input type="text" id="resolvedContent" class="form-control border-2" name="resolvedContent"
+                    value="{{report.resolvedContent}}" required disabled />
+            </div>
+        </div>
+    </div>
+
     <div id="fnButton" class="mt-3" style="display: none;">
         <a id="cancelButton" class="btn btn-secondary" role="button">
             Hủy

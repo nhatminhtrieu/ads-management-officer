@@ -52,8 +52,6 @@ router.get("/manage", async (req, res) => {
     });
   }
 
-  console.log(req.session.authUser)
-
   res.render("vwAds/ads", {
     layout: "ads",
     list: result.data,

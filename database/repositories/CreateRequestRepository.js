@@ -26,13 +26,13 @@ export default class CreateRequestRepository {
 			.lean();
 	}
 
-	async findDataForPage({ offset, limit }) {
-		const data = await this.model.find().populate("location").skip(offset).limit(limit);
+	async findDataForPage({ offset, limit }, entity = {}) {
+		const data = await this.model.find(entity).populate("location").skip(offset).limit(limit);
 		return data;
 	}
 
-	async countAll() {
-		return await this.model.countDocuments();
+	async countAll(entity = {}) {
+		return await this.model.countDocuments(entity);
 	}
 
 	async update(id, entity) {

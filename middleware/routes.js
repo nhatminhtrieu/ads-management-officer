@@ -10,7 +10,7 @@ import ReportTypeRouter from "../routes/reportTypeRoutes.js";
 import LocationRouter from "../routes/locationRoutes.js";
 import DistrictRouter from "../routes/districtRoutes.js";
 import WardRouter from "../routes/wardRoutes.js";
-import ErrorRouter from '../routes/errorRoutes.js'
+import ErrorRouter from "../routes/errorRoutes.js";
 
 export default function (app) {
 	app.get("/", auth, (req, res) => {
@@ -26,8 +26,8 @@ export default function (app) {
 	app.use("/report-type", ReportTypeRouter);
 	app.use("/location", LocationRouter);
 	app.use("/districts", DistrictRouter);
-	app.use("/wards", WardRouter)
-	app.use("/errors", ErrorRouter)
+	app.use("/wards", WardRouter);
+	app.use("/errors", ErrorRouter);
 
 	app.use("*", (req, res) => {
 		res.redirect("/errors/404");

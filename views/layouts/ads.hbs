@@ -38,7 +38,7 @@
             {{! Thể hiện số yêu cầu chưa được phê duyệt, hoặc tạo mới chưa xem gì đó }}
             <span class="badge rounded-pill text-bg-success">5</span>
           </a>
-          {{#ifCond authUser.role '==' '3'}}
+          {{#ifCond authUser.role '===' 3}}
           <a class="list-group-item list-group-item-action" href="/advertisement/type-ad">
             Loại hình quảng cáo
           </a>

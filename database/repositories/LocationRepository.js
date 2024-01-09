@@ -29,8 +29,8 @@ export default class LocationRepository {
     return await this.model.find(entity).populate("format");
   }
 
-  async findAll() {
-    return await this.model.find().populate("format");
+  async findAll(entity={}) {
+    return await this.model.find(entity).populate("format");
   }
 
   async generate() {

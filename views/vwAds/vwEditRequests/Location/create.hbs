@@ -1,0 +1,137 @@
+{{#section "js"}}
+<script type="module">
+  import CustomMap from "/static/js/map/CustomMap.js";
+  import { contentAd } from "/static/js/loadMarker.js";
+  function onMapChange(returnData) {
+    // Hide alert 
+    $('#alert').prop("hidden", true);
+    // If it has '_id' then it comes from database 
+    // If it doesn't have '_id' then it comes from google map 
+    if (returnData && returnData.hasOwnProperty("_id")) {
+      $("#address").attr("value", returnData.address);
+      $("#locationId").attr("value", returnData._id);
+      $('#raw').removeAttr('hidden')
+      $('#rawType').attr("value", returnData.type)
+      $('#rawFormat').attr("value", returnData.format.name)
+      $('#rawZoning').attr("value", returnData.zoning ? 'Đã quy hoạch' : 'Chưa quy hoạch')
+      $('button[type="submit"]').removeClass('disabled')
+    }
+  }
+  const HomeMap = new CustomMap();
+  const list = {{{ json locations }}};
+  HomeMap.init(onMapChange).then(async () => {
+    for (const location of list) {
+      const contentString = contentAd(location);
+      await HomeMap.pushAdMarker(location, location.address, contentString);
+    }
+    HomeMap.setAdCluster();
+    HomeMap.map.addListener("click", (event) => {
+      $("#address").attr("value", "");
+      $("#locationId").attr("value", "");
+      $('#alert').prop("hidden", false);
+	    $('#raw').prop('hidden', true)
+      $('button[type="submit"]').addClass('disabled')
+    });
+  })
+</script>
+<script>
+  $(".disabled").on('keydown paste focus mousedown', function (e) {
+    if (e.keyCode != 9) // ignore tab 
+      e.preventDefault();
+  });
+</script>
+{{/section}}
+
+{{#section "css"}}
+<style>
+  .disabled {
+    pointer-events: none;
+    background-color: #e9ecef;
+  }
+</style>
+{{/section}}
+
+<a class="btn p-0 link-primary" href="/advertisement/edit-request" role="button">
+  <i class="bi bi-caret-left"></i>
+  Trở về
+</a>
+
+<div class="alert alert-danger mt-3" role="alert" id="alert" hidden>
+  Vui lòng chọn điểm đặt quảng cáo đã có trên bảng đồ!
+</div>
+
+<h4 class="mt-3">Yêu cầu chỉnh sửa thông tin điểm đặt quảng cáo</h4>
+<div id="map" style="height:300px; width:100%"></div>
+
+<form method="POST">
+  <!-- Địa chỉ điểm đặt quảng cáo input -->
+  <div class="form-outline mt-3">
+    <label class="form-label">Điểm đặt quảng cáo
+      <div style="display:inline; color:red">*</div>
+    </label>
+    <input type="text" id="address" class="form-control border-2 disabled"
+      placeholder="Vui lòng chọn 1 điểm trên bản đồ" readonly />
+  </div>
+
+  <!-- Hidden input for locationId -->
+  <input type="hidden" id="locationId" name="rawLocation" />
+
+  <div class="form-outline mt-3" hidden id="raw">
+	  <h4 class="mt-3">Thông tin hiện tại</h4>
+    <div class="row g-3">
+      <div class="col">
+        <label class="form-label" for="number">Loại vị trí đặt quảng cáo
+        </label>
+        <input type="text" id="rawType" class="form-control border-2 disabled" readonly />
+      </div>
+      <div class="col">
+        <label class="form-label" for="size">Loại hình quảng cáo
+        </label>
+        <input type="text" id="rawFormat" class="form-control border-2 disabled" readonly />
+      </div>
+	  <div class="col">
+        <label class="form-label" for="size">Thông tin quy hoạch
+        </label>
+        <input type="text" id="rawZoning" class="form-control border-2 disabled" readonly />
+      </div>
+    </div>
+  </div>
+
+  <div class="form-outline mt-3">
+	<h4 class="mt-3">Thông tin mới</h4>
+    <div class="row g-3">
+      <div class="col">
+        <label class="form-label" for="number">Loại vị trí đặt quảng cáo
+        </label>
+        <select id="txtType" class="form-select border-2" name="type" required>
+			{{#each types}}
+			<option value="{{this}}">{{this}}</option>
+			{{/each}}
+		</select>
+      </div>
+      <div class="col">
+        <label class="form-label" for="size">Loại hình quảng cáo
+        </label>
+		<select id="txtFormat" class="form-select border-2" name="format" required>
+			{{#each adsTypes}}
+			<option value="{{this._id}}">{{this.name}}</option>
+			{{/each}}
+		</select>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-outline mt-3">
+    <label class="form-label" for="type">Lý do chỉnh sửa
+      <div style="display:inline; color:red">*</div>
+    </label>
+    <textarea class="form-control border-2" style="height: 100px" name="reason" required></textarea>
+  </div>
+  
+  <div class="text-end">
+    <button type="submit" class="btn btn-primary mt-3 disabled">
+	  <i class="bi bi-send"></i>
+      Gửi yêu cầu
+    </button>
+  </div>
+</form>

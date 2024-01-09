@@ -1,4 +1,4 @@
-# Ads Management Resident Website
+# Ads Management Officer Website
 
 ## Installation
 
@@ -16,12 +16,12 @@
 
    - Run `npm start`.
 
-   - Navigate to `localhost:3456/static/html/map.html`.
+   - Navigate to `localhost:3000`.
 
 ## Folder Structure
 
 ```shell
-ads-management-resident
+ads-management-officer
 ├── database
 │     ├── models
 │     │    └── <ModelName>.js                   # Model's schema declaration
@@ -32,13 +32,14 @@ ads-management-resident
 │     └── <RouteName>.js
 ├── services                                    # Database services declaration
 │     └── <ServiceName>.js
-└── static
-      ├── assets
-      ├── html
-      ├── js                                    # Functions
-      │    ├── ...
-      │    └── service                          # Render services declaration
-      └── style                                 # Styling folder
+├── static                                      
+|     ├── assets                                 
+|     └── js                                    # Function
+├── utils                                       # Helper function
+└── views
+      ├── layouts
+      ├── partials                                    
+      └── <vwName>                                 
 ```
 
 ## Available Scripts

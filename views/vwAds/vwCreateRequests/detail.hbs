@@ -9,16 +9,8 @@
     Map.setCenter({{{ json request.location.coordinate }}}); 
     });
 </script>
-<script>
-    function updatePreview(list) {
-        const previewDiv = $('#preview');
-        list.map((img, index) => {
-            const div = $('<div class="col-4" style="position: relative; max-height: 300px;"></div>')
-            const imgEle = $(`<img src="${img}" style="width: 100%; object-fit: cover; border-radius: 0.375rem;" />`)
-            div.append(imgEle)
-            previewDiv.append(div)
-        })
-    }
+<script type="module">
+    import { updatePreview } from '/static/js/handleImgs.js'
 
     let imgsArr = {{{ json request.advertisement.imgs }}}
 

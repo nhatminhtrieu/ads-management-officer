@@ -41,11 +41,11 @@ const EditRequestSchema = new mongoose.Schema(
         type: Date,
       },
     },
-    createAt: {
+    createdAt: {
       type: Date,
       require: true,
     },
-    createBy: {
+    createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Account",
       required: false,

@@ -24,7 +24,7 @@ Router.get("/", async (req, res) => {
   const limit = 10;
   let options = {};
   if (req.session.authUser.role < 3) {
-    options = { createBy: req.session.authUser._id };
+    options = { createdBy: req.session.authUser._id };
   }
   const result = await pagination(req, service, limit, options);
 
@@ -72,8 +72,8 @@ Router.post("/create/location", authNotDepartmentRole, async (req, res) => {
       type: data.type,
       format: data.format,
     },
-    createAt: new Date(),
-    createBy: req.session.authUser._id,
+    createdAt: new Date(),
+    createdBy: req.session.authUser._id,
     reason: data.reason,
     for: "location",
     accepted: "pending",
@@ -125,8 +125,8 @@ Router.post("/create/advertisement", async (req, res) => {
       start: moment(data.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
       end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
     },
-    createAt: new Date(),
-    createBy: req.session.authUser._id,
+    createdAt: new Date(),
+    createdBy: req.session.authUser._id,
     reason: data.reason,
     for: "advertisement",
     accepted: "pending",

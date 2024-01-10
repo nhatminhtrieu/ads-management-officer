@@ -75,7 +75,10 @@ router.post("/report/create", async (req, res) => {
 			ward: wardId,
 		},
 	};
-	const result = await service.createReport(report);
+	const reportTypeService = new ReportTypesService();
+	var result = await service.createReport(report);
+	const typeReportInfo = await reportTypeService.getReportTypeById(result.typeReport);
+	result = { ...result, typeReportName: typeReportInfo.name };
 	res.send(result);
 });
 

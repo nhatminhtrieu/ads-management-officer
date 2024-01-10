@@ -9,7 +9,7 @@ export default class ReportService {
 	async createReport(data) {
 		try {
 			const report = await this.repository.createReport(data);
-			return report;
+			return report.toObject();
 		} catch (err) {
 			console.log("ReportService.createReport", err);
 		}

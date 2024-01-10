@@ -21,18 +21,6 @@ export function contentReport(report) {
 	return contentString;
 }
 
-// async function getLocations() {
-// 	try {
-// 		const response = await fetch("https://localhost:3000/location/find-all");
-// 		if (!response.ok) {
-// 			throw new Error("Network response was not ok");
-// 		}
-// 		return response.json();
-// 	} catch (error) {
-// 		console.error(error);
-// 	}
-// }
-
 export async function loadAdMarkers(map) {
 	const list = await getLocations();
 	for await (const location of list) {
@@ -40,19 +28,3 @@ export async function loadAdMarkers(map) {
 		map.pushAdMarker(location, location.address, contentString);
 	}
 }
-
-// export async function loadReportMarkers(map) {
-// 	try {
-// 		const response = await fetch("https://localhost:3000/report/all");
-// 		if (!response.ok) {
-// 			throw new Error("Network response was not ok");
-// 		}
-// 		const list = await response.json();
-// 		for await (const report of list) {
-// 			const contentString = contentReport(report);
-// 			map.pushReportMarker(report, report.typeReport, contentString);
-// 		}
-// 	} catch (error) {
-// 		console.error(error);
-// 	}
-// }

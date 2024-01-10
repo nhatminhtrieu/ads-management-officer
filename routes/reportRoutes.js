@@ -11,7 +11,6 @@ const apiKey = process.env.GOOGLE_API_KEY;
 const reportService = new ReportService();
 const reportTypeService = new ReportTypeService();
 import { authDepartmentRole, authNotDepartmentRole } from "../middleware/auth.js";
-import e from "express";
 
 // UI routers declaration
 router.get("/", async (req, res) => {

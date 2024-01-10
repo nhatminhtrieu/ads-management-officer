@@ -11,9 +11,7 @@
             <th scope="col">Tên người gửi</th>
             <th scope="col">Số điện thoại</th>
             <th scope="col" style="width: 40%">Địa điểm báo cáo</th>
-            {{!-- (báo cáo điểm, báo cáo bảng) --}}
             <th scope="col" style="width: 20%">Loại báo cáo</th>
-            <th scope="col">Hình thức báo cáo</th>
             <th scope="col">&nbsp;</th>
         </tr>
     </thead>
@@ -25,7 +23,7 @@
             <td>{{phone}}</td>
             <td>{{address}}</td>
             <td>{{typeReport.name}}</td>
-            <td><a href="/report/manage/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
+            <td class="text-end"><a href="/report/manage/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
         </tr>
         {{/each}}
     </tbody>

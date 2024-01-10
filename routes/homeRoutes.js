@@ -63,16 +63,17 @@ router.get("/", auth, async (req, res) => {
 			}
 		});
 	}
-	console.log(reports);
 	if (reports === null) reports = [];
+	if (!Array.isArray(reports)) reports = [reports];
 	if (reports.length > 0) {
 		reports = await Promise.all(reports.map(async (report) => {
 			const reportType = (await reportTypeService.getReportTypeById(report.typeReport)).toObject();
 			const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${report.coordinate.lat},${report.coordinate.lng}&key=${apiKey}`);
 			const data = await response.json();
 			const address = data.results[0] ? data.results[0].formatted_address : "";
+			const reportData = report instanceof mongoose.Document ? report.toObject() : report;
 			const newItem = {
-				...report.toObject(),
+				...reportData,
 				typeReportName: reportType.name,
 				address
 			};

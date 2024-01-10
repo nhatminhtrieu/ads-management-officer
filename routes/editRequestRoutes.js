@@ -1,5 +1,6 @@
 import express from "express";
 import moment from "moment";
+import nodemailer from "nodemailer";
 
 import LocationService from "../services/LocationService.js";
 import EditRequestService from "../services/EditRequestService.js";
@@ -35,6 +36,7 @@ Router.get("/", async (req, res) => {
     totalPage: result.totalPage,
     page: result.page,
     pageNumbers: result.pageNumbers,
+    message: req.session.message || "",
   });
 });
 
@@ -177,8 +179,48 @@ Router.post("/delete", async (req, res) => {
   res.redirect("/advertisement/edit-request");
 });
 
+function sendEmail(email, request, accepted) {
+  var transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "bddquan@gmail.com",
+      pass: "wjge iflg rmzs nghh",
+    },
+  });
+  var mainOptions = {
+    from: "JCXDC Team",
+    to: email,
+    subject: "Cập nhật tình trạng xét duyệt yêu cầu chỉnh sửa",
+    text: "Bạn nhận được tin nhắn này từ đội ngũ phát triển website - JCXDC team ",
+    html: `<div style="border-bottom:1px solid #eee"> \
+            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
+        </div> \
+        <p style="font-size:1.1em">Xin chào,</p> \
+        <p>Yêu cầu chỉnh sửa về ${
+          request.for == "location" ? "điểm quảng cáo" : "bảng quảng cáo"
+        } tại <b>${request.rawLocation.address}</b> của bạn vừa ${
+      accepted ? "được" : "bị"
+    }</p>\
+        <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${
+          accepted ? "Chấp nhận" : "Từ chối"
+        }</h2> \
+        <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
+        <hr style="border:none;border-top:1px solid #eee" /> \
+        <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
+            <p>JCXDC team</p> \
+            <p>HCM City</p> \
+        </div>`,
+  };
+  transporter.sendMail(mainOptions, (err, info) => {
+    if (err) console.log(err);
+  });
+}
+
 Router.post("/approve", authDepartmentRole, async (req, res) => {
   const request = await service.findById(req.body.id);
+  if (request.createdBy.email)
+    sendEmail(request.createdBy.email, request, true);
+  else req.session.message = "Cán bộ tạo yêu cầu chỉnh sửa không có email";
 
   if (request.for == "location") {
     await locationService.updateLocation(request.rawLocation, request.location);
@@ -194,6 +236,11 @@ Router.post("/approve", authDepartmentRole, async (req, res) => {
 });
 
 Router.post("/reject", authDepartmentRole, async (req, res) => {
+  const request = await service.findById(req.body.id);
+  if (request.createdBy.email)
+    sendEmail(request.createdBy.email, request, false);
+  else req.session.message = "Cán bộ tạo yêu cầu chỉnh sửa không có email";
+
   await service.rejectEditRequest(req.body.id);
   res.redirect("/advertisement/edit-request");
 });

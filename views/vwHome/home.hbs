@@ -5,9 +5,10 @@
 {{#section "js"}}
 <script type="module">
 	import CustomMap from "/static/js/map/CustomMap.js";
-	import { contentAd } from "/static/js/loadMarker.js";
+	import { contentAd, contentReport } from "/static/js/loadMarker.js";
+	import { updatePreview } from "/static/js/handleImgs.js";
 
-	function getAdsData(id){
+	function getAdsData(id) {
 		var result = [];
 		$.ajax({
 			url: "advertisement/find-all-by-location/" + id,
@@ -23,29 +24,31 @@
 		// Reset tab content to default
 		$("#nav-ads").html("Chưa có thông tin về điểm đặt và bảng quảng cáo");
 		$("#nav-report").html("Chưa có thông tin về báo cáo của người dân");
-		
+
 		// If no returnData then user click X on infoWindow
 		if (!returnData) return;
 		// Else continue
 
-		const adsData = getAdsData(returnData._id)
+		// Advertisement and location
+		if (!returnData.typeReport) {
+			const adsData = getAdsData(returnData._id)
 
-		// Handle data change
-		const adsButton = document.querySelector('button[id="nav-ads-tab"]')
-		
-		// Reformat data
-		returnData.zoning = returnData.zoning === true ? "Đã quy hoạch" : "Chưa quy hoạch"
+			// Handle data change
+			const adsButton = document.querySelector('button[id="nav-ads-tab"]')
 
-		// Big card
-		const card = document.createElement("div");
-		card.style.height = "100%";
-		card.style.display = "flex";
-		card.style.flexDirection = "column";
+			// Reformat data
+			returnData.zoning = returnData.zoning === true ? "Đã quy hoạch" : "Chưa quy hoạch"
 
-		// Upper card
-		const upperCard = document.createElement("div");
-		upperCard.classList.add("card");
-		upperCard.innerHTML = `	
+			// Big card
+			const card = document.createElement("div");
+			card.style.height = "100%";
+			card.style.display = "flex";
+			card.style.flexDirection = "column";
+
+			// Upper card
+			const upperCard = document.createElement("div");
+			upperCard.classList.add("card");
+			upperCard.innerHTML = `	
 			<div class="card-header" style="display: flex; justify-content: space-between;">
 				<h5> Thông tin điểm đặt quảng cáo </h5>
 				<a class="btn link-primary" href="/advertisement/ad-location/${returnData._id}" role="button">
@@ -61,29 +64,29 @@
 			</div>
 		`;
 
-		// Lower card
-		const lowerCard = document.createElement("div");
-		lowerCard.classList.add("card", "mt-2");
-		lowerCard.style.flexGrow = "1";
-		lowerCard.style.overflow = "auto";
-		const lowerCardHeader = document.createElement("h5");
-		lowerCardHeader.classList.add("card-header");
-		lowerCardHeader.innerHTML = "Thông tin các bảng quảng cáo";
-		lowerCard.appendChild(lowerCardHeader);
+			// Lower card
+			const lowerCard = document.createElement("div");
+			lowerCard.classList.add("card", "mt-2");
+			lowerCard.style.flexGrow = "1";
+			lowerCard.style.overflow = "auto";
+			const lowerCardHeader = document.createElement("h5");
+			lowerCardHeader.classList.add("card-header");
+			lowerCardHeader.innerHTML = "Thông tin các bảng quảng cáo";
+			lowerCard.appendChild(lowerCardHeader);
 
-		const lowerCardBody = document.createElement("div");
-		lowerCardBody.classList.add("card-body");
-		lowerCardBody.style.overflowY = "scroll";
-		lowerCardBody.style.padding = "0px";
-		const rowBody = document.createElement("div");
-		rowBody.classList.add("d-flex", "flex-wrap");
+			const lowerCardBody = document.createElement("div");
+			lowerCardBody.classList.add("card-body");
+			lowerCardBody.style.overflowY = "scroll";
+			lowerCardBody.style.padding = "0px";
+			const rowBody = document.createElement("div");
+			rowBody.classList.add("d-flex", "flex-wrap");
 
-		for (const item of adsData) {
-			const unitCard = document.createElement("div");
-			unitCard.classList.add("p-2", "m-2");
-			unitCard.style.width = 'calc(50% - 16px)';
-			unitCard.classList.add("card");
-			unitCard.innerHTML = `
+			for (const item of adsData) {
+				const unitCard = document.createElement("div");
+				unitCard.classList.add("p-2", "m-2");
+				unitCard.style.width = 'calc(50% - 16px)';
+				unitCard.classList.add("card");
+				unitCard.innerHTML = `
 				<h5> ${item.typeBoard} </h5>
 				<div> <b>Số lượng: </b> ${item.number} </div>
 				<div> <b>Kích thước: </b> ${item.size} </div>
@@ -95,39 +98,64 @@
 					</a>
 			</div>
 			`;
-			rowBody.appendChild(unitCard);
+				rowBody.appendChild(unitCard);
+			}
+
+			if (adsData.length === 0) {
+				const emptyCard = document.createElement("div");
+				emptyCard.classList.add("p-2", "m-2");
+				emptyCard.innerHTML = "Chưa có thông tin về bảng quảng cáo";
+				rowBody.appendChild(emptyCard);
+			}
+
+			lowerCardBody.appendChild(rowBody);
+			lowerCard.appendChild(lowerCardBody);
+
+			// Append to big card
+			card.appendChild(upperCard);
+			card.appendChild(lowerCard);
+
+			// Append to tab content
+			$("#nav-ads").html(card);
 		}
+		// Report 
+		else {
+			const reportButton = document.querySelector('button[id="nav-report-tab"]')
+			const card = document.createElement("div");
 
-		if (adsData.length === 0)
-		{
-			const emptyCard = document.createElement("div");
-			emptyCard.classList.add("p-2", "m-2");
-			emptyCard.innerHTML = "Chưa có thông tin về bảng quảng cáo";
-			rowBody.appendChild(emptyCard);
+			card.classList.add("card");
+			card.innerHTML = `
+			<div class="card-header" style="display: flex; justify-content: space-between;">
+				<h5> Thông tin báo cáo </h5>
+				<a class="btn link-primary" href="/report/manage/${returnData._id}" role="button">
+					<i class="bi bi-eye"></i>
+					Chi tiết
+				</a>
+			</div>
+			<div class="card-body">
+				<div> <b>Tên người gửi: </b> ${returnData.name} </div>
+				<div> <b>Số điện thoại: </b> ${returnData.phone} </div>
+				<div> <b>Địa điểm báo cáo: </b> ${returnData.address} </div>
+				<div> <b>Loại báo cáo: </b> ${returnData.typeReportName} </div>
+				<div style="display: flex; justify-content: space-between;" id='preview'>
+				</div>
+			</div>`;
+			$("#nav-report").html(card);
+			updatePreview(returnData.imgs);
 		}
-
-		lowerCardBody.appendChild(rowBody);
-		lowerCard.appendChild(lowerCardBody);
-
-		// Append to big card
-		card.appendChild(upperCard);
-		card.appendChild(lowerCard);
-
-		// Append to tab content
-		$("#nav-ads").html(card);
-		
-		const reportButton = document.querySelector('button[id="nav-report-tab"]')
-		reportButton.addEventListener('shown.bs.tab', function (event) {
-			$("#nav-report").html("Có thì thêm sau...");
-		})
 	}
 
 	const HomeMap = new CustomMap();
-	const list = {{{ json locations }}};
+	const locationList = {{{ json locations }}};
+	const reportList = {{{ json reports }}}
 	HomeMap.init(onMapChange).then(async () => {
-		for (const location of list) {
+		for (const location of locationList) {
 			const contentString = contentAd(location);
 			await HomeMap.pushAdMarker(location, location.address, contentString);
+		}
+		for (const report of reportList) {
+			const contentString = contentReport(report);
+			await HomeMap.pushReportMarker(report, report.address, contentString);
 		}
 		HomeMap.setAdCluster();
 	});
@@ -145,10 +173,11 @@
 		<div class="col-6 p-0 px-2 pt-2" style="height: calc(100vh - 120px)">
 			{{! Button nav }}
 			<div class="btn-group nav nav-tabs w-100" role="group">
-				<button class="btn btn-outline-primary active" id="nav-ads-tab" data-bs-toggle="tab" data-bs-target="#nav-ads" type="button"
-					role="tab" aria-selected="true">Thông tin vị trí</button>
-				<button class="btn btn-outline-primary" id="nav-report-tab" data-bs-toggle="tab" data-bs-target="#nav-report" type="button"
-					role="tab" aria-selected="false">Báo cáo của người dân</button>
+				<button class="btn btn-outline-primary active" id="nav-ads-tab" data-bs-toggle="tab"
+					data-bs-target="#nav-ads" type="button" role="tab" aria-selected="true">Thông tin vị trí</button>
+				<button class="btn btn-outline-primary" id="nav-report-tab" data-bs-toggle="tab"
+					data-bs-target="#nav-report" type="button" role="tab" aria-selected="false">Báo cáo của người
+					dân</button>
 			</div>
 
 			{{! Tab content }}

@@ -43,14 +43,20 @@ export default class ReportService {
 		return report;
 	}
 
-	async findTotalPages() {
-		const total = await this.repository.findTotalPages();
-		return total;
+	async findTotalPages({ limit }, options = {}) {
+		try {
+			const total = await this.repository.findTotalPages(options);
+			const totalPages = Math.ceil(total / limit);
+			return totalPages;
+		} catch (err) {
+			console.log(err)
+		}
 	}
 
-	async findDataForPage({ offset, limit }) {
+	async findDataForPage({ offset, limit }, options = {}) {
 		try {
-			const rawData = await this.repository.findDataForPage({ offset, limit });
+			const rawData = await this.repository.findDataForPage({ offset, limit }, options);
+			
 			const data = rawData.map((item, index) => {
 				const newItem = {
 					_id: item._id,

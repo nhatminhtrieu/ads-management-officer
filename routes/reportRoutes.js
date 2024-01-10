@@ -5,16 +5,52 @@ import ReportService from "../services/ReportService.js";
 import { pagination } from "../utils/pagination.js";
 import moment from "moment";
 import nodemailer from "nodemailer";
+import mongoose, { Types } from "mongoose";
 
 const apiKey = process.env.GOOGLE_API_KEY;
 const reportService = new ReportService();
 const reportTypeService = new ReportTypeService();
 import { authDepartmentRole, authNotDepartmentRole } from "../middleware/auth.js";
+import e from "express";
 
 // UI routers declaration
 router.get("/", async (req, res) => {
 	const limit = parseInt(req.query.limit) || 10;
-	const paginatedReports = await pagination(req, reportService, limit);
+	var options = {};
+
+	switch (req.session.authUser.role) {
+		case 1:
+			options = 
+				{
+					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+					"area.ward":  new mongoose.Types.ObjectId(req.session.authUser.ward),
+				};
+			break;
+		case 2:
+			let fav_list = []
+			if (req.session.authUser.fav_list.length === 0) {
+				options = 
+				{
+					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+				};
+			} else {
+				for (const item of req.session.authUser.fav_list) {
+					fav_list.push(new mongoose.Types.ObjectId(item))
+					options
+				}
+				options = 
+				{
+					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+					"area.ward": { $in: fav_list },
+				}
+			}
+			break;
+		default:
+			options = {}
+			break;
+	}
+
+	const paginatedReports = await pagination(req, reportService, limit, options);
 
 	for (let report of paginatedReports.data) {
 		// Populate the typeReport field

@@ -33,14 +33,19 @@ class ReportRepository {
 		return await this.model.findOne(entity);
 	}
 
-	async findTotalPages() {
-		const total = await this.model.countDocuments();
-		return total;
+	async findTotalPages(options) {
+		try {
+			const count = await this.model.countDocuments(options);
+			return count;
+		} catch (err) {
+			console.log("findTotalPages", err);
+			throw err;
+		}
 	}
 
-	async findDataForPage({ offset, limit }) {
+	async findDataForPage({ offset, limit }, options) {
 		try {
-			const rawData = await this.model.find({}).skip(offset).limit(limit).lean();
+			const rawData = await this.model.find(options).skip(offset).limit(limit).lean();
 			return rawData;
 		} catch (err) {
 			console.log("findDataForPage", err);

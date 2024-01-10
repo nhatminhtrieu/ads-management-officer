@@ -29,6 +29,7 @@ jobs:
           source ~/.nvm/nvm.sh
           
           cd ~/ads-management-officer/
+          git reset --hard
           git pull
           npm i
           pm2 delete AMO

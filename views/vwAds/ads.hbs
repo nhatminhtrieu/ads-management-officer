@@ -15,19 +15,41 @@
 			<th scope="col" style="width: 50%">Địa chỉ</th>
 			<th scope="col">Loại bảng quảng cáo</th>
 			<th scope="col">Kích thước</th>
-			<th scope="col">&nbsp;</th>
+			<th scope="col" style="width: 8rem">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
+		{{#ifCond authUser.role '!==' 3 }}
 		{{#each this.list}}
 		<tr>
 			<th scope="row">{{index}}</th>
 			<td>{{address}}</td>
 			<td>{{typeBoard}}</td>
 			<td>{{size}}</td>
-			<td><a href="/advertisement/manage/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
+			<td class="row h-100">
+				<a href="/advertisement/request/create/{{_id}}" style="text-decoration: none"
+					class="mb-1 text-success"><i class="bi bi-send me-1"></i>Yêu cầu</a>
+
+				<a href="/advertisement/manage/{{_id}}" style="text-decoration: none"><i
+						class="bi bi-arrows-angle-expand me-1"></i>Xem chi tiết</a>
+			</td>
 		</tr>
 		{{/each}}
+		{{/ifCond}}
+		{{#ifCond authUser.role '===' 3 }}
+		{{#each this.list}}
+		<tr>
+			<th scope="row">{{index}}</th>
+			<td>{{address}}</td>
+			<td>{{typeBoard}}</td>
+			<td>{{size}}</td>
+			<td>
+				<a href="/advertisement/manage/{{_id}}" style="text-decoration: none"><i
+						class="bi bi-arrows-angle-expand me-1"></i>Xem chi tiết</a>
+			</td>
+		</tr>
+		{{/each}}
+		{{/ifCond}}
 	</tbody>
 </table>
 {{> pagination href="/advertisement/manage" page=page totalPage=totalPage pageNumbers=pageNumbers}}

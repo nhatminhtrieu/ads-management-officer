@@ -1,20 +1,12 @@
 import moment from "moment";
-import CreateRequestRepository from "../database/repositories/CreateRequestRepository.js";
+import RequestRepository from "../database/repositories/RequestRepository.js";
 
-export default class CreateRequestService {
+export default class RequestService {
 	constructor() {
-		this.repository = new CreateRequestRepository();
+		this.repository = new RequestRepository();
 	}
 
 	async createRequest(newReq) {
-		const advertisement = {
-			TypeBoard: newReq.typeBoard,
-			size: newReq.size,
-			number: newReq.number,
-			imgs: newReq.imgs,
-			start: moment(newReq.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
-			end: moment(newReq.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
-		};
 		const company = {
 			name: newReq.comName,
 			address: newReq.comAddress,
@@ -22,8 +14,10 @@ export default class CreateRequestService {
 			phone: newReq.comPhone,
 		};
 		const newRequest = {
-			advertisement,
-			location: newReq.location,
+			advertisement: newReq.advertisement,
+			start: newReq.start,
+			end: newReq.end,
+			imgs: newReq.imgs,
 			createdBy: newReq.createdBy,
 			company,
 		};
@@ -34,7 +28,7 @@ export default class CreateRequestService {
 		return await this.repository.add(newRequest);
 	}
 
-	async getAllCreateRequests() {
+	async getAllRequests() {
 		const list = await this.repository.getAll();
 		return list;
 	}
@@ -45,7 +39,7 @@ export default class CreateRequestService {
 			const totalPages = Math.ceil(totalItems / limit);
 			return totalPages;
 		} catch (err) {
-			console.log("CreateRequestService.findTotalPages", err);
+			console.log("RequestService.findTotalPages", err);
 		}
 	}
 
@@ -59,7 +53,7 @@ export default class CreateRequestService {
 			});
 			return data;
 		} catch (err) {
-			console.log("CreateRequestService.findDataForPage", err);
+			console.log("RequestService.findDataForPage", err);
 		}
 	}
 
@@ -72,16 +66,16 @@ export default class CreateRequestService {
 		return request;
 	}
 
-	async deleteCreateRequest(id) {
+	async deleteRequest(id) {
 		return await this.repository.delete({ _id: id });
 	}
 
-	async approveCreateRequest(id) {
+	async approveRequest(id) {
 		// Chờ service của location để tạo bảng quảng cáo mới
 		return await this.repository.update(id, { accepted: "approved" });
 	}
 
-	async rejectCreateRequest(id) {
+	async rejectRequest(id) {
 		return await this.repository.update(id, { accepted: "rejected" });
 	}
 }

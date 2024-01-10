@@ -1,87 +1,84 @@
 {{#section "js"}}
-  <script type="module">
-    import CustomMap from "/static/js/map/CustomMap.js"; 
-	  import { contentAd } from "/static/js/loadMarker.js";
-    import { readAsDataURL, updateHidden, checkFilesSize, handleDelImg, updatePreview } from '/static/js/handleImgs.js'
+<script type="module">
+  import CustomMap from "/static/js/map/CustomMap.js";
+  import { contentAd } from "/static/js/loadMarker.js";
+  import { readAsDataURL, updateHidden, checkFilesSize, handleDelImg, updatePreview } from '/static/js/handleImgs.js'
 
-    const HomeMap = new CustomMap();
-      HomeMap.init().then(() => { 
-      const contentString = contentAd({{{json location }}}); 
-      HomeMap.pushAdMarker({{{json location}}}, {{{json location.address}}}, contentString); 
-      HomeMap.setCenter({{{json location.coordinate }}}); 
+  const HomeMap = new CustomMap();
+  HomeMap.init().then(() => {
+    const contentString = contentAd({{{ json location }}});
+  HomeMap.pushAdMarker({{{ json location }}}, {{{ json location.address }}}, contentString);
+  HomeMap.setCenter({{{ json location.coordinate }}}); 
     });
 
-    let imgsArr = {{{json ad.imgs}}}
+  let imgsArr = {{{ json ad.imgs }}}
 
-    window.onload = function () { 
-      updatePreview(imgsArr)
-      updateHidden(imgsArr)
-    } 
+  window.onload = function () {
+    updatePreview(imgsArr)
+    updateHidden(imgsArr)
+  }
 
-    $("#edit").click(function () { 
-      $('#typeBoard').prop("disabled", false); 
-      $('#typeBoard').prop("required", true); 
-      $('#number').prop("disabled", false); 
-      $('#size').prop("disabled", false); 
-      $('#file').prop("disabled", false);
-      $('#deleteButton').prop("hidden", false);
-      $('#edit').prop("hidden", true);
-      $('#fnButton').show(); 
-      document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
-      $('#start').prop("disabled", false); 
-      $('#end').prop("disabled", false);
-      $('#file').prop('hidden', false)
-    }); 
-    $("#cancelButton").click(function () {
-        window.location.reload(); 
-    }); 
-    $("#deleteButton").click(function (e) {
-      e.preventDefault(); 
-      $.post("/advertisement/manage/delete/{{ad._id}}", function (response) { 
-        window.location.href = '/advertisement/manage'; 
-      }) 
-    });
-
-    $('input#file').on('change', async (e) => { 
-      const files = Array.from(e.currentTarget.files); 
-      if (files.length && checkFilesSize(imgsArr, files)) { 
-        const images = await Promise.all(files.map((file) => {
-          return readAsDataURL(file)
-        }))
-        
-        imgsArr.push(images)
-        updatePreview(imgsArr, false)
-        updateHidden(imgsArr)
-      } 
+  $("#edit").click(function () {
+    $('#typeBoard').prop("disabled", false);
+    $('#typeBoard').prop("required", true);
+    $('#number').prop("disabled", false);
+    $('#size').prop("disabled", false);
+    $('#file').prop("disabled", false);
+    $('#deleteButton').prop("hidden", false);
+    $('#edit').prop("hidden", true);
+    $('#fnButton').show();
+    document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
+    $('#start').prop("disabled", false);
+    $('#end').prop("disabled", false);
+    $('#file').prop('hidden', false)
+  });
+  $("#cancelButton").click(function () {
+    window.location.reload();
+  });
+  $("#deleteButton").click(function (e) {
+    e.preventDefault();
+    $.post("/advertisement/manage/delete/{{ad._id}}", function (response) {
+      window.location.href = '/advertisement/manage';
     })
-  </script>
-  {{!-- Datetimepicker --}}
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
-  ></script>
-  <script>
-    $('#start').datetimepicker({ 
-      timepicker: false, 
-      format: 'd/m/Y', 
-      mask: true,
-      scrollMonth: false, 
-      scrollInput: false, 
-    }); 
-    $('#end').datetimepicker({
-      imepicker: false, 
-      format: 'd/m/Y', 
-      mask: true, 
-      scrollMonth: false,
-      scrollInput: false,
-    });
-  </script>
+  });
+
+  $('input#file').on('change', async (e) => {
+    const files = Array.from(e.currentTarget.files);
+    if (files.length && checkFilesSize(imgsArr, files)) {
+      const images = await Promise.all(files.map((file) => {
+        return readAsDataURL(file)
+      }))
+
+      imgsArr.push(images)
+      updatePreview(imgsArr, false)
+      updateHidden(imgsArr)
+    }
+  })
+</script>
+{{!-- Datetimepicker --}}
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script>
+  $('#start').datetimepicker({
+    timepicker: false,
+    format: 'd/m/Y',
+    mask: true,
+    scrollMonth: false,
+    scrollInput: false,
+  });
+  $('#end').datetimepicker({
+    imepicker: false,
+    format: 'd/m/Y',
+    mask: true,
+    scrollMonth: false,
+    scrollInput: false,
+  });
+</script>
 {{/section}}
 
 {{#section "css"}}
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
-  />
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
 {{/section}}
 
 <a class="btn p-0 link-primary" href="/advertisement/manage" role="button">
@@ -101,25 +98,19 @@
     </div>
     {{/ifCond}}
   </div>
-  
+
   <div class="mt-3">
-    <button type="submit" class="btn btn-primary mt-3">
+    <a href="/advertisement/request/create/{{ad._id}}" class="btn btn-primary mt-3">
       <i class="bi bi-send"></i>
       Gửi yêu cầu cấp phép
-    </button>
+    </a>
   </div>
 </div>
 
 <form method="POST">
   <div class="form-outline mt-3">
     <label class="form-label" for="address">Địa chỉ</label>
-    <input
-      type="text"
-      id="address"
-      class="form-control border-2"
-      value="{{location.address}}"
-      disabled
-    />
+    <input type="text" id="address" class="form-control border-2" value="{{location.address}}" disabled />
   </div>
 
   <div id="hiddenImgsInput"></div>
@@ -128,7 +119,7 @@
     <label class="form-label" for="typeBoard">Loại bảng quảng cáo</label>
     <select id="typeBoard" class="form-select border-2" name="typeBoard" required disabled>
       {{#each typeBoards}}
-        <option value="{{name}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
+      <option value="{{name}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
       {{/each}}
     </select>
   </div>
@@ -136,44 +127,21 @@
     <div class="row g-3">
       <div class="col">
         <label class="form-label" for="number">Số lượng</label>
-        <input
-          type="text"
-          id="number"
-          class="form-control border-2"
-          name="number"
-          value="{{ad.number}}"
-          disabled
-        />
+        <input type="text" id="number" class="form-control border-2" name="number" value="{{ad.number}}" disabled />
       </div>
       <div class="col">
         <label class="form-label" for="size">Kích thước</label>
-        <input
-          type="text"
-          id="size"
-          class="form-control border-2"
-          name="size"
-          value="{{ad.size}}"
-          disabled
-        />
+        <input type="text" id="size" class="form-control border-2" name="size" value="{{ad.size}}" disabled />
       </div>
     </div>
   </div>
   <div class="form-outline mt-3">
     <label class="form-label" for="type">Hình ảnh bảng quảng cáo</label>
-    <input
-      type="file"
-      id="file"
-      class="form-control border-2"
-      name="file"
-      aria-describedby="fileHelp"
-		  accept="image/*"
-      multiple
-      disabled
-      hidden
-    />
+    <input type="file" id="file" class="form-control border-2" name="file" aria-describedby="fileHelp" accept="image/*"
+      multiple disabled hidden />
     <div id="fileHelp" class="invalid-feedback">
-		Tổng dung lượng các hình tối đa 10MB.
-	</div>
+      Tổng dung lượng các hình tối đa 10MB.
+    </div>
     <div class="mt-3 row flex-nowrap overflow-auto" id="preview">
     </div>
   </div>
@@ -181,25 +149,12 @@
     <div class="row g-3">
       <div class="col">
         <label class="form-label" for="start">Ngày bắt đầu</label>
-        <input
-          type="text"
-          id="start"
-          class="form-control border-2"
-          name="start"
-          value="{{formatDays.start}}"
-          disabled
-        />
+        <input type="text" id="start" class="form-control border-2" name="start" value="{{formatDays.start}}"
+          disabled />
       </div>
       <div class="col">
         <label class="form-label" for="end">Ngày kết thúc</label>
-        <input
-          type="text"
-          id="end"
-          class="form-control border-2"
-          name="end"
-          value="{{formatDays.end}}"
-          disabled
-        />
+        <input type="text" id="end" class="form-control border-2" name="end" value="{{formatDays.end}}" disabled />
       </div>
     </div>
   </div>

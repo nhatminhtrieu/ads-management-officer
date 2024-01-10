@@ -35,7 +35,15 @@ router.get("/report/detail", async (req, res) => {
 	const id = req.query.id;
 	const service = new ReportService();
 	const report = await service.findReportById(id);
-	res.send(report);
+
+	const reportTypeService = new ReportTypesService();
+	var result = await service.createReport(report);
+	if (result) {
+		const typeReportInfo = await reportTypeService.getReportTypeById(result.typeReport);	
+		result = { ...result, typeReportName: typeReportInfo.name };
+	}
+
+	res.send(result);
 });
 
 router.post("/report/create", async (req, res) => {

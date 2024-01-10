@@ -5,25 +5,29 @@ export default class ReportTypesService {
         this.repository = new ReportTypeRepository()
     }
 
-    async addReportType(newType){
+    async addReportType(newType) {
         const isExist = await this.repository.findByEntity(newType);
 
         if (isExist) {
-            return {error: "Report type already exists"};
+            return { error: "Report type already exists" };
         }
 
         return await this.repository.add(newType);
     }
 
-    async getAllReportTypes(){
+    async getAllReportTypes() {
         return await this.repository.getAll();
     }
 
-    async deleteReportType(type){
+    async getReportTypeById(id) {
+        return await this.repository.findByEntity({ _id: id });
+    }
+
+    async deleteReportType(type) {
         return await this.repository.delete(type);
     }
 
-    async updateReportType({oldName, newName}){
-        return await this.repository.update({oldName, newName});
+    async updateReportType({ oldName, newName }) {
+        return await this.repository.update({ oldName, newName });
     }
 }

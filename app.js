@@ -98,10 +98,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser(function (user, done) {
-	done(null, user);
+  done(null, user);
 });
 passport.deserializeUser(function (obj, done) {
-	done(null, obj);
+  done(null, obj);
 });
 app.use(function (req, res, next) {
   if (typeof req.session.isAuthenticated === "undefined") {
@@ -131,7 +131,7 @@ const credentials = { key: privateKey, cert: certificate, ca: ca };
 const httpsServer = https.createServer(credentials, app);
 
 Connection().then(() => {
-	httpsServer.listen(port, () => {
-		console.log(`App is running on https://127.0.0.1:${port}`);
-	});
+  httpsServer.listen(port, () => {
+    console.log(`App is running on https://127.0.0.1:${port}`);
+  });
 });

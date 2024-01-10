@@ -1,17 +1,15 @@
 import { Schema, model } from "mongoose";
+import ReportTypes from "./ReportTypes.js";
 
 const ReportSchema = new Schema(
 	{
-		id: {
-			type: Schema.Types.ObjectId,
-		},
 		coordinate: {
 			type: Object,
 			required: true,
 		},
 		typeReport: {
-			type: String,
-			enum: ["Tố giác sai phạm", "Đăng ký nội dung", "Đóng góp ý kiến", "Giải đáp thắc mắc"],
+			type: Schema.Types.ObjectId,
+			ref: ReportTypes,
 			required: true,
 		},
 		email: {
@@ -41,8 +39,17 @@ const ReportSchema = new Schema(
 		},
 		type: {
 			type: String,
-			enum: ["issued", "resolved"],
-			default: "issue",
+			enum: ["Đã tiếp nhận", "Đã xử lý"],
+			default: "Đã tiếp nhận",
+			required: true,
+		},
+		createAt: {
+			type: Date,
+			default: Date.now,
+			required: true,
+		},
+		area: {
+			type: Object,
 			required: true,
 		},
 	},

@@ -1,7 +1,11 @@
 import { Schema, model } from "mongoose";
 
 const ReportTypeSchema = new Schema({
-    name: String,
+    name: {
+        type: String,
+        enum: ["Tố giác sai phạm", "Đăng ký nội dung", "Đóng góp ý kiến", "Giải đáp thắc mắc"],
+        required: true,
+    },
 }, {
     versionKey: false,
 });

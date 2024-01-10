@@ -29,6 +29,10 @@ class ReportRepository {
 		return await this.model.find(entity);
 	}
 
+	async findOne(entity){
+		return await this.model.findOne(entity);
+	}
+
 	async findTotalPages() {
 		const total = await this.model.countDocuments();
 		return total;

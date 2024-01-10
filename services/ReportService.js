@@ -39,7 +39,7 @@ export default class ReportService {
 	}
 
 	async findReportById(id) {
-		const report = await this.repository.findByEntity({ _id: id });
+		const report = await this.repository.findOne({ _id: id });
 		return report;
 	}
 

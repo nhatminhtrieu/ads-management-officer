@@ -23,6 +23,7 @@ export function updateHidden(images) {
 }
 
 // Update div for preview imgs
+// hidden true for hide del btn
 export function updatePreview(imgsArr, hidden = true, query = "#preview") {
 	$(query).empty();
 

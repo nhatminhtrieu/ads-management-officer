@@ -39,13 +39,18 @@ Router.get("/", async (req, res) => {
 });
 
 Router.get("/create/location", authNotDepartmentRole, async (req, res) => {
+  const { id } = req.query;
   const user = req.session.authUser;
   const option = {
     "area.district": new mongoose.Types.ObjectId(user.district),
   };
-  if (user.role == "1") option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
+  if (user.role == "1")
+    option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
 
-  const locations = await locationService.findAllLocations(option);
+  const locations = id
+    ? await locationService.find({ _id: new mongoose.Types.ObjectId(id) })
+    : await locationService.findAllLocations(option);
+
   const types = [
     "Đất công/Công viên/Hành lang an toàn giao thông",
     "Đất tư nhân/Nhà ở riêng lẻ",
@@ -85,13 +90,29 @@ Router.post("/create/location", authNotDepartmentRole, async (req, res) => {
 });
 
 Router.get("/create/advertisement", authNotDepartmentRole, async (req, res) => {
+  const { id } = req.query;
   const user = req.session.authUser;
   const option = {
     "area.district": new mongoose.Types.ObjectId(user.district),
   };
-  if (user.role == "1") option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
+  if (user.role == "1")
+    option["area.ward"] = new mongoose.Types.ObjectId(user.ward);
 
-  const locations = await locationService.findAllLocations(option);
+  let locations = [];
+  let advertisement = {};
+  if (id) {
+    const list = await advertisementService.find({
+      _id: new mongoose.Types.ObjectId(id),
+    });
+    advertisement = { ...list[0] };
+    advertisement = advertisement._doc;
+    delete advertisement._id;
+    advertisement._id = id;
+    locations.push(list[0].location);
+  } else {
+    locations = await locationService.findAllLocations(option);
+  }
+
   const list = [
     "Trụ bảng hiflex",
     "Trụ màn hình điện tử LED",
@@ -108,6 +129,7 @@ Router.get("/create/advertisement", authNotDepartmentRole, async (req, res) => {
   res.render("vwAds/vwEditRequests/Advertisement/create", {
     layout: "ads",
     locations,
+    advertisement,
     list,
   });
 });
@@ -122,8 +144,6 @@ Router.post("/create/advertisement", async (req, res) => {
       number: data.number,
       size: data.size,
       imgs: data.imgs,
-      start: moment(data.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
-      end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
     },
     createdAt: new Date(),
     createdBy: req.session.authUser._id,
@@ -163,17 +183,9 @@ Router.post("/approve", authDepartmentRole, async (req, res) => {
   if (request.for == "location") {
     await locationService.updateLocation(request.rawLocation, request.location);
   } else {
-    const entity = {
-      ...request.advertisement,
-      start: moment(request.advertisement.start, "DD/MM/YYYY").format(
-        "YYYY-MM-DD"
-      ),
-      end: moment(request.advertisement.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
-    };
-
     await advertisementService.updateAdvertisement(
       request.rawAdvertisement,
-      entity
+      request.advertisement
     );
   }
 

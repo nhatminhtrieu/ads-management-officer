@@ -28,8 +28,6 @@
     $('#edit').prop("hidden", true);
     $('#fnButton').show();
     document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
-    $('#start').prop("disabled", false);
-    $('#end').prop("disabled", false);
     $('#file').prop('hidden', false)
   });
   $("#cancelButton").click(function () {
@@ -55,30 +53,6 @@
     }
   })
 </script>
-{{!-- Datetimepicker --}}
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-<script>
-  $('#start').datetimepicker({
-    timepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false,
-  });
-  $('#end').datetimepicker({
-    imepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false,
-  });
-</script>
-{{/section}}
-
-{{#section "css"}}
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
 {{/section}}
 
 <a class="btn p-0 link-primary" href="/advertisement/manage" role="button">
@@ -96,6 +70,12 @@
       <i class="bi bi-pencil-square"></i>
       Chỉnh sửa
     </div>
+    {{/ifCond}}
+    {{#ifCond authUser.role '!==' 3}}
+    <a style="margin-left: 16px; cursor: pointer" href="/advertisement/edit-request/create/advertisement?id={{ad._id}}">
+      <i class="bi bi-pencil-square"></i>
+      Chỉnh sửa
+    </a>
     {{/ifCond}}
   </div>
 
@@ -143,19 +123,6 @@
       Tổng dung lượng các hình tối đa 10MB.
     </div>
     <div class="mt-3 row flex-nowrap overflow-auto" id="preview">
-    </div>
-  </div>
-  <div class="form-outline mt-3">
-    <div class="row g-3">
-      <div class="col">
-        <label class="form-label" for="start">Ngày bắt đầu</label>
-        <input type="text" id="start" class="form-control border-2" name="start" value="{{formatDays.start}}"
-          disabled />
-      </div>
-      <div class="col">
-        <label class="form-label" for="end">Ngày kết thúc</label>
-        <input type="text" id="end" class="form-control border-2" name="end" value="{{formatDays.end}}" disabled />
-      </div>
     </div>
   </div>
 </form>

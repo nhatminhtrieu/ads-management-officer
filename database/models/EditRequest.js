@@ -34,12 +34,6 @@ const EditRequestSchema = new mongoose.Schema(
           type: String,
         },
       ],
-      start: {
-        type: Date,
-      },
-      end: {
-        type: Date,
-      },
     },
     createdAt: {
       type: Date,

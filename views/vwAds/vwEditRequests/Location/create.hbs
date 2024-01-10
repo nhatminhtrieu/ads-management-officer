@@ -19,20 +19,38 @@
   }
   const HomeMap = new CustomMap();
   const list = {{{ json locations }}};
-  HomeMap.init(onMapChange).then(async () => {
-    for (const location of list) {
+
+  if (list.length === 1) {
+    const location = list[0]
+    HomeMap.init().then(() => {
       const contentString = contentAd(location);
-      await HomeMap.pushAdMarker(location, location.address, contentString);
-    }
-    HomeMap.setAdCluster();
-    HomeMap.map.addListener("click", (event) => {
-      $("#address").attr("value", "");
-      $("#locationId").attr("value", "");
-      $('#alert').prop("hidden", false);
-	    $('#raw').prop('hidden', true)
-      $('button[type="submit"]').addClass('disabled')
+      HomeMap.pushAdMarker(location, location.address, contentString);
+      HomeMap.setCenter(location.coordinate);
     });
-  })
+
+    $('#address').attr('value', location.address)
+    $("#locationId").attr("value", location._id);
+    $('#raw').removeAttr('hidden')
+    $('#rawType').attr("value", location.type)
+    $('#rawFormat').attr("value", location.format.name)
+    $('#rawZoning').attr("value", location.zoning ? 'Đã quy hoạch' : 'Chưa quy hoạch')
+    $('button[type="submit"]').removeClass('disabled')
+  } else {
+    HomeMap.init(onMapChange).then(async () => {
+      for (const location of list) {
+        const contentString = contentAd(location);
+        await HomeMap.pushAdMarker(location, location.address, contentString);
+      }
+      HomeMap.setAdCluster();
+      HomeMap.map.addListener("click", (event) => {
+        $("#address").attr("value", "");
+        $("#locationId").attr("value", "");
+        $('#alert').prop("hidden", false);
+        $('#raw').prop('hidden', true)
+        $('button[type="submit"]').addClass('disabled')
+      });
+    })
+  }
 </script>
 <script>
   $(".disabled").on('keydown paste focus mousedown', function (e) {

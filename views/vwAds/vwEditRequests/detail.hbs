@@ -25,33 +25,6 @@
         }) 
     });
   </script>
-  {{! Datetimepicker }}
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
-  ></script>
-  <script>
-    $('#start').datetimepicker({ 
-        timepicker: false, 
-        format: 'd/m/Y', 
-        mask: true,
-        scrollMonth: false,
-        scrollInput: false, 
-    });
-    $('#end').datetimepicker({ 
-        timepicker: false,
-        format: 'd/m/Y',
-        mask: true,
-        scrollMonth: false,
-        scrollInput: false, 
-    });
-  </script>
-{{/section}}
-
-{{#section "css"}}
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
-  />
 {{/section}}
 
 <a
@@ -144,30 +117,6 @@
     <div class="form-outline mt-3">
       <label class="form-label" for="type">Hình ảnh bảng quảng cáo</label>
       <div class="row flex-nowrap overflow-auto" id="preview">
-      </div>
-    </div>
-    <div class="form-outline mt-3">
-      <div class="row g-3">
-        <div class="col">
-          <label class="form-label" for="start">Ngày bắt đầu</label>
-          <input
-            type="text"
-            id="start"
-            class="form-control border-2"
-            value={{{request.advertisement.start}}}
-            disabled
-          />
-        </div>
-        <div class="col">
-          <label class="form-label" for="start">Ngày kết thúc</label>
-          <input
-            type="text"
-            id="end"
-            class="form-control border-2"
-            value={{{request.advertisement.end}}}
-            disabled
-          />
-        </div>
       </div>
     </div>
   {{/ifCond}}

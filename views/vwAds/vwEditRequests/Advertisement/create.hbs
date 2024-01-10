@@ -4,7 +4,59 @@
   import { contentAd } from "/static/js/loadMarker.js";
   import { readAsDataURL, updateHidden, updatePreview, checkFilesSize, handleDelImg } from '/static/js/handleImgs.js'
 
+  function onMapChange(returnData) {
+    // Hide alert 
+    $('#alert').prop("hidden", true);
+    // If it has '_id' then it comes from database 
+    // If it doesn't have '_id' then it comes from google map 
+    if (returnData && returnData.hasOwnProperty("_id")) {
+      const address = returnData.address;
+      const locationId = returnData._id;
+	    const adsData = getAdsData(locationId)
+
+      $("#address").attr("value", address);
+	    $('#raw').attr('hidden', true)
+
+	    updateAds(adsData)
+    }
+  }
+  const HomeMap = new CustomMap();
+  const list = {{{ json locations }}};
+  const advertisement = {{{json advertisement}}}
   let imgsArr = []
+
+  if (list.length === 1) {
+    const location = list[0]
+    HomeMap.init().then(() => {
+      const contentString = contentAd(location);
+      HomeMap.pushAdMarker(location, location.address, contentString);
+      HomeMap.setCenter(location.coordinate);
+    });
+
+    $("#address").attr("value", location.address);
+
+    const adsData = getAdsData(location._id)
+    updateAds(adsData)
+
+	  $('#raw').attr('hidden', false)
+  } else {  
+    HomeMap.init(onMapChange).then(async () => {
+      for (const location of list) {
+        const contentString = contentAd(location);
+        await HomeMap.pushAdMarker(location, location.address, contentString);
+      }
+      HomeMap.setAdCluster();
+      HomeMap.map.addListener("click", (event) => {
+        $("#address").attr("value", "");
+        $("#locationId").attr("value", "");
+        $('#alert').prop("hidden", false);
+        $('button[type="submit"]').addClass('disabled')
+        $('#raw').attr('hidden', true)
+
+        updateAds([])
+      });
+    })
+  }
 
   function getAdsData(id){
     var result = [];
@@ -16,18 +68,6 @@
       }
     });
     return result;
-  }
-
-  // Format date to 'DD/MM/YYYY'
-  function formatDate(date) {
-    const yyyy = date.getFullYear();
-    let mm = date.getMonth() + 1; // Months start at 0!
-    let dd = date.getDate();
-
-    if (dd < 10) dd = '0' + dd;
-    if (mm < 10) mm = '0' + mm;
-
-    return dd + '/' + mm + '/' + yyyy;
   }
 
   function catchCardEvent(ele, ad) {
@@ -47,8 +87,6 @@
       $(`#txtTypeBoard option:contains(${ad.typeBoard})`).prop('selected', true)
       $('#txtNumber').attr("value", ad.number)
       $('#txtSize').attr("value", ad.size)
-      $('#start').attr('value', formatDate(new Date(ad.start)))
-      $('#end').attr('value', formatDate(new Date(ad.end)))
 
       imgsArr = ad.imgs
       updatePreview(imgsArr, false)
@@ -73,7 +111,11 @@
           </div>
         `
         ads.append(div)
-        catchCardEvent(div, ad)
+
+        if (advertisement != {} && ad._id == advertisement._id) {
+          catchCardEvent(div, ad)
+          div.click()
+        }
       })
     } else {
       ads.innerHTML = `
@@ -84,41 +126,6 @@
     }
   }
   
-  function onMapChange(returnData) {
-    // Hide alert 
-    $('#alert').prop("hidden", true);
-    // If it has '_id' then it comes from database 
-    // If it doesn't have '_id' then it comes from google map 
-    if (returnData && returnData.hasOwnProperty("_id")) {
-      const address = returnData.address;
-      const locationId = returnData._id;
-	    const adsData = getAdsData(locationId)
-
-      $("#address").attr("value", address);
-	    $('#raw').attr('hidden', true)
-
-	    updateAds(adsData)
-    }
-  }
-  const HomeMap = new CustomMap();
-  const list = {{{ json locations }}};
-  HomeMap.init(onMapChange).then(async () => {
-    for (const location of list) {
-      const contentString = contentAd(location);
-      await HomeMap.pushAdMarker(location, location.address, contentString);
-    }
-    HomeMap.setAdCluster();
-    HomeMap.map.addListener("click", (event) => {
-      $("#address").attr("value", "");
-      $("#locationId").attr("value", "");
-      $('#alert').prop("hidden", false);
-      $('button[type="submit"]').addClass('disabled')
-      $('#raw').attr('hidden', true)
-
-      updateAds([])
-    });
-  })
-
 	$('input#file').on('change', async (e) => { 
 	  const files = Array.from(e.currentTarget.files); 
 		if (files.length && checkFilesSize(imgsArr, files)) { 
@@ -138,24 +145,6 @@
       e.preventDefault();
   });
 </script>
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-<script>
-  $('#start').datetimepicker({
-    timepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false
-  });
-  $('#end').datetimepicker({
-    timepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false
-  });
-</script>
 {{/section}}
 
 {{#section "css"}}
@@ -165,8 +154,6 @@
     background-color: #e9ecef;
   }
 </style>
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
 {{/section}}
 
 <a class="btn p-0 link-primary" href="/advertisement/edit-request" role="button">
@@ -238,19 +225,6 @@
 			Tổng dung lượng các hình tối đa 10MB.
 		</div>
 		<div class="mt-3 row flex-nowrap overflow-auto" id="preview">
-		</div>
-	</div>
-
-	<div class="form-outline mt-3">
-		<div class="row g-3">
-			<div class="col">
-				<label class="form-label" for="start">Ngày bắt đầu</label>
-				<input type="text" id="start" class="form-control border-2" name="start" value="01/01/1970" />
-			</div>
-			<div class="col">
-				<label class="form-label" for="end">Ngày kết thúc</label>
-				<input type="text" id="end" class="form-control border-2" name="end" value="01/01/1970"/>
-			</div>
 		</div>
 	</div>
 

@@ -5,8 +5,8 @@
 	const HomeMap = new CustomMap();
 	HomeMap.init().then(() => {
 		const contentString = contentAd({{{ json location }}});
-	HomeMap.pushAdMarker({{{ json location }}}, {{{ json location.address }}}, contentString);
-	HomeMap.setCenter({{{ json location.coordinate }}});
+		HomeMap.pushAdMarker({{{ json location }}}, {{{ json location.address }}}, contentString);
+		HomeMap.setCenter({{{ json location.coordinate }}});
 	});
 </script>
 <script>
@@ -57,6 +57,12 @@
 			<i class="bi bi-pencil-square"></i>
 			Chỉnh sửa
 		</div>
+		{{/ifCond}}
+		{{#ifCond authUser.role '!==' 3}}
+		<a style="margin-left: 16px; cursor: pointer" href="/advertisement/edit-request/create/location?id={{location._id}}">
+			<i class="bi bi-pencil-square"></i>
+			Chỉnh sửa
+		</a>
 		{{/ifCond}}
 	</div>
 

@@ -6,6 +6,7 @@
 <script type="module">
 	import CustomMap from "/static/js/map/CustomMap.js";
 	import { contentAd, contentReport } from "/static/js/loadMarker.js";
+	import { updatePreview } from "/static/js/handleImgs.js";
 
 	function getAdsData(id) {
 		var result = [];
@@ -136,11 +137,11 @@
 				<div> <b>Số điện thoại: </b> ${returnData.phone} </div>
 				<div> <b>Địa điểm báo cáo: </b> ${returnData.address} </div>
 				<div> <b>Loại báo cáo: </b> ${returnData.typeReportName} </div>
-				<div style="display: flex; justify-content: space-between;">
-					${returnData.imgs}
+				<div style="display: flex; justify-content: space-between;" id='preview'>
 				</div>
 			</div>`;
 			$("#nav-report").html(card);
+			updatePreview(returnData.imgs);
 		}
 	}
 

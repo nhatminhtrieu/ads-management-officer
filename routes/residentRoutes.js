@@ -77,8 +77,10 @@ router.post("/report/create", async (req, res) => {
 	};
 	const reportTypeService = new ReportTypesService();
 	var result = await service.createReport(report);
-	const typeReportInfo = await reportTypeService.getReportTypeById(result.typeReport);
-	result = { ...result, typeReportName: typeReportInfo.name };
+	if (result) {
+		const typeReportInfo = await reportTypeService.getReportTypeById(result.typeReport);	
+		result = { ...result, typeReportName: typeReportInfo.name };
+	}
 	res.send(result);
 });
 

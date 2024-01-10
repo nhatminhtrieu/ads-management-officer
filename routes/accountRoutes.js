@@ -245,7 +245,7 @@ router.post("/changeInfo", auth, async (req, res) => {
     const { _id } = req.session.authUser;
     const { email, fullname, phone, rawDob, address, fav_list_raw } = req.body;
 
-    const dob = rawDob === '__/__/____' ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
+    const dob = (rawDob == '__/__/____'  || rawDob == "") ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
     const fav_list = !fav_list_raw ? [] : (fav_list_raw[0] == 'on' ? fav_list_raw.slice(1) : fav_list_raw);
 
     await service.updateProfile(_id, { email, fullname, phone, dob, address, fav_list });

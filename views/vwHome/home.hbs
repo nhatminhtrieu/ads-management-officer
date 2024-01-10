@@ -136,12 +136,9 @@
 				<div> <b>Số điện thoại: </b> ${returnData.phone} </div>
 				<div> <b>Địa điểm báo cáo: </b> ${returnData.address} </div>
 				<div> <b>Loại báo cáo: </b> ${returnData.typeReportName} </div>
-				<div style="display: flex; justify-content: space-between;">
-					${returnData.imgs}
-				</div>
 			</div>
-				
-			</div>
+			<div class="card-body">
+				<img src="${{ returnData.image }}" alt="Image">
 			</div>
 		`;
 			$("#nav-report").html(card);

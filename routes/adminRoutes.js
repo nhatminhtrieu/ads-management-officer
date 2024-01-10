@@ -109,7 +109,7 @@ router.post("/createAccount", async (req, res) => {
 
 router.put("/officer/updateArea", async (req, res) => {
 	const { _id, district, ward } = req.body;
-	await service.updateProfile(_id, { district, ward });
+	await service.updateProfile(_id, { district, ward, fav_list: [] });
 	return res.json({ success: true });
 })
 

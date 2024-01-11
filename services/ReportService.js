@@ -12,6 +12,7 @@ export default class ReportService {
 			return report.toObject();
 		} catch (err) {
 			console.log("ReportService.createReport", err);
+			return null
 		}
 	}
 
@@ -39,8 +40,12 @@ export default class ReportService {
 	}
 
 	async findReportById(id) {
-		const report = await this.repository.findOne({ _id: id });
-		return report;
+		try {
+			const report = await this.repository.findOne({ _id: id });
+			return report;
+		} catch (err) {
+			return null
+		}
 	}
 
 	async findTotalPages({ limit }, options = {}) {

@@ -36,6 +36,40 @@ const wardDistrict1 = [
   "Phường Phạm Ngũ Lão",
   "Phường Tân Định",
 ];
+const wardDistrict3 = [
+  "Phường 1",
+  "Phường 2",
+  "Phường 3",
+  "Phường 4",
+  "Phường 5",
+  "Phường 6",
+  "Phường 7",
+  "Phường 8",
+  "Phường 9",
+  "Phường 10",
+  "Phường 11",
+  "Phường 12",
+  "Phường 13",
+  "Phường 14",
+  "Phường Võ Thị Sáu",
+];
+
+const wardDistrict4 = [
+  "Phường 1",
+  "Phường 2",
+  "Phường 3",
+  "Phường 4",
+  "Phường 6",
+  "Phường 8",
+  "Phường 9",
+  "Phường 10",
+  "Phường 13",
+  "Phường 14",
+  "Phường 15",
+  "Phường 16",
+  "Phường 18",
+];
+
 const districtService = new DistrictService();
 const wardService = new WardService();
 
@@ -65,6 +99,7 @@ async function formatData(response, zoning, lat, lng) {
   const formatted_address = response.results[0].formatted_address;
   const districtIndex = formatted_address.indexOf("Quận");
   const wardIndex = formatted_address.indexOf("Phường");
+  const districts = ["Quận 1", "Quận 3", "Quận 4", "Quận 5", "Quận 10"];
   var district = "";
   var ward = "";
 
@@ -79,25 +114,38 @@ async function formatData(response, zoning, lat, lng) {
           districtIndex,
           formatted_address.indexOf(",", districtIndex)
         ))
-      : (district = `Quận ${Math.random() < 0.5 ? 1 : 5}`);
+      : (district = districts[Math.floor(Math.random() * districts.length)]);
   }
 
   if (ward === "") {
-    formatted_address.indexOf("Phường") !== -1
-      ? (ward = formatted_address.substring(
-          wardIndex,
-          formatted_address.indexOf(",", wardIndex)
-        ))
-      : district === "Quận 5"
-      ? (ward = `Phường ${Math.floor(Math.random() * 14) + 1}`)
-      : (ward =
-          wardDistrict1[Math.floor(Math.random() * wardDistrict1.length)]);
+    if (formatted_address.indexOf("Phường") !== -1) {
+      ward = formatted_address.substring(
+        wardIndex,
+        formatted_address.indexOf(",", wardIndex)
+      );
+    } else {
+      switch (district) {
+        case "Quận 5":
+        case "Quận 10":
+          ward = `Phường ${Math.floor(Math.random() * 14) + 1}`;
+          break;
+        case "Quận 1":
+          ward =
+            wardDistrict1[Math.floor(Math.random() * wardDistrict1.length)];
+          break;
+        case "Quận 3":
+          ward =
+            wardDistrict3[Math.floor(Math.random() * wardDistrict1.length)];
+          break;
+        case "Quận 4":
+          ward =
+            wardDistrict4[Math.floor(Math.random() * wardDistrict4.length)];
+      }
+    }
   }
 
-  if (district == "Quận 5" || district == "Quận 1") {
-    district = await formatDistrict(district);
-    ward = await formatWard(district["$oid"], ward);
-  }
+  district = await formatDistrict(district);
+  ward = await formatWard(district["$oid"], ward);
 
   return {
     type: type[Math.floor(Math.random() * type.length)],

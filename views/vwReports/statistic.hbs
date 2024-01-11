@@ -1,3 +1,33 @@
-Thống kê
-
-{{!-- Tổng báo cáo, báo cáo đã tiếp nhận, báo cáo đã xử lý --}}
+{{#each reportsByDistrict}}
+<h2>{{this.district}}</h2>
+<table class="table table-hover mt-3 flex">
+    <thead>
+        <tr class="table-light">
+            <th scope="col" style="width: 30%">Phường</th>
+            <th>Tổng số báo cáo</th>
+            <th>Loại báo cáo</th>
+            <th>Trạng thái báo cáo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each this.listReportsByDistrict}}
+        {{#if this.count}}
+        <tr>
+            <td>{{this.ward}}</td>
+            <td>{{this.count}}</td>
+            <td>
+                {{#each this.countByType}}
+                {{this.name}}: {{this.count}} <br>
+                {{/each}}
+            </td>
+            <td>
+                {{#each this.countByStatus}}
+                {{this.name}}: {{this.count}} <br>
+                {{/each}}
+            </td>
+        </tr>
+        {{/if}}
+        {{/each}}
+    </tbody>
+</table>
+{{/each}}

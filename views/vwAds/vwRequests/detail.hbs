@@ -90,7 +90,7 @@
             <div class="row flex-nowrap overflow-auto" id="preview-request"></div>
             <div class="mt-2">
                 <strong>Thời hạn hợp đồng: </strong>
-                {{this.request.start}} - {{this.request.end}}
+                {{formatDate this.request.start}} - {{formatDate this.request.end}}
             </div>
             {{#with this.request.company}}
             <div>

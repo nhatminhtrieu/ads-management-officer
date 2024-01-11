@@ -1,4 +1,5 @@
 import express from "express";
+import moment from "moment";
 
 import RequestService from "../services/RequestService.js";
 import AdvertisementService from "../services/AdvertisementService.js";
@@ -57,6 +58,8 @@ Router.post("/create/:id", authNotDepartmentRole, async (req, res) => {
 	const data = req.body;
 	data.advertisement = id;
 	data.createdBy = req.session.authUser._id;
+	data.start = moment(data.start, "DD/MM/YYYY").toDate();
+	data.end = moment(data.end, "DD/MM/YYYY").toDate();
 	await service.createRequest(data);
 	res.redirect("/advertisement/request");
 });

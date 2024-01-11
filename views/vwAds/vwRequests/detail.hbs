@@ -1,0 +1,147 @@
+{{#section "js"}}
+<script type="module">
+    import CustomMap from "/static/js/map/CustomMap.js";
+    import { contentAd } from "/static/js/loadMarker.js";
+    const Map = new CustomMap();
+    Map.init().then(() => {
+        const contentString = contentAd({{{ json request.advertisement.location }}});
+    Map.pushAdMarker({{{ json request.advertisement.location }}}, {{{ json request.advertisement.location.address }}}, contentString);
+    Map.setCenter({{{ json request.advertisement.location.coordinate }}}); 
+    });
+</script>
+<script type="module">
+    import { updatePreview } from '/static/js/handleImgs.js'
+
+    let adImgs = {{{ json request.advertisement.imgs }}}
+    let requestImgs = {{{ json request.imgs }}}
+
+    window.onload = function () {
+        updatePreview(adImgs);
+        updatePreview(requestImgs, true, "#preview-request");
+    }
+
+</script>
+{{/section}}
+
+<a class="btn p-0 link-primary" href="javascript:history.back()" role="button">
+    <i class="bi bi-caret-left"></i>
+    Trở về
+</a>
+<form class="mt-3" id="form-request" method="post">
+    {{#with this.request.advertisement.location}}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Điểm đặt quảng cáo</h4>
+        </div>
+        <div class="card-body row px-4">
+            <div id="map" style="height: 200px" class="col-6 rounded"></div>
+            <div class="col-6">
+                <div>
+                    <strong>Địa chỉ: </strong>
+                    {{address}}
+                </div>
+                <div>
+                    <strong>Phân loại: </strong>
+                    {{type}}
+                </div>
+                {{#if zoning}}
+                <div class="text-uppercase mt-2 fw-bold fst-italic text-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>Đã quy hoạch
+                </div>
+                {{else}}
+                <div class="text-uppercase mt-2 fw-bold fst-italic text-secondary">
+                    <i class="bi bi-x-circle-fill me-2"></i>Chưa quy hoạch
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/with}}
+
+    {{#with this.request.advertisement}}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Bảng quảng cáo</h4>
+        </div>
+        <div class="card-body">
+            <div class="row flex-nowrap overflow-auto" id="preview"></div>
+            <div class="mt-2">
+                <strong>Loại bảng quảng cáo: </strong>
+                {{typeBoard}}
+            </div>
+            <div>
+                <strong>Số lượng: </strong>
+                {{number}}
+            </div>
+            <div>
+                <strong>Kích cỡ: </strong>
+                {{size}}
+            </div>
+        </div>
+    </div>
+    {{/with}}
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Quảng cáo xin cấp phép</h4>
+        </div>
+        <div class="card-body">
+            <div class="row flex-nowrap overflow-auto" id="preview-request"></div>
+            <div class="mt-2">
+                <strong>Thời hạn hợp đồng: </strong>
+                {{formatDate this.request.start}} - {{formatDate this.request.end}}
+            </div>
+            {{#with this.request.company}}
+            <div>
+                <strong>Tên công ty: </strong>
+                {{name}}
+            </div>
+            <div>
+                <strong>Địa chỉ: </strong>
+                {{address}}
+            </div>
+            <div>
+                <strong>Email: </strong>
+                {{email}}
+            </div>
+            <div>
+                <strong>Số điện thoại: </strong>
+                {{phone}}
+            </div>
+            {{/with}}
+            <div>
+                <strong>Tình trạng: </strong>{{#ifCond this.request.accepted '==' "pending"}}
+                <span class="text-warning"><i class="bi bi-clock me-1"></i>Đang chờ</span>
+                {{/ifCond}}
+                {{#ifCond this.request.accepted '==' "approved"}}
+                <span class="text-success"><i class="bi bi-check-lg me-1"></i>Đã duyệt</span>
+                {{/ifCond}}
+                {{#ifCond this.request.accepted '==' "rejected"}}
+                <span class="text-danger"><i class="bi bi-x me-1"></i>Không duyệt</span>
+                {{/ifCond}}
+            </div>
+        </div>
+    </div>
+    <input id="hidden-id-input" class="d-none" value="{{this.request._id}}" name="id" readonly />
+    <input id="hidden-id-input" class="d-none" value="{{this.request.advertisement._id}}" name="advertisement"
+        readonly />
+    {{#ifCond request.createdBy '==' authUser._id}}
+    <button name="" id="" class="btn btn-danger" formaction="/advertisement/request/delete" {{#ifCond
+        request.accepted '!==' 'pending' }} disabled {{/ifCond}}>
+        Hủy yêu cầu
+    </button>
+    {{/ifCond}}
+    {{#ifCond authUser.role '==' '3'}}
+    <div class="d-flex">
+        <button name="" id="" class="btn btn-danger" style="width: 150px" formaction="/advertisement/request/reject"
+            {{#ifCond request.accepted '!==' 'pending' }} disabled {{/ifCond}}>
+            Từ chối
+        </button>
+        <button name="" id="" class="btn btn-success ms-2" style="width: 150px" {{#ifCond
+            request.accepted '!==' 'pending' }} disabled {{/ifCond}} formaction="/advertisement/request/approve">
+            Đồng ý
+        </button>
+    </div>
+    {{/ifCond}}
+</form>

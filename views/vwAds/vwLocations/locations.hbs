@@ -1,0 +1,33 @@
+<div class="d-flex justify-content-between">
+	<h4>Danh sách điểm đặt quảng cáo</h4>
+	{{! Cho phân hệ cán bộ sở }}
+	{{#ifCond authUser.role '===' 3}}
+	<a name="" id="" class="btn btn-primary" href="ad-location/new" role="button">
+		<i class="bi bi-plus-lg"></i>
+		Tạo mới
+	</a>
+	{{/ifCond}}
+</div>
+<table class="table table-hover mt-3">
+	<thead>
+		<tr class="table-light">
+			<th scope="col" style="width: 2rem">No.</th>
+			<th scope="col" style="width: 50%">Địa chỉ</th>
+			<th scope="col" style="width: 25%">Loại vị trí</th>
+			<th scope="col" style="width: 25%">Hình thức quảng cáo</th>
+			<th scope="col">&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#each this.list}}
+		<tr>
+			<th scope="row">{{index}}</th>
+			<td>{{address}}</td>
+			<td>{{type}}</td>
+			<td>{{format}}</td>
+			<td><a href="/advertisement/ad-location/{{_id}}" class="bi bi-arrows-angle-expand"></a></td>
+		</tr>
+		{{/each}}
+	</tbody>
+</table>
+{{> pagination href="/advertisement/ad-location" page=page totalPage=totalPage pageNumbers=pageNumbers}}

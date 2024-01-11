@@ -1,0 +1,264 @@
+{{#section 'jsWards'}}
+<script>
+    $(document).ready(function () {
+        function handleResponse(success) {
+            var modal = success ? '#successModal' : '#failModal';
+            $(modal).modal('show');
+            setTimeout(function () {
+                $(modal).modal('hide');
+                location.reload();
+            }, 3000);
+        }
+
+        // Create
+        $('#addWardForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const wardName = $('#addWardForm input[name="ward"]').val();
+            const districtId = $('#addWardForm select[name="district"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/wards/create',
+                data: { ward: wardName, district: districtId },
+                success: function (response) {
+                    $('#addWardModal').modal('hide');
+                    handleResponse(response.success);
+                }
+            });
+        });
+
+        // Delete
+        $('#deleteWardButton').on('click', function (e) {
+            e.preventDefault();
+
+            const wardId = $('#deleteWardId').val();
+            const districtId = $('#deleteWardDistrictId').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/wards/delete/?id=' + wardId + '&districtID=' + districtId,
+                success: function (response) {
+                    $('#deleteWardModal').modal('hide');
+                    handleResponse(response.success);
+                }
+            });
+        });
+
+        // Update
+        $(document).ready(function () {
+            $('#updateWardForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const wardId = $('#updateWardId').val();
+                const wardName = $('#updateWardName').val();
+                const districtId = $('#updateWardDistrictId').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/wards/update/?id=' + wardId + '&districtID=' + districtId,
+                    data: { ward: wardName },
+                    success: function (response) {
+                        $('#updateWardModal').modal('hide');
+                        handleResponse(response.success);
+                    }
+                });
+            });
+        });
+
+        $('#closeModal').on('click', function (e) {
+            e.preventDefault();
+            $('.modal').modal('hide');
+            location.reload();
+        });
+    });
+</script>
+{{/section}}
+
+<div class="d-flex justify-content-between">
+    <h4>
+        {{#if isWardList}}
+        Quản lý tất cả các phường
+        {{else}}
+        Quản lý theo {{district.district}}
+        {{/if}}
+    </h4>
+    <caption>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWardModal">
+            <i class="bi bi-plus-lg"></i>
+            Thêm mới
+        </button>
+    </caption>
+</div>
+
+<!-- Add Ward Modal Done -->
+<div class="modal fade" id="addWardModal" tabindex="-1" aria-labelledby="addWardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWardModalLabel">Tạo phường quản lý mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addWardForm" method="post">
+                    <div class="mb-3">
+                        <label for="ward" class="form-label">Tên phường</label>
+                        <input type="text" class="form-control" id="ward" name="ward" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">Quận</label>
+                        <select class="form-select" id="district" name="district">
+                            {{#each district}}
+                            {{#if this.district}}
+                            <option value="{{this._id}}">{{this.district}}</option>
+                            {{/if}}
+                            {{/each}}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary ">Tạo mới</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Ward Modal -->
+<div class="modal fade" id="updateWardModal" tabindex="-1" aria-labelledby="updateWardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateWardModalLabel">Cập nhật phường quản lý</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateWardForm" method="post">
+                    <input type="hidden" id="updateWardId" name="updateWardId" value="{{this._id}}">
+                    <input type="hidden" id="updateWardDistrictId" name="updateWardDistrictId"
+                        value="{{this.district._id}}">
+                    <div class="mb-3">
+                        <label for="oldWardName" class="form-label">Tên phường cũ</label>
+                        <input type="text" class="form-control" id="oldWardName" name="oldWardName"
+                            value="{{this.ward._id}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateWardName" class="form-label">Tên phường mới</label>
+                        <input type="text" class="form-control" id="updateWardName" name="updateWardName"
+                            placeholder="Phường 1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Ward Modal Done -->
+<div class="modal fade" id="deleteWardModal" tabindex="-1" aria-labelledby="deleteWardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteWardModalLabel">Xoá phường</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xoá phường này không?</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="deleteWardId" value="">
+                <input type="hidden" id="deleteWardDistrictId" value="">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="button" class="btn btn-danger" id="deleteWardButton">Xoá</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Successs Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Thành công</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Thao tác thành công.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fail Modal -->
+<div class="modal fade" id="failModal" tabindex="-1" role="dialog" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="failModalLabel">Thất bại</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Thao tác thất bại.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeModal" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-hover mt-3 flex">
+    <thead class="table-light">
+        <tr>
+            <th scope="col" style="width: 2rem">No.</th>
+            <th scope="col" style="width: 50%;">Tên phường</th>
+            <th scope="col" style="width: 25%;">Tên quận</th>
+            <th scope="col" style="width:108px">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each ward}}
+        <tr>
+            <th scope="row">{{this.index}}</th>
+            <td>{{this.ward}}</td>
+            <td>{{this.district.district}}</td>
+            <td class="text-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateWardModal"
+                    onclick="document.getElementById('updateWardId').value = '{{this._id}}'; 
+             document.getElementById('oldWardName').value = '{{this.ward}}';">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteWardModal"
+                    onclick="document.getElementById('deleteWardId').value = '{{this._id}}'; document.getElementById('deleteWardDistrictId').value = '{{this.district._id}}';">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<ul class="pagination justify-content-center">
+    <li class="page-item {{#if firstPageDisabled}}disabled{{/if}}">
+        <a class="page-link" href="?page={{firstPage}}" aria-label="First">
+            <span aria-hidden="true">&laquo;</span>
+        </a>
+    </li>
+    {{#each pages}}
+    <li class="page-item {{#if isCurrent}}disabled{{/if}}">
+        <a class="page-link" href="?page={{number}}">{{number}}</a>
+    </li>
+    {{/each}}
+    <li class="page-item {{#if lastPageDisabled}}disabled{{/if}}">
+        <a class="page-link" href="?page={{lastPage}}" aria-label="Last">
+            <span aria-hidden="true">&raquo;</span>
+        </a>
+    </li>
+</ul>

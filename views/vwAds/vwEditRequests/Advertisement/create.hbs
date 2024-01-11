@@ -1,0 +1,244 @@
+{{#section "js"}}
+<script type="module">
+  import CustomMap from "/static/js/map/CustomMap.js";
+  import { contentAd } from "/static/js/loadMarker.js";
+  import { readAsDataURL, updateHidden, updatePreview, checkFilesSize, handleDelImg } from '/static/js/handleImgs.js'
+
+  function onMapChange(returnData) {
+    // Hide alert 
+    $('#alert').prop("hidden", true);
+    // If it has '_id' then it comes from database 
+    // If it doesn't have '_id' then it comes from google map 
+    if (returnData && returnData.hasOwnProperty("_id")) {
+      const address = returnData.address;
+      const locationId = returnData._id;
+	    const adsData = getAdsData(locationId)
+
+      $("#address").attr("value", address);
+	    $('#raw').attr('hidden', true)
+
+	    updateAds(adsData)
+    }
+  }
+  const HomeMap = new CustomMap();
+  const list = {{{ json locations }}};
+  const advertisement = {{{json advertisement}}}
+  let imgsArr = []
+
+  if (list.length === 1) {
+    const location = list[0]
+    HomeMap.init().then(() => {
+      const contentString = contentAd(location);
+      HomeMap.pushAdMarker(location, location.address, contentString);
+      HomeMap.setCenter(location.coordinate);
+    });
+
+    $("#address").attr("value", location.address);
+
+    const adsData = getAdsData(location._id)
+    updateAds(adsData)
+
+	  $('#raw').attr('hidden', false)
+  } else {  
+    HomeMap.init(onMapChange).then(async () => {
+      for (const location of list) {
+        const contentString = contentAd(location);
+        await HomeMap.pushAdMarker(location, location.address, contentString);
+      }
+      HomeMap.setAdCluster();
+      HomeMap.map.addListener("click", (event) => {
+        $("#address").attr("value", "");
+        $("#locationId").attr("value", "");
+        $('#alert').prop("hidden", false);
+        $('button[type="submit"]').addClass('disabled')
+        $('#raw').attr('hidden', true)
+
+        updateAds([])
+      });
+    })
+  }
+
+  function getAdsData(id){
+    var result = [];
+    $.ajax({
+      url: "/advertisement/find-all-by-location/" + id,
+      async: false,
+      success: function (data) {
+        result = data;
+      }
+    });
+    return result;
+  }
+
+  function catchCardEvent(ele, ad) {
+    ele.addEventListener("mouseenter", () => {
+      ele.classList.add('border-primary-subtle')
+    });
+    ele.addEventListener("mouseleave", () => {
+      ele.classList.remove('border-primary-subtle')
+    });
+    ele.addEventListener('click', () => {
+      $('[id=ads-card]').removeClass('border-primary')
+      ele.classList.add('border-primary')
+      $('#adsId').attr('value', ad._id)
+      $('#locId').attr('value', ad.location._id)
+      $('button[type="submit"]').removeClass('disabled')
+      $('#raw').removeAttr('hidden')
+      $(`#txtTypeBoard option:contains(${ad.typeBoard})`).prop('selected', true)
+      $('#txtNumber').attr("value", ad.number)
+      $('#txtSize').attr("value", ad.size)
+
+      imgsArr = ad.imgs
+      updatePreview(imgsArr, false)
+      updateHidden(ad.imgs)
+    })
+  }
+
+  function updateAds(list) {
+    $('button[type="submit"]').addClass('disabled')
+    $('#ads').empty()
+
+    if (list.length) {
+      list.map((ad) => {
+        const div = document.createElement('div')
+        div.classList.add('card', 'flex-fill', 'border-2')
+        div.id = 'ads-card'
+        div.innerHTML = `
+          <div class="card-body">
+            <h5 class="card-title">${ad.typeBoard}</h5>
+            <p class="card-text mb-0"><b>Số lượng: </b>${ad.number}</p>
+            <p class="card-text"><b>Kích thước: </b>${ad.size}</p>
+          </div>
+        `
+        ads.append(div)
+
+        if (advertisement != {} && ad._id == advertisement._id) {
+          catchCardEvent(div, ad)
+          div.click()
+        }
+      })
+    } else {
+      ads.innerHTML = `
+        <h6 class="card-subtitle text-muted text-center">
+          Điểm đặt chưa có bảng quảng cáo
+        </h6>
+      `
+    }
+  }
+  
+	$('input#file').on('change', async (e) => { 
+	  const files = Array.from(e.currentTarget.files); 
+		if (files.length && checkFilesSize(imgsArr, files)) { 
+			const images = await Promise.all(files.map((file) => {
+				return readAsDataURL(file)
+			}))
+      
+			imgsArr.push(...images)
+			updatePreview(imgsArr, false)
+			updateHidden(imgsArr)
+		} 
+	})
+</script>
+<script>
+  $(".disabled").on('keydown paste focus mousedown', function (e) {
+    if (e.keyCode != 9) // ignore tab 
+      e.preventDefault();
+  });
+</script>
+{{/section}}
+
+{{#section "css"}}
+<style>
+  .disabled {
+    pointer-events: none;
+    background-color: #e9ecef;
+  }
+</style>
+{{/section}}
+
+<a class="btn p-0 link-primary" href="/advertisement/edit-request" role="button">
+  <i class="bi bi-caret-left"></i>
+  Trở về
+</a>
+
+<div class="alert alert-danger mt-3" role="alert" id="alert" hidden>
+  Vui lòng chọn điểm đặt quảng cáo đã có trên bảng đồ!
+</div>
+
+<h4 class="mt-3">Yêu cầu chỉnh sửa thông tin bảng quảng cáo</h4>
+<div id="map" style="height:300px; width:100%"></div>
+
+<form method="POST">
+  <!-- Địa chỉ điểm đặt quảng cáo input -->
+  <div class="form-outline mt-3">
+    <label class="form-label">Điểm đặt quảng cáo
+      <div style="display:inline; color:red">*</div>
+    </label>
+    <input type="text" id="address" class="form-control border-2 disabled"
+      placeholder="Vui lòng chọn 1 điểm trên bản đồ" readonly />
+  </div>
+
+  <div class="form-outline mt-3">
+    <label class="form-label">Bảng quảng cáo
+      <div style="display:inline; color:red">*</div>
+    </label>
+    <div class="row flex-nowrap overflow-auto gap-3 ms-0 me-0" id="ads">
+		<h6 class="card-subtitle text-muted text-center">
+            Điểm đặt chưa có bảng quảng cáo
+        </h6>
+    </div>
+  </div>
+
+  <!-- Hidden input-->
+  <input type="hidden" id="locId" name="rawLocation" />
+  <input type="hidden" id="adsId" name="rawAdvertisement" />
+  <div id="hiddenImgsInput"></div>
+
+  <div class="form-outline mt-3" hidden id="raw">
+	<h4 class="mt-3">Chỉnh sửa thông tin</h4>
+    <div class="row g-3">
+      <div class="col">
+        <label class="form-label" for="number">Loại bảng quảng cáo
+        </label>
+		<select id="txtTypeBoard" class="form-select border-2" name="typeBoard">
+			{{#each list}}
+			<option value="{{this}}">{{this}}</option>
+			{{/each}}
+		</select>      
+	  </div>
+      <div class="col">
+        <label class="form-label" for="size">Số lượng
+        </label>
+        <input type="text" id="txtNumber" class="form-control border-2" name="number" />
+      </div>
+	  <div class="col">
+        <label class="form-label" for="size">Kích thước
+        </label>
+        <input type="text" id="txtSize" class="form-control border-2" name="size"/>
+      </div>
+    </div>
+	<div class="mt-3">
+		<label class="form-label" for="type">Hình ảnh bảng quảng cáo
+		</label>
+		<input type="file" id="file" class="form-control border-2" aria-describedby="fileHelp" accept="image/*" multiple />
+    <div id="fileHelp" class="invalid-feedback">
+			Tổng dung lượng các hình tối đa 10MB.
+		</div>
+		<div class="mt-3 row flex-nowrap overflow-auto" id="preview">
+		</div>
+	</div>
+
+	<div class="form-outline mt-3">
+		<label class="form-label" for="type">Lý do chỉnh sửa
+			<div style="display:inline; color:red">*</div>
+		</label>
+		<textarea class="form-control border-2" style="height: 100px" name="reason" required></textarea>
+	</div>
+
+  <div class="text-end">
+    <button type="submit" class="btn btn-primary mt-3 disabled">
+      <i class="bi bi-send"></i>
+      Gửi yêu cầu
+    </button>
+  </div>
+</form>

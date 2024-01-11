@@ -1,0 +1,123 @@
+{{#section "js"}}
+<script type="module">
+	import CustomMap from "/static/js/map/CustomMap.js";
+	import { contentAd } from "/static/js/loadMarker.js";
+	const HomeMap = new CustomMap();
+	HomeMap.init().then(() => {
+		const contentString = contentAd({{{ json location }}});
+		HomeMap.pushAdMarker({{{ json location }}}, {{{ json location.address }}}, contentString);
+		HomeMap.setCenter({{{ json location.coordinate }}});
+	});
+</script>
+<script>
+	window.onload = function () {
+		$.post(`/advertisement/ad-location/can-be-deleted/{{location._id}}`, function (data) {
+			if (data === true) {
+				$('#deleteButton').prop("disabled", false);
+			}
+		});
+	}
+
+	$("#edit").click(function () {
+		$('#type').prop("disabled", false);
+		$('#type').prop("required", true);
+		$('#format').prop("disabled", false);
+		$('#zoning').prop("disabled", false);
+		$('#deleteButton').prop("hidden", false);
+		$('#edit').prop("hidden", true);
+		$('#fnButton').show();
+	});
+
+	$("#cancelButton").click(function () {
+		window.location.reload();
+	});
+
+	$("#deleteButton").click(function (e) {
+		e.preventDefault();
+
+		$.post("/advertisement/ad-location/delete/{{location._id}}", function (response) {
+			window.location.href = '/advertisement/ad-location';
+		})
+	});
+</script>
+{{/section}}
+
+<a class="btn p-0 link-primary" href="/advertisement/ad-location" role="button">
+	<i class="bi bi-caret-left"></i>
+	Trở về
+</a>
+
+<div id="map" style="height: 400px; width: 100%;" class="mt-3"></div>
+
+<div class="d-flex justify-content-between">
+	<div class="mt-3" style="display: flex; align-items: center;">
+		<h4>Thông tin chi tiết điểm đặt quảng cáo </h4>
+		{{#ifCond authUser.role '===' 3}}
+		<div id="edit" style="margin-left: 16px; cursor: pointer">
+			<i class="bi bi-pencil-square"></i>
+			Chỉnh sửa
+		</div>
+		{{/ifCond}}
+		{{#ifCond authUser.role '!==' 3}}
+		<a style="margin-left: 16px; cursor: pointer" href="/advertisement/edit-request/create/location?id={{location._id}}">
+			<i class="bi bi-pencil-square"></i>
+			Chỉnh sửa
+		</a>
+		{{/ifCond}}
+	</div>
+
+	<div class="mt-3">
+		<button type="button" class="btn btn-danger" id="deleteButton" hidden disabled>
+			<i class="bi bi-trash"></i>
+			Xóa
+		</button>
+	</div>
+</div>
+
+<form method="POST">
+	<div class="form-outline mt-3">
+		<label class="form-label" for="address">Địa chỉ</label>
+		<input type="text" id="address" class="form-control border-2" value="{{location.address}}" disabled />
+	</div>
+
+	<div class="form-outline mt-3">
+		<label class="form-label" for="type">Loại vị trí đặt quảng cáo</label>
+		<input type="text" id="type" class="form-control border-2" name="type" value="{{location.type}}" disabled />
+	</div>
+
+	<div class="form-outline mt-3">
+		<label class="form-label" for="description">Loại hình quảng cáo</label>
+		<select class="form-select" id="format" name="format" disabled>
+			{{#each adsTypes}}
+			{{#ifCond isSelected "===" true}}
+			<option value={{_id}} selected>{{name}}</option>
+			{{else}}
+			<option value={{_id}}>{{name}}</option>
+			{{/ifCond}}
+			{{/each}}
+		</select>
+	</div>
+
+	<div class="form-outline mt-3">
+		<label class="form-label" for="description">Thông tin quy hoạch</label>
+		<select class="form-select" id="zoning" name="zoning" disabled>
+			{{#each zoning}}
+			{{#ifCond isSelected "===" true}}
+			<option value={{zoning}} selected>{{name}}</option>
+			{{else}}
+			<option value={{zoning}}>{{name}}</option>
+			{{/ifCond}}
+			{{/each}}
+		</select>
+	</div>
+
+	<div id="fnButton" class="mt-3" style="display: none;">
+		<a id="cancelButton" class="btn btn-secondary" role="button">
+			Hủy
+		</a>
+		<button type="submit" class="btn btn-primary">
+			<i class="bi bi-floppy"></i>
+			Lưu
+		</button>
+	</div>
+</form>

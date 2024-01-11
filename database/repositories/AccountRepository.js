@@ -10,7 +10,23 @@ export default class AccountRepository {
         return await newEntity.save();
     }
 
+    async getAll() {
+        return await this.model.find({status: {$ne: -1}});
+    }
+
     async findByEntity(entity) {
         return await this.model.findOne(entity);
+    }
+
+    async patch(_id, password) {
+        return await this.model.updateOne({ _id }, { password });
+    }
+
+    async patchEntity(entity, data) {
+        return await this.model.updateOne(entity, data);
+    }
+
+    async patchLinkAccount(_id, id) {
+        return await this.model.updateOne({ _id }, { $push: { account_link: id } });
     }
 }

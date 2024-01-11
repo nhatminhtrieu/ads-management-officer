@@ -1,1 +1,157 @@
-<h4>Loại hình quảng cáo</h4>
+{{#section 'js'}}
+    <script>
+        var name;
+        $(document).ready(function() {
+            $('#deleteAdsTypeModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                name = button.data('name'); // Extract info from data-* attributes
+
+                // Update the modal's content
+                var modal = $(this);
+                modal.find('.modal-body').html('Bạn xác nhận xóa loại hình quảng cáo: <br><b style="text-align:center; display: block;">' + name + '</b>');
+            });
+
+            $('#deleteAdsTypeButton').click(function(e) {
+                e.preventDefault();
+
+                $.post('/ads-type/delete', {name: name}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            })
+
+            $('#addAdsTypeButton').click(function(e) {
+                e.preventDefault();
+
+                var name = $('#addAdsTypeModal input[name="name"]').val();
+
+                $.post('/ads-type/add', {name: name}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            })
+
+            $('#editAdsTypeModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                name = button.data('name'); // Extract info from data-* attributes
+
+                // Update the modal's content
+                var modal = $(this);
+                modal.find('#oldName').val(name);
+            });
+
+            $('#editAdsTypeButton').click(function(e) {
+                e.preventDefault();
+
+                var oldName = $('#editAdsTypeModal input[name="oldName"]').val();
+                var newName = $('#editAdsTypeModal input[name="newName"]').val();
+
+                console.log(oldName, newName);
+
+                $.post('/ads-type/update', {oldName: oldName, newName: newName}, function(response) {
+                    // Reload page
+                    location.reload();
+                })
+            });
+        });
+    </script>
+{{/section}}
+
+
+<div class="d-flex justify-content-between">
+	<h4>Loại hình quảng cáo</h4>
+	{{! Cho phân hệ cán bộ sở }}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAdsTypeModal">
+        <i class="bi bi-plus-lg"></i>
+        Thêm mới
+    </button>
+</div>
+
+
+<table class="table table-hover mt-3 flex">
+    <thead>
+        <tr class="table-light">
+            <th scope="col" style="width: 2rem">No.</th>
+            <th scope="col">Tên loại hình quảng cáo</th>
+            <th scope="col" style="width:108px">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each this.list}}
+        <tr>
+            <th scope="row">{{inc @index}}</th>
+            <td>{{name}}</td>
+            <td>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAdsTypeModal" data-name="{{name}}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAdsTypeModal" data-name="{{name}}">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+
+<!-- Delete Ads Type Modal -->
+<div class="modal fade" id="deleteAdsTypeModal" tabindex="-1" aria-labelledby="deleteAdsTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAdsTypeModal"><b>Xác nhận xóa</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button id="deleteAdsTypeButton" type="button" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Ads Type Modal -->
+<div class="modal fade" id="addAdsTypeModal" tabindex="-1" aria-labelledby="addAdsTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAdsTypeModal"><b>Thêm mới loại hình quảng cáo</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Tên loại hình quảng cáo</label>
+                <input type="text" class="form-control" name="name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="addAdsTypeButton" class="btn btn-primary">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Ads Type Modal -->
+<div class="modal fade" id="editAdsTypeModal" tabindex="-1" aria-labelledby="editAdsTypeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAdsTypeModal"><b>Chỉnh sửa tên loại hình quảng cáo</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Tên cũ</label>
+                <input type="text" class="form-control" id="oldName" name="oldName" disabled>
+                <label class="form-label mt-3">Tên mới</label>
+                <input type="text" class="form-control" name="newName">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="editAdsTypeButton" class="btn btn-primary">Sửa</button>
+            </div>
+        </div>
+    </div>
+</div>

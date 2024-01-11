@@ -1,43 +1,61 @@
 import { Schema, model } from "mongoose";
-import Image from "models/Image";
+import ReportTypes from "./ReportTypes.js";
 
 const ReportSchema = new Schema(
-  {
-    id: {
-      type: Schema.Types.ObjectId,
-      required: true,
-    },
-    email: {
-      type: String,
-      enum: ["example1@example.com", "example2@example.com"], // Add your desired email options here
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-    imgs: {
-      type: [Image],
-      required: true,
-    },
-    type: {
-      type: String,
-      enum: ["issued", "resolved"],
-      default: "issue",
-      required: true,
-    },
-  },
-  {
-    versionKey: false,
-  }
+	{
+		coordinate: {
+			type: Object,
+			required: true,
+		},
+		typeReport: {
+			type: Schema.Types.ObjectId,
+			ref: ReportTypes,
+			required: true,
+		},
+		email: {
+			type: String,
+			required: true,
+		},
+		name: {
+			type: String,
+			required: true,
+		},
+		phone: {
+			type: String,
+			required: true,
+		},
+		content: {
+			type: String,
+			required: true,
+		},
+		imgs: [
+			{
+				type: String,
+				required: true,
+			},
+		],
+		resolvedContent: {
+			type: String,
+		},
+		type: {
+			type: String,
+			enum: ["Đã tiếp nhận", "Đã xử lý"],
+			default: "Đã tiếp nhận",
+			required: true,
+		},
+		createAt: {
+			type: Date,
+			default: Date.now,
+			required: true,
+		},
+		area: {
+			type: Object,
+			required: true,
+		},
+	},
+	{
+		versionKey: false,
+	}
 );
 
 const Report = model("Report", ReportSchema, "reports");

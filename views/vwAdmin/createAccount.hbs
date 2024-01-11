@@ -1,0 +1,183 @@
+{{#section 'css'}}
+<style>
+    .badge {
+        padding: 1rem 0.8rem
+    }
+
+    .badge-success {
+        background-color: #dcf1e4;
+        color: #0c622e
+    }
+
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+</style>
+{{/section}}
+
+{{#if err_message}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{err_message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+{{#if success_message}}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{success_message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+<div class="modal fade" id="failConfirmPwd" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title" id="failModalLabel">Lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Mật khẩu không trùng khớp</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="/admin/officers" class="btn p-0 link-primary mb-4" role="button">
+    <i class="bi bi-caret-left"></i>
+	Trở về
+</a>
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form class="mx-1 mx-md-4" method="post" id="frmAccount">
+                    <div class="d-flex flex-row gap-2 mb-4">
+                        <i class="bi bi-person h3"></i>
+                        <div class="form-outline flex-fill mb-0">
+                            <input type="text" id="username" name="username"  class="form-control" required/>
+                            <label class="form-label" for="username">Tên tài khoản</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row gap-2 mb-4">
+                        <i class="bi bi-lock h3"></i>
+                        <div class="form-outline flex-fill mb-0">
+                            <input type="password" id="password" name="password" class="form-control" required/>
+                            <label class="form-label" for="password">Mật khẩu</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row gap-2 mb-4">
+                        <i class="bi bi-lock h3"></i>
+                        <div class="form-outline flex-fill mb-0">
+                            <input type="password" id="confirmpwd" class="form-control" required/>
+                            <label class="form-label" for="confirmpwd">Xác nhận mật khẩu</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row gap-2 mb-4">
+                        <i class="bi bi-person-workspace h3"></i>
+                        <div class="form-outline flex-fill mb-0">
+
+                            <select class="form-select" id="role" name="role" aria-label="Default select example">
+                                <option value="1">Cán bộ phường</option>
+                                <option value="2">Cán bộ quận</option>
+                                <option value="3">Cán bộ sở</option>
+                            </select>
+                            <label class="form-label" for="role">Chức vụ</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row gap-2 mb-4">
+                        <i class="bi bi-geo-alt h3"></i>
+                        <div class="form-outline flex-fill mb-0">
+                            <select class="form-select p-2" id="district" name="district" aria-label="Default select example">
+                                {{#each this.districtList}}
+                                    <option value="{{_id}}">{{district}}</option>
+                                {{/each}}
+                            </select>
+                            <label class="form-label" for="district">Khu vực quận</label>
+                        </div>
+                        <div class="form-outline flex-fill  mb-0">
+                            <select class="form-select p-2" id="ward" name="ward" aria-label="Default select example"></select>
+                            <label class="form-label" for="district">Khu vực phường</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column align-items-center justify-content-center mx-4 mb-3 mb-lg-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Tạo tài khoản</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{#section 'js'}}
+<script>
+    async function fetchData(id) {
+        $.get(`/wards/getWards/${id}`, function (data, status) {
+            if (status == 'success') {
+                $('#ward').empty();
+                const list = data.data
+                if (list.length == 0) {
+                    $('#ward').append(`<option value="">Không có danh sách</option>`);
+                } else {
+                    list.forEach(ward => {
+                        $('#ward').append(`<option value="${ward._id}">${ward.ward}</option>`);
+                    });
+                }
+            }
+        });
+    }
+
+    const district = $('#district').val();
+    fetchData(district);
+
+    $('#district').change(function () {
+        const district = $(this).val();
+        fetchData(district);
+    });
+
+    $('#role').change(function () {
+        const role = $(this).val();
+        switch (role) {
+            case '1':
+                $('#district').removeAttr('disabled');
+                $('#ward').removeAttr('disabled');
+                break;
+            case '2':
+                $('#district').removeAttr('disabled', 'disabled');
+                $('#ward').attr('disabled', 'disabled');
+                break;
+            case '3':
+                $('#district').attr('disabled', 'disabled');
+                $('#ward').attr('disabled', 'disabled');
+                break;
+            default:
+                break;
+        }
+    });
+
+    $('#frmAccount').on('submit', () => {
+        const password = $('#password').val();
+        const confirmpwd = $('#confirmpwd').val();
+        if (password != confirmpwd) {
+            $('#failConfirmPwd').modal('show');
+            event.preventDefault();
+            return;
+        }
+
+        $('#frmAccount').off('submit').on('submit')
+    })
+</script>
+{{/section}}

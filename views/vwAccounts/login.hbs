@@ -13,7 +13,9 @@
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 		/>
+		<link rel="icon" type="image/x-icon" href="/static/assets/favicon.svg" />
 		<script src="https://kit.fontawesome.com/36e2579864.js" crossorigin="anonymous"></script>
+		<link rel="icon" type="image/x-icon" href="/static/assets/favicon.svg" />
 		<style>
 			body { height: 100vh; } .btn { background-color: #3B71CA; }
 		</style>
@@ -45,13 +47,13 @@
 						<form id="frmLogin" method="post" class="d-flex flex-column" style="gap: 1rem">
 							<!-- Email input -->
 							<div class="form-outline">
-								<label class="form-label" for="login-email">Email</label>
+								<label class="form-label" for="usernam">Tên đăng nhập</label>
 								<input
-									type="email"
-									id="login-email"
+									type="text"
+									id="username"
 									class="form-control border-2"
-									placeholder="Nhập đúng định dạng email"
-									name="email"
+									placeholder="Nhập tên đăng nhập"
+									name="username"
 								/>
 							</div>
 
@@ -86,21 +88,6 @@
 								>
 									<i class="fab fa-facebook-f"></i>
 								</a>
-								<button
-									type="button"
-									class="btn btn-outline-primary btn-floating mx-1"
-									style="background: none"
-								>
-									<i class="fab fa-twitter"></i>
-								</button>
-
-								<button
-									type="button"
-									class="btn btn-outline-primary btn-floating mx-1"
-									style="background: none"
-								>
-									<i class="fab fa-linkedin-in"></i>
-								</button>
 							</div>
 
 						</form>

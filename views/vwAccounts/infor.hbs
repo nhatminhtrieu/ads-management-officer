@@ -1,0 +1,264 @@
+{{#section 'css'}}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+
+<style>
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    #multiSelectDropdown:disabled{
+        background-color: #e9ecef;
+    }
+</style>
+{{/section}}
+
+<div class="d-flex align-items-center">
+    <h3>Thông tin cá nhân</h3>
+    <button id="edit" class="list-group-item ms-4">
+        <i class="fa fa-edit" aria-hidden="true"></i>
+        Chỉnh sửa
+    </button>
+</div>
+<form id="frmInfo" action="/account/changeInfo" class="row g-3 needs-validation" method="post">
+    <div class="form-outline">
+        <label class="form-label" for="role"><b>Chức vụ</b></label>
+        <input type="text" id="role" class="form-control border-2" 
+            {{#ifCond authUser.role '==' '1'}}
+                value="Cán bộ phường"
+            {{/ifCond}}
+            {{#ifCond authUser.role '==' '2'}}
+                value="Cán bộ quận"
+            {{/ifCond}}
+            {{#ifCond authUser.role '==' '3'}}
+                value="Cán bộ sở"
+            {{/ifCond}}
+            disabled 
+        />
+    </div>
+    {{#ifCond authUser.role '!=' '3'}}
+     <div class="form-outline">
+        <label class="form-label" for="location"><b>Khu vực</b></label>
+        <input type="text" id="location" class="form-control border-2" 
+            {{#ifCond authUser.role '==' '1'}}
+                {{#if authUser.wardInfo}}
+                    value="{{authUser.districtInfo.district}}, {{authUser.wardInfo.ward}}"
+                {{else}}
+                    placeholder="Chưa có thông tin khu vực"
+                {{/if}}
+            {{/ifCond}}
+            {{#ifCond authUser.role '==' '2'}}
+                {{#if authUser.districtInfo}}
+                    value="{{authUser.districtInfo.district}}"
+                {{else}}
+                    placeholder="Chưa có thông tin khu vực"
+                {{/if}}
+            {{/ifCond}}
+            disabled 
+        />
+    </div>
+    {{/ifCond}}
+    <div class="form-outline">
+        <label class="form-label" for="email"><b>Email</b></label>
+        <input type="email" id="email" class="form-control border-2" 
+            {{#if authUser.email}}
+                value={{authUser.email}}
+            {{else}}
+                placeholder="Chưa có thông tin email"
+            {{/if}}
+            name="email"  disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="fullName"><b>Họ tên</b></label>
+        <input type="text" id="fullName" class="form-control border-2" 
+            {{#if authUser.fullname}}
+                value="{{authUser.fullname}}"
+            {{else}}
+                placeholder="Chưa có thông tin họ tên"
+            {{/if}}
+            name="fullname" disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="phone"><b>Số điện thoại</b></label>
+        <input type="text" id="phone" class="form-control border-2"  
+            {{#if authUser.phone}}
+                value={{authUser.phone}}
+            {{else}}
+                placeholder="Chưa có thông tin số điện thoại"
+            {{/if}}
+            name="phone" disabled 
+        />
+    </div>
+     <div class="form-outline">
+        <label class="form-label" for="address"><b>Địa chỉ</b></label>
+        <input type="text" id="address" class="form-control border-2"  
+            {{#if authUser.address}}
+                value="{{authUser.address}}"
+            {{else}}
+                placeholder="Chưa có thông tin địa chỉ"
+            {{/if}}
+            name="address" disabled 
+        />
+    </div>
+    <div class="form-outline">
+        <label class="form-label" for="txtDoB"><b>Ngày tháng năm sinh</b></label>
+        <input type="text" id="txtDoB" class="form-control border-2" 
+            {{#if authUser.dob}}
+                value={{authUser.dob}}
+            {{/if}}
+            name="rawDob" disabled 
+        />
+    </div>
+
+    {{#ifCond authUser.role '==' '2'}}
+     <div class="form-outline">
+        <label class="form-label" for="txtDoB"><b>Các phường quan tâm</b></label>
+        <div class="dropdown" disabled>
+            {{#ifCond lengthWardList '!=' '0'}}
+            <button disabled id="multiSelectDropdown" class="btn btn-light dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
+                Chưa có thông tin
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <input name="fav_list_raw" class="form-check-input" type="checkbox" id="all" style="margin-left: 3px">
+                    <label class="form-check-label" for="all">
+                        Tất cả
+                    </label>
+                </li>
+                {{#each wardList}}
+                    <li class="gap-2 d-flex">
+                        <input name="fav_list_raw" class="form-check-input" type="checkbox" value="{{_id}}" id="{{_id}}" style="margin-left: 3px">
+                        <label class="form-check-label" for="{{_id}}">
+                            {{ward}}
+                        </label>
+                {{/each}}
+            </ul>
+            {{/ifCond}}
+            {{#ifCond lengthWardList '==' '0'}}
+            <button disabled id="empty" class="btn btn-light dropdown-toggle text-nowrap" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="white-space: no-wrap">
+                không có thông tin của phường
+            </button>
+            {{/ifCond}}
+        </div>
+    </div>
+    {{/ifCond}}
+
+    <div class="d-flex gap-2">
+        <button id="cancel" type="button" class="btn btn-secondary" disabled>Hủy</button>
+        <button id="update" type="submit" class="btn btn-primary" disabled>Cập nhật</button>
+    </div>
+</form>
+
+{{#section 'js'}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+        $('#txtDoB').datetimepicker({
+            timepicker: false,
+            format: 'd/m/Y',
+            mask: true,
+            scrollMonth: false,
+            scrollInput: false
+        });
+
+        $('#edit').click(function() {
+            $('input:not(#role, #location, #empty)').removeAttr('disabled');
+            $('button:not(#empty)').removeAttr('disabled');
+        });
+
+
+        $('#cancel').click(function() {
+            $('#frmInfo')[0].reset()
+            $('#txtDoB').datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y',
+                mask: true,
+                scrollMonth: false,
+                scrollInput: false
+            });
+            $('input').attr('disabled', 'disabled');
+            $('#update').attr('disabled', 'disabled');
+            $('#cancel').attr('disabled', 'disabled');
+            $('#multiSelectDropdown').attr('disabled', 'disabled');
+        });
+
+       
+        let selectedItems = [];
+        let selectedContent = [];
+        const lengthWardList = '{{lengthWardList}}';
+        function initSelectedItems() {
+            const favList = '{{authUser.fav_list}}';
+            if (favList) {
+                const favListArr = favList.split(',');
+                favListArr.length == '{{lengthWardList}}' && $('#all').prop('checked', true)
+                favListArr.forEach((item) => {
+                    selectedItems.push(item);
+                    const content = $(`label[for="${item}"]`).text().trim();
+                    selectedContent.push(content);
+                    $(`#${item}`).prop('checked', true);
+                });
+            }
+            let displayText = '';
+            if (selectedContent.length > 2) {
+                displayText = selectedContent.slice(0, 2).join(', ') + ', ...';
+            } else {
+                displayText = selectedContent.join(', ');
+            }
+
+            $('#multiSelectDropdown').text(selectedContent.length > 0 ? displayText : 'Chưa có thông tin');
+        }
+
+        function handleCB(event) {
+            const checkbox = $(event.target);
+
+            if (checkbox.is(':checked')) {
+                const id = checkbox.attr('id');
+                if (id === 'all') {
+                    $('#multiSelectDropdown').text('Tất cả');
+                    $('.dropdown-menu').find('input').prop('checked', true);
+
+                    const items = $('.dropdown-menu').find('input').map(function() {return $(this).val()}).get();
+                    const contents = $('.dropdown-menu').find('input').map(function() {return $(`label[for="${$(this).attr('id')}"]`).text().trim()}).get();
+                
+                    selectedItems = items.slice(1);
+                    selectedContent = contents.slice(1);
+                    return;
+                }
+
+                $(`#all`).prop('checked', false);
+                selectedItems.push(checkbox.val());
+                const content = $(`label[for="${checkbox.attr('id')}"]`).text().trim();
+                selectedContent.push(content);
+            } else {
+                const id = checkbox.attr('id');
+                if (id === 'all') {
+                    selectedItems = [];
+                    selectedContent = [];
+                    $('#multiSelectDropdown').text('Chưa có thông tin');
+                    $('.dropdown-menu').find('input').prop('checked', false);
+                    return;
+                }
+                $(`#all`).prop('checked', false);
+                selectedItems = selectedItems.filter((item) => item !== checkbox.val());
+                selectedContent = selectedContent.filter((item) => item !== $(`label[for="${checkbox.attr('id')}"]`).text().trim());
+            }
+            
+            let displayText = '';
+            if (selectedContent.length > 2) {
+                displayText = selectedContent.slice(0, 2).join(', ') + ', ...';
+            } else {
+                displayText = selectedContent.join(', ');
+            }
+
+            $('#multiSelectDropdown').text(selectedContent.length > 0 ? displayText : 'Chưa có thông tin');
+        }
+       
+        if(lengthWardList != 0) {
+            initSelectedItems();
+        }
+            
+        $('.dropdown-menu').on('change', handleCB);
+    </script>
+{{/section}}

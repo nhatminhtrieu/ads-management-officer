@@ -1,0 +1,85 @@
+{{#section "js"}}
+<script>
+  window.onload = function () {
+    if ({{{json message}}}) $('.toast').toast('show')
+  }
+</script>
+{{/section}}
+
+<div aria-atomic="true" class="position-relative">
+  <div class="d-flex justify-content-between">
+    <h4>Yêu cầu chỉnh sửa</h4>
+    {{#ifCond authUser.role '!=' '3'}}
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-plus-lg"></i>
+        Tạo mới
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="edit-request/create/location">Chỉnh sửa điểm đặt</a></li>
+        <li><a class="dropdown-item" href="edit-request/create/advertisement">Chỉnh sửa bảng</a></li>
+      </ul>
+    </div>
+    {{/ifCond}}
+  </div>
+  <table class="table table-hover mt-3">
+    <thead>
+      <tr class="table-light">
+        <th scope="col" style="width: 2rem">No.</th>
+        <th scope="col" style="width: 20%">Loại chỉnh sửa</th>
+        <th scope="col" style="width: 20%">Ngày tạo</th>
+        <th scope="col">Địa chỉ</th>
+        <th scope="col" style="width: 20%">Tình trạng</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#if empty}}
+      {{> emptylist message="Chưa có yêu cầu chỉnh sửa nào, hãy tạo mới"}}
+      {{else}}
+      {{#each this.list}}
+        <tr>
+          <th scope="row">{{index}}</th>
+          {{#ifCond for '==' "location"}}
+          <td>Điểm đặt quảng cáo</td>
+          {{/ifCond}}
+          {{#ifCond for '==' "advertisement"}}
+          <td>Bảng quảng cáo</td>
+          {{/ifCond}}
+          <td>{{formatDate createdAt}}</td>
+          <td>{{rawLocation.address}}</td>
+          {{#ifCond accepted '==' "pending"}}
+          <td class="text-warning"><i class="bi bi-clock me-1"></i>Đang chờ</td>
+          {{/ifCond}}
+          {{#ifCond accepted '==' "approved"}}
+          <td class="text-success"><i class="bi bi-check-lg me-1"></i>Đã duyệt</td>
+          {{/ifCond}}
+          {{#ifCond accepted '==' "rejected"}}
+          <td class="text-danger"><i class="bi bi-x me-1"></i>Không duyệt</td>
+          {{/ifCond}}
+          <td>
+            <a
+              class="link-primary"
+              href="/advertisement/edit-request/detail?id={{_id}}"
+            >
+              <i class="bi bi-arrows-angle-expand"></i>
+            </a>
+          </td>
+        </tr>
+      {{/each}}  
+      {{/if}}
+    </tbody>
+  </table>
+  {{> pagination href="/advertisement/edit-request" page=page totalPage=totalPage pageNumbers=pageNumbers}}
+
+  <div class="toast-container top-0 end-0">
+    <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{message}}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>

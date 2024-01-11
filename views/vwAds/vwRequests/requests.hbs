@@ -1,0 +1,44 @@
+<div class="d-flex justify-content-between">
+	<h4>Yêu cầu cấp phép</h4>
+</div>
+<table class="table table-hover mt-3">
+	<thead>
+		<tr class="table-light">
+			<th scope="col" style="width: 2rem">No.</th>
+			<th scope="col" style="width: 20%">Loại bảng quảng cáo</th>
+			<th scope="col">Địa chỉ</th>
+			<th scope="col" style="width: 15%">Công ty</th>
+			<th scope="col" style="width: 15%">Tình trạng</th>
+			<th scope="col">&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{#if empty}}
+		{{> emptylist message="Chưa có yêu cầu cấp phép nào, hãy tạo mới"}}
+		{{else}}
+		{{#each list}}
+		<tr>
+			<th scope="row">{{inc index}}</th>
+			<td>{{advertisement.typeBoard}}</td>
+			<td>{{advertisement.location.address}}</td>
+			<td>{{company.name}}</td>
+			{{#ifCond accepted '==' "pending"}}
+			<td class="text-warning"><i class="bi bi-clock me-1"></i>Đang chờ</td>
+			{{/ifCond}}
+			{{#ifCond accepted '==' "approved"}}
+			<td class="text-success"><i class="bi bi-check-lg me-1"></i>Đã duyệt</td>
+			{{/ifCond}}
+			{{#ifCond accepted '==' "rejected"}}
+			<td class="text-danger"><i class="bi bi-x me-1"></i>Không duyệt</td>
+			{{/ifCond}}
+			<td>
+				<a class="link-primary" href="/advertisement/request/detail?id={{_id}}">
+					<i class="bi bi-arrows-angle-expand"></i>
+				</a>
+			</td>
+		</tr>
+		{{/each}}
+	</tbody>
+	{{/if}}
+</table>
+{{> pagination href="/advertisement/request" page=page totalPage=totalPage pageNumbers=pageNumbers}}

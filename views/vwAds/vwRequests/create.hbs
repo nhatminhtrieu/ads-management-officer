@@ -1,0 +1,177 @@
+{{#section "js"}}
+<script type="module">
+	import CustomMap from "/static/js/map/CustomMap.js";
+	import { contentAd } from "/static/js/loadMarker.js";
+	import { readAsDataURL, checkFilesSize, updateHidden, updatePreview } from '/static/js/handleImgs.js';
+
+	function getAdsData(id) {
+		var result = [];
+		$.ajax({
+			url: "/advertisement/find-all-by-location/" + id,
+			async: false,
+			success: function (data) {
+				result = data;
+			}
+		});
+		return result;
+	}
+	const HomeMap = new CustomMap();
+	const location = {{{ json location }}};
+	HomeMap.init().then(async () => {
+		const contentString = contentAd(location);
+		await HomeMap.pushAdMarker(location, location.address, contentString);
+		HomeMap.map.addListener("click", (event) => {
+			$("#address").attr("value", "");
+			$("#advertisement").attr("value", "");
+			$('#alert').prop("hidden", false);
+			$('button[type="submit"]').addClass('disabled')
+		});
+		HomeMap.map.setCenter(location.coordinate);
+	})
+
+	$('input#file').on('change', async function (e) {
+		var files = Array.from(e.currentTarget.files);
+		if (files.length && checkFilesSize([], files)) {
+			var images = await Promise.all(files.map((file) => {
+				return readAsDataURL(file);
+			}));
+
+			updatePreview(images)
+			updateHidden(images)
+
+			$('button[type="submit"]').removeClass('disabled')
+		}
+	});
+
+</script>
+<script>
+	$(".disabled").on('keydown paste focus mousedown', function (e) {
+		if (e.keyCode != 9) // ignore tab 
+			e.preventDefault();
+	});
+</script>
+<script type="module">
+	import { updatePreview } from '/static/js/handleImgs.js'
+
+	let adImgs = {{{ json ad.imgs }}}
+
+	window.onload = function () {
+		updatePreview(adImgs, true, "#preview-ad");
+	}
+
+</script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script>
+	$('#start').datetimepicker({
+		timepicker: false,
+		format: 'd/m/Y',
+		mask: true,
+		scrollMonth: false,
+		scrollInput: false
+	});
+	$('#end').datetimepicker({
+		timepicker: false,
+		format: 'd/m/Y',
+		mask: true,
+		scrollMonth: false,
+		scrollInput: false
+	});
+</script>
+{{/section}}
+{{#section "css"}}
+<style>
+	.disabled {
+		pointer-events: none;
+		background-color: #e9ecef;
+	}
+</style>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
+{{/section}}
+<a class="btn p-0 link-primary mb-2" href="javascript:history.back()" role="button">
+	<i class="bi bi-caret-left"></i>
+	Trở về
+</a>
+<form id="form-request" class="d-flex flex-column" style="gap: 1rem" method="post">
+	<h4 id="step-name">Thông tin bảng quảng cáo</h4>
+	<div id="map" class="rounded" style="height:300px; width:100%"></div>
+	<!-- Địa chỉ điểm đặt quảng cáo input -->
+	<ul>
+		<li> <strong>Địa chỉ: </strong> {{location.address}} </li>
+		<li> <strong>Loại bảng quảng cáo: </strong> {{ad.typeBoard}} </li>
+		<li> <strong>Số lượng: </strong> {{ad.number}} </li>
+		<li> <strong>Kích thước: </strong> {{ad.size}} </li>
+		<li class="mb-2"><strong>Hình ảnh bảng quảng cáo: </strong></li>
+		<div class="row flex-nowrap overflow-auto" id="preview-ad"></div>
+
+	</ul>
+
+	<!-- Hidden input for advertisement -->
+	<input type="hidden" id="advertisement" name="advertisement" value="{{this.ad._id}}" />
+	<h4 id="step-name">Tạo quảng cáo</h4>
+	<!-- Upload hình ảnh bảng quảng cáo -->
+	<div class="form-outline ">
+		<label class="form-label" for="type">Hình ảnh quảng cáo
+			<span class="text-danger">*</span>
+		</label>
+		<input type="file" id="file" class="form-control border-2" name="file" aria-describedby="fileHelp"
+			accept="image/*" multiple required />
+		<div id="fileHelp" class="invalid-feedback">
+			Tổng dung lượng các hình tối đa 10MB.
+		</div>
+	</div>
+	<div id="hiddenImgsInput" class="d-none"></div>
+	<div class="row flex-nowrap overflow-auto" id="preview">
+	</div>
+
+	<!-- Thời gian hợp đồng -->
+	<div class="form-outline ">
+		<div class="row g-3">
+			<div class="col">
+				<label class="form-label" for="start">Ngày bắt đầu
+					<span class="text-danger">*</span>
+				</label>
+				<input type="text" id="start" class="form-control border-2" name="start" required />
+			</div>
+			<div class="col">
+				<label class="form-label" for="end">Ngày kết thúc
+					<span class="text-danger">*</span>
+				</label>
+				<input type="text" id="end" class="form-control border-2" name="end" required />
+			</div>
+		</div>
+	</div>
+	<!-- Tên công ty input -->
+	<div class="form-outline">
+		<label class="form-label" for="comName">Tên công ty
+			<span class="text-danger">*</span></label>
+		<input type="text" id="comName" class="form-control border-2" placeholder="Công ty ABC" name="comName"
+			required />
+	</div>
+	<!-- Tên Email input -->
+	<div class="form-outline">
+		<label class="form-label" for="comEmail">Email <span class="text-danger">*</span></label>
+		<input type="email" name="comEmail" id="comEmail" class="form-control border-2"
+			placeholder="fit@hcmus.edu.vn" />
+	</div>
+	<!-- Phone -->
+	<div class="form-outline">
+		<label class="form-label" for="comPhone">Phone <span class="text-danger">*</span></label>
+		<input type="text" name="comPhone" id="comPhone" class="form-control border-2" placeholder="0909123456"
+			required />
+	</div>
+	<!-- Địa chỉ -->
+	<div class="form-outline">
+		<label class="form-label" for="comAddress">Địa chỉ công ty<span class="text-danger">*</span></label>
+		<input type="text" id="comAddress" class="form-control border-2" placeholder="227 Nguyễn Văn Cừ"
+			name="comAddress" />
+	</div>
+
+	<div class="text-end">
+		<button type="submit" class="btn btn-primary disabled">
+			<i class="bi bi-send"></i>
+			Gửi yêu cầu
+		</button>
+	</div>
+</form>

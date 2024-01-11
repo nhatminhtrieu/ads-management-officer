@@ -192,24 +192,24 @@ function sendEmail(email, request, accepted) {
     to: email,
     subject: "Cập nhật tình trạng xét duyệt yêu cầu chỉnh sửa",
     text: "Bạn nhận được tin nhắn này từ đội ngũ phát triển website - JCXDC team ",
-    html: `<div style="border-bottom:1px solid #eee"> \
-            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
+    html:
+      `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;"> \
+        <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;"> \
+          <a href="#" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600;">JCXDC team</a> \
         </div> \
-        <p style="font-size:1.1em">Xin chào,</p> \
-        <p>Yêu cầu chỉnh sửa về ${
-          request.for == "location" ? "điểm quảng cáo" : "bảng quảng cáo"
-        } tại <b>${request.rawLocation.address}</b> của bạn vừa ${
-      accepted ? "được" : "bị"
-    }</p>\
-        <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${
-          accepted ? "Chấp nhận" : "Từ chối"
-        }</h2> \
-        <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
-        <hr style="border:none;border-top:1px solid #eee" /> \
-        <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
-            <p>JCXDC team</p> \
-            <p>HCM City</p> \
-        </div>`,
+        <p style="font-size: 1.1em;">Xin chào,</p> \
+        <p>Yêu cầu chỉnh sửa về ${request.for == "location" ? "điểm quảng cáo" : "bảng quảng cáo"} tại <b>${request.rawLocation.address}</b> của bạn vừa ${accepted ? "được" : "bị"}.</p> \
+        <div style="background: #00466a; margin: 20px auto; width: fit-content; padding: 10px 20px; color: #fff; border-radius: 4px; font-size: 1.4em;"> \
+          ${accepted ? "Chấp nhận" : "Từ chối"} \
+        </div> \
+        <p>Chúng tôi rất trân trọng sự hợp tác của bạn và mong muốn cung cấp dịch vụ tốt nhất cho bạn.</p> \
+        <p style="font-size: 0.9em;">Trân trọng,<br />JCXDC team</p> \
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" /> \
+        <div style="font-size: 0.8em; color: #aaa; line-height: 1.5; font-weight: 300;"> \
+          <p>JCXDC team</p> \
+          <p>HCM City</p> \
+        </div> \
+      </div>`
   };
   transporter.sendMail(mainOptions, (err, info) => {
     if (err) console.log(err);

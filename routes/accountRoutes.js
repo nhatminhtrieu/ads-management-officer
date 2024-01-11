@@ -33,10 +33,10 @@ passport.use(new FacebookStrategy({
             authUser: req.session.authUser,
         }
         if (existedAccount) {
-            return done(null, {...data, status: statusAuthenticated["authenticated"]});
+            return done(null, { ...data, status: statusAuthenticated["authenticated"] });
         }
 
-        return done(null, {...data, status: statusAuthenticated["not authenticated"]});
+        return done(null, { ...data, status: statusAuthenticated["not authenticated"] });
     }
 ));
 
@@ -47,8 +47,8 @@ router.get("/", (req, res) => {
 router.get("/login", (req, res) => {
     const linkAccount = req.session?.linkAccount;
     res.render("vwAccounts/login", {
-        err_message: linkAccount, 
-        layout: false 
+        err_message: linkAccount,
+        layout: false
     });
 });
 
@@ -102,11 +102,11 @@ router.get(
                 const { _id } = authUser
                 await service.updateLinkAccount(_id, id);
                 var user = (await service.findById(_id)).toObject();
-                if(user.dob != null) {
+                if (user.dob != null) {
                     user.dob = formatDate(user.dob);
                 }
                 req.session.isAuthenticated = true;
-                req.session.authUser = {...authUser, ...user};
+                req.session.authUser = { ...authUser, ...user };
                 return res.redirect("/account/link");
             }
             req.session.linkAccount = "Tài khoản chưa được liên kết"
@@ -114,11 +114,11 @@ router.get(
         }
 
         var user = (await service.findByLinkAccount(id)).toObject();
-        if(user.dob != null) {
+        if (user.dob != null) {
             user.dob = formatDate(user.dob);
         }
         if (typeof authUser != "undefined") {
-            if(user._id != authUser._id) {
+            if (user._id != authUser._id) {
                 req.session.isAuthenticated = true;
                 req.session.authUser = authUser;
                 req.session.linkAccount = "Tài khoản facebook của bạn đã được liên kết với tài khoản khác"
@@ -129,23 +129,23 @@ router.get(
         req.session.isAuthenticated = true;
         const districtInfo = await districtService.getDistrictById(user.district);
         const wardInfo = await wardService.getWardById(user.ward);
-        const data  = {...user, districtInfo, wardInfo};
-        req.session.authUser = data;                   
+        const data = { ...user, districtInfo, wardInfo };
+        req.session.authUser = data;
         res.redirect("/home");
     }
 );
 
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    var check = await service.verifyAccount({username, status: 1}, password);
+    var check = await service.verifyAccount({ username, status: 1 }, password);
     if (check) {
         req.session.isAuthenticated = true;
-        if(check.dob != null) {
+        if (check.dob != null) {
             check.dob = formatDate(check.dob);
         }
         const districtInfo = await districtService.getDistrictById(check.district);
         const wardInfo = await wardService.getWardById(check.ward);
-        const data = {...check, districtInfo, wardInfo};
+        const data = { ...check, districtInfo, wardInfo };
 
         req.session.authUser = data
         res.redirect("/home");
@@ -175,26 +175,30 @@ router.post("/sendOTP", async (req, res) => {
             pass: 'wjge iflg rmzs nghh'
         }
     });
+
     var mainOptions = {
         from: 'JCXDC Team',
         to: req.session.authUser.email,
         subject: 'Thay đổi mật khẩu',
         text: 'Bạn nhận được tin nhắn này từ đội ngũ phát triển website - JCXDC team ',
         html:
-            '<div style="border-bottom:1px solid #eee"> \
-                <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
-            </div> \
-            <p style="font-size:1.1em">Xin chào,</p> \
-            <p>Cảm ơn bạn đã sử dụng sản phẩm của chúng tôi. Sử dụng mã OTP dưới đây để xác nhận cài đặt lại mật khẩu của tài khoản.</p> \
-            <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">'
-            + otp + '</h2> \
-            <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
-            <hr style="border:none;border-top:1px solid #eee" /> \
-            <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
-                <p>JCXDC team</p> \
-                <p>HCM City</p> \
-            </div>'
-    }
+            '<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">' +
+            '<div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">' +
+            '<a href="#" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600;">JCXDC team</a>' +
+            '</div>' +
+            '<p style="font-size: 1.1em;">Xin chào,</p>' +
+            '<p>Cảm ơn bạn đã sử dụng sản phẩm của chúng tôi. Sử dụng mã OTP dưới đây để xác nhận cài đặt lại mật khẩu của tài khoản.</p>' +
+            '<div style="background: #00466a; margin: 20px auto; width: fit-content; padding: 10px 20px; color: #fff; border-radius: 4px; font-size: 1.4em;">' +
+            otp +
+            '</div>' +
+            '<p style="font-size: 0.9em;">Trân trọng,<br />JCXDC team</p>' +
+            '<hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />' +
+            '<div style="font-size: 0.8em; color: #aaa; line-height: 1.5; font-weight: 300;">' +
+            '<p>JCXDC team</p>' +
+            '<p>HCM City</p>' +
+            '</div>' +
+            '</div>'
+    };
     transporter.sendMail(mainOptions, (err, info) => {
         if (err) console.log(err);
         else {
@@ -232,7 +236,7 @@ router.post("/changePassword", auth, async (req, res) => {
     const { _id } = req.session.authUser;
     const { currentPassword, newPassword } = req.body;
 
-    const check = await service.verifyAccount({_id}, currentPassword);
+    const check = await service.verifyAccount({ _id }, currentPassword);
     if (check) {
         await service.updatePassword(_id, newPassword);
         res.render("vwAccounts/changePassword", { layout: "profile.hbs", success_message: "Đổi mật khẩu thành công" });
@@ -245,16 +249,16 @@ router.post("/changeInfo", auth, async (req, res) => {
     const { _id } = req.session.authUser;
     const { email, fullname, phone, rawDob, address, fav_list_raw } = req.body;
 
-    const dob = (rawDob == '__/__/____'  || rawDob == "") ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
+    const dob = (rawDob == '__/__/____' || rawDob == "") ? null : moment.utc(rawDob, "DD/MM/YYYY").toDate();
     const fav_list = !fav_list_raw ? [] : (fav_list_raw[0] == 'on' ? fav_list_raw.slice(1) : fav_list_raw);
 
     await service.updateProfile(_id, { email, fullname, phone, dob, address, fav_list });
-   
+
     const user = (await service.findById(_id)).toObject();
-    if(user.dob != null) {
+    if (user.dob != null) {
         user.dob = moment(user.dob).format("DD/MM/YYYY");
     }
-    req.session.authUser = {... req.session.authUser, ...user};
+    req.session.authUser = { ...req.session.authUser, ...user };
     res.redirect("/account/profile");
 })
 
@@ -267,8 +271,8 @@ router.post("/changeStatus/:id", async (req, res) => {
 
 
 router.post("/logout", auth, (req, res) => {
-    req.session.destroy(function(err) {
-        if(err) {
+    req.session.destroy(function (err) {
+        if (err) {
             console.log(err);
         } else {
             res.redirect("/account/login");

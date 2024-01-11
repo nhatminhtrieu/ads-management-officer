@@ -69,11 +69,12 @@
         document.querySelectorAll('#deleteImgButton').forEach((btn) => btn.removeAttribute('hidden'))
         $('#start').prop("disabled", false);
         $('#end').prop("disabled", false);
-        $('#file').prop('hidden', false)
     });
+
     $("#cancelButton").click(function () {
         window.location.reload();
     });
+
     $("#deleteButton").click(function (e) {
         e.preventDefault();
         $.post("/report/manage/delete/{{report._id}}", function (response) {
@@ -183,6 +184,18 @@
             </option>
             {{/each}}
         </select>
+    </div>
+
+    <div class="form-outline mt-3">
+        <div class="row g-3">
+            <div class="col">
+                <label class="form-label" for="content">Nội dung báo cáo</label>
+                <div id="content" class="form-control border-2" name="content"
+                    style="pointer-events: none; background-color: #eee;">
+                    {{{report.content}}}
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="form-outline mt-3">

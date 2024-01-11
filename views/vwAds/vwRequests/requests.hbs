@@ -1,19 +1,13 @@
 <div class="d-flex justify-content-between">
 	<h4>Yêu cầu cấp phép</h4>
-	{{#ifCond authUser.role '<' '3' }} <a name="" id="" class="btn btn-primary" href="create-request/create"
-		role="button">
-		<i class="bi bi-plus-lg"></i>
-		Tạo mới
-		</a>
-		{{/ifCond}}
 </div>
 <table class="table table-hover mt-3">
 	<thead>
 		<tr class="table-light">
 			<th scope="col" style="width: 2rem">No.</th>
-			<th scope="col" style="width: 20%">Loại quảng cáo</th>
-			<th scope="col" style="width: 15%">Công ty</th>
+			<th scope="col" style="width: 20%">Loại bảng quảng cáo</th>
 			<th scope="col">Địa chỉ</th>
+			<th scope="col" style="width: 15%">Công ty</th>
 			<th scope="col" style="width: 15%">Tình trạng</th>
 			<th scope="col">&nbsp;</th>
 		</tr>
@@ -25,9 +19,9 @@
 		{{#each list}}
 		<tr>
 			<th scope="row">{{inc index}}</th>
-			<td>{{advertisement.TypeBoard}}</td>
+			<td>{{advertisement.typeBoard}}</td>
+			<td>{{advertisement.location.address}}</td>
 			<td>{{company.name}}</td>
-			<td>{{location.address}}</td>
 			{{#ifCond accepted '==' "pending"}}
 			<td class="text-warning"><i class="bi bi-clock me-1"></i>Đang chờ</td>
 			{{/ifCond}}
@@ -38,7 +32,7 @@
 			<td class="text-danger"><i class="bi bi-x me-1"></i>Không duyệt</td>
 			{{/ifCond}}
 			<td>
-				<a class="link-primary" href="/advertisement/create-request/detail?id={{_id}}">
+				<a class="link-primary" href="/advertisement/request/detail?id={{_id}}">
 					<i class="bi bi-arrows-angle-expand"></i>
 				</a>
 			</td>
@@ -47,4 +41,4 @@
 	</tbody>
 	{{/if}}
 </table>
-{{> pagination href="/advertisement/create-request" page=page totalPage=totalPage pageNumbers=pageNumbers}}
+{{> pagination href="/advertisement/request" page=page totalPage=totalPage pageNumbers=pageNumbers}}

@@ -20,18 +20,14 @@ const AdvertisementSchema = new Schema(
         required: true,
       },
     ],
-    start: {
-      type: Date,
-      required: true,
-    },
-    end: {
-      type: Date,
-      required: true,
-    },
     location: {
       type: Schema.Types.ObjectId,
       ref: "Location",
       required: true,
+    },
+    used: {
+      type: Schema.Types.ObjectId,
+      ref: "Request",
     },
   },
   {

@@ -92,24 +92,6 @@
     }
   })
 </script>
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
-<script>
-  $('#start').datetimepicker({
-    timepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false
-  });
-  $('#end').datetimepicker({
-    timepicker: false,
-    format: 'd/m/Y',
-    mask: true,
-    scrollMonth: false,
-    scrollInput: false
-  });
-</script>
 {{/section}}
 
 {{#section "css"}}
@@ -119,8 +101,6 @@
     background-color: #e9ecef;
   }
 </style>
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" />
 {{/section}}
 
 <a class="btn p-0 link-primary" href="/advertisement/manage" role="button">
@@ -188,22 +168,6 @@
       Tổng dung lượng các hình tối đa 10MB.
     </div>
     <div class="mt-3 row flex-nowrap overflow-auto" id="preview">
-    </div>
-  </div>
-  <div class="form-outline mt-3">
-    <div class="row g-3">
-      <div class="col">
-        <label class="form-label" for="start">Ngày bắt đầu
-          <div style="display:inline; color:red">*</div>
-        </label>
-        <input type="text" id="start" class="form-control border-2" name="start" required />
-      </div>
-      <div class="col">
-        <label class="form-label" for="end">Ngày kết thúc
-          <div style="display:inline; color:red">*</div>
-        </label>
-        <input type="text" id="end" class="form-control border-2" name="end" required />
-      </div>
     </div>
   </div>
 

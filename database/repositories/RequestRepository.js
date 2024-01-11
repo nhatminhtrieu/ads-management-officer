@@ -1,8 +1,8 @@
-import CreateRequest from "../models/CreateRequest.js";
+import Request from "../models/Request.js";
 
-export default class CreateRequestRepository {
+export default class RequestRepository {
 	constructor() {
-		this.model = CreateRequest;
+		this.model = Request;
 	}
 
 	async add(entity) {
@@ -10,24 +10,29 @@ export default class CreateRequestRepository {
 		return await newEntity.save();
 	}
 
-	async getAll() {
-		return await this.model.find().populate("location").lean();
-	}
-
 	async findAllByEntity(entity) {
-		return await this.model.find(entity).populate("location").lean();
+		return await this.model
+			.find(entity)
+			.populate("advertisement")
+			.populate({ path: "advertisement", populate: "location" })
+			.lean();
 	}
 
 	async findByEntity(entity) {
 		return await this.model
 			.findOne(entity)
-			.populate("location")
-			.populate({ path: "location", populate: "format" })
+			.populate("advertisement")
+			.populate({ path: "advertisement", populate: "location" })
 			.lean();
 	}
 
 	async findDataForPage({ offset, limit }, entity = {}) {
-		const data = await this.model.find(entity).populate("location").skip(offset).limit(limit);
+		const data = await this.model
+			.find(entity)
+			.populate("advertisement")
+			.populate({ path: "advertisement", populate: "location" })
+			.skip(offset)
+			.limit(limit);
 		return data;
 	}
 

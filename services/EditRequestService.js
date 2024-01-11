@@ -47,14 +47,6 @@ export default class EditRequestService {
 
   async findById(_id) {
     let request = await this.repository.findByEntity({ _id });
-    if (request && request.for == "advertisement") {
-      request.advertisement.start = moment(request.advertisement.start).format(
-        "DD/MM/YYYY"
-      );
-      request.advertisement.end = moment(request.advertisement.end).format(
-        "DD/MM/YYYY"
-      );
-    }
     return request;
   }
 

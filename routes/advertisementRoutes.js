@@ -6,7 +6,7 @@ import AdsTypesService from "../services/AdsTypeService.js";
 import LocationService from "../services/LocationService.js";
 import WardService from "../services/WardService.js";
 import DistrictService from "../services/DistrictService.js";
-import createRequestRouter from "./createRequestRoute.js";
+import requestRouter from "./requestRoute.js";
 import editRequestRouter from "./editRequestRoutes.js";
 import moment from "moment";
 import mongoose from "mongoose";
@@ -28,17 +28,20 @@ router.get("/manage", async (req, res) => {
     // Fav_list == [] -> all
     if (req.session.authUser.fav_list.length === 0)
       result = await pagination(req, service, limit, {
-        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.district": new mongoose.Types.ObjectId(
+          req.session.authUser.district
+        ),
       });
-    else 
-    {
+    else {
       let fav_list_ids = [];
       req.session.authUser.fav_list.forEach((id) => {
         fav_list_ids.push(new mongoose.Types.ObjectId(id));
       });
-      
+
       result = await pagination(req, service, limit, {
-        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.district": new mongoose.Types.ObjectId(
+          req.session.authUser.district
+        ),
         "area.ward": { $in: fav_list_ids },
       });
     }
@@ -46,7 +49,7 @@ router.get("/manage", async (req, res) => {
   // Role: Ward Officer
   else if (req.session.authUser.role === 1) {
     result = await pagination(req, service, limit, {
-      "area": {
+      area: {
         district: new mongoose.Types.ObjectId(req.session.authUser.district),
         ward: new mongoose.Types.ObjectId(req.session.authUser.ward),
       },
@@ -93,8 +96,6 @@ router.post("/manage/new", async (req, res) => {
     number: data.number,
     size: data.size,
     imgs: data.imgs,
-    start: moment(data.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
-    end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
     location: new mongoose.Types.ObjectId(data.location),
   };
 
@@ -108,11 +109,6 @@ router.get("/manage/:id", async (req, res) => {
   const service = new AdvertisementService();
   let ad = await service.find({ _id: req.params.id });
   ad = ad[0];
-
-  const formatDays = {
-    start: moment(ad.start).format("DD/MM/YYYY"),
-    end: moment(ad.end).format("DD/MM/YYYY"),
-  };
 
   const rawTypeBoards = [
     "Trụ bảng hiflex",
@@ -138,7 +134,6 @@ router.get("/manage/:id", async (req, res) => {
     ad,
     location: ad.location,
     typeBoards,
-    formatDays,
   });
 });
 
@@ -150,8 +145,6 @@ router.post("/manage/:id", async (req, res) => {
     number: data.number,
     size: data.size,
     imgs: data.imgs,
-    start: moment(data.start, "DD/MM/YYYY").format("YYYY-MM-DD"),
-    end: moment(data.end, "DD/MM/YYYY").format("YYYY-MM-DD"),
   };
 
   const service = new AdvertisementService();
@@ -174,34 +167,37 @@ router.get("/ad-location", async (req, res) => {
   let result = [];
 
   // Role: Department Officer
-  if (req.session.authUser.role === 3) 
+  if (req.session.authUser.role === 3)
     result = await pagination(req, service, limit);
   // Role: District Officer
   else if (req.session.authUser.role === 2) {
     // Fav_list == [] -> all
     if (req.session.authUser.fav_list.length === 0)
       result = await pagination(req, service, limit, {
-        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.district": new mongoose.Types.ObjectId(
+          req.session.authUser.district
+        ),
       });
-    else 
-    {
+    else {
       let fav_list_ids = [];
       req.session.authUser.fav_list.forEach((id) => {
         fav_list_ids.push(new mongoose.Types.ObjectId(id));
       });
-      
+
       result = await pagination(req, service, limit, {
-        "area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+        "area.district": new mongoose.Types.ObjectId(
+          req.session.authUser.district
+        ),
         "area.ward": { $in: fav_list_ids },
       });
     }
-  // Role: Ward Officer
+    // Role: Ward Officer
   } else if (req.session.authUser.role === 1) {
     result = await pagination(req, service, limit, {
-        area: {
-          district: new mongoose.Types.ObjectId(req.session.authUser.district),
-          ward: new mongoose.Types.ObjectId(req.session.authUser.ward),
-        },
+      area: {
+        district: new mongoose.Types.ObjectId(req.session.authUser.district),
+        ward: new mongoose.Types.ObjectId(req.session.authUser.ward),
+      },
     });
   }
 
@@ -329,9 +325,9 @@ router.post("/ad-location/delete/:id", async (req, res) => {
 
 router.use("/edit-request", editRequestRouter);
 
-router.use("/create-request", createRequestRouter);
+router.use("/request", requestRouter);
 
-router.get("/type-ad", authDepartmentRole,  async (req, res) => {
+router.get("/type-ad", authDepartmentRole, async (req, res) => {
   const service = new AdsTypesService();
   const list = await service.findAllAdsType();
   res.render("vwAds/typeAds", {

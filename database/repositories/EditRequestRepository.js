@@ -27,7 +27,8 @@ export default class EditRequestRepository {
       .findOne(entity)
       .lean()
       .populate("rawLocation")
-      .populate({ path: "location", populate: { path: "format" } });
+      .populate({ path: "location", populate: { path: "format" } })
+      .populate("createdBy");
   }
 
   async update(id, newEntity) {

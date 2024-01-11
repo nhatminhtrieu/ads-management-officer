@@ -2,6 +2,8 @@ import express, { response } from "express";
 const router = express.Router();
 import ReportTypeService from "../services/ReportTypeService.js";
 import ReportService from "../services/ReportService.js";
+import DistrictService from "../services/DistrictService.js";
+import WardService from "../services/WardService.js";
 import { pagination } from "../utils/pagination.js";
 import moment from "moment";
 import nodemailer from "nodemailer";
@@ -10,6 +12,8 @@ import mongoose, { Types } from "mongoose";
 const apiKey = process.env.GOOGLE_API_KEY;
 const reportService = new ReportService();
 const reportTypeService = new ReportTypeService();
+const districtService = new DistrictService();
+const wardService = new WardService();
 import { authDepartmentRole, authNotDepartmentRole } from "../middleware/auth.js";
 
 // UI routers declaration
@@ -19,16 +23,16 @@ router.get("/", async (req, res) => {
 
 	switch (req.session.authUser.role) {
 		case 1:
-			options = 
-				{
-					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
-					"area.ward":  new mongoose.Types.ObjectId(req.session.authUser.ward),
-				};
+			options =
+			{
+				"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
+				"area.ward": new mongoose.Types.ObjectId(req.session.authUser.ward),
+			};
 			break;
 		case 2:
 			let fav_list = []
 			if (req.session.authUser.fav_list.length === 0) {
-				options = 
+				options =
 				{
 					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
 				};
@@ -37,7 +41,7 @@ router.get("/", async (req, res) => {
 					fav_list.push(new mongoose.Types.ObjectId(item))
 					options
 				}
-				options = 
+				options =
 				{
 					"area.district": new mongoose.Types.ObjectId(req.session.authUser.district),
 					"area.ward": { $in: fav_list },
@@ -164,8 +168,133 @@ router.get("/type-report", authDepartmentRole, async (req, res) => {
 	});
 });
 
-router.get("/statistic", (req, res) => {
-	res.render("vwReports/statistic", { layout: "report" });
+router.get("/statistic", authDepartmentRole, async (req, res) => {
+	const listDistricts = await districtService.getAllDistricts();
+	const listReports = await reportService.getAllReports();
+
+	const reportsByDistrict = [];
+
+	for (let district of listDistricts) {
+		const listReportsByDistrict = [];
+
+		const reports = listReports.filter((report) => {
+			if (!report.area || !report.area.district) {
+				console.error('Report does not have a district:', report);
+				return false;
+			}
+
+			if (!district || !district._id) {
+				console.error('District does not have an _id:', district);
+				return false;
+			}
+
+			return report.area.district.toString() === district._id.toString();
+		});
+
+		const countByType = [];
+		const countByStatus = [];
+
+		for (const report of reports) {
+			const typeReportName = await reportTypeService.getReportTypeById(report.typeReport);
+
+			const typeReportIndex = countByType.findIndex((type) => {
+				return type.name === typeReportName.name;
+			});
+
+			if (typeReportIndex === -1) {
+				countByType.push({
+					name: typeReportName.name,
+					count: 1,
+				});
+			} else {
+				countByType[typeReportIndex].count++;
+			}
+
+			const statusReportIndex = countByStatus.findIndex((status) => {
+				return status.name === report.type;
+			});
+
+			if (statusReportIndex === -1) {
+				countByStatus.push({
+					name: report.type,
+					count: 1,
+				});
+			} else {
+				countByStatus[statusReportIndex].count++;
+			}
+		}
+
+		const listWards = await wardService.getAllWardsByDistrict(district._id);
+
+		for (const ward of listWards) {
+			const reports = listReports.filter((report) => {
+				return report.area.ward.toString() === ward._id.toString();
+			});
+
+			const countByType = [];
+			const countByStatus = [];
+			for (const report of reports) {
+				const typeReportName = await reportTypeService.getReportTypeById(report.typeReport);
+
+				const typeReportIndex = countByType.findIndex((type) => {
+					return type.name === typeReportName.name;
+				});
+
+				if (typeReportIndex === -1) {
+					countByType.push({
+						name: typeReportName.name,
+						count: 1,
+					});
+				} else {
+					countByType[typeReportIndex].count++;
+				}
+
+				const statusReportIndex = countByStatus.findIndex((status) => {
+					return status.name === report.type;
+				});
+
+				if (statusReportIndex === -1) {
+					countByStatus.push({
+						name: report.type,
+						count: 1,
+					});
+				} else {
+					countByStatus[statusReportIndex].count++;
+				}
+			}
+
+			listReportsByDistrict.push({
+				district: district.district,
+				ward: ward.ward,
+				count: reports.length,
+				countByType: countByType,
+				countByStatus: countByStatus,
+			});
+		}
+
+		reportsByDistrict.push({
+			district: district.district,
+			listReportsByDistrict: listReportsByDistrict,
+		});
+
+		// Sort the listReportsByDistrict array
+		listReportsByDistrict.sort((a, b) => {
+			if (a.count === 0 && b.count === 0) {
+				return 0;
+			} else if (a.count === 0) {
+				return 1;
+			} else if (b.count === 0) {
+				return -1;
+			} else {
+				return b.count - a.count;
+			}
+		});
+	}
+
+	res.render("vwReports/statistic", {
+		layout: "report",
+		reportsByDistrict,
+	});
 });
 
 // Data routers declaration

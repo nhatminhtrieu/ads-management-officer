@@ -27,6 +27,10 @@
 						Hình thức báo cáo
 					</a>
 					{{/ifCond}}
+					{{!-- Thống kê --}}
+					<a class="list-group-item list-group-item-action" href="/report/statistic">
+						Thống kê
+					</a>
 				</ul>
 			</div>
 			<div class="col-9 border-left border-2 p-4">
@@ -44,17 +48,17 @@
 	crossorigin="anonymous"></script>
 
 <script>
-		$(document).ready(function () {
-			var path = window.location.pathname;
-			$('a.list-group-item').each(function () {
-				if ($(this).attr('href') === path) {
-					$(this).addClass('active');
-				} else {
-					$(this).removeClass('active');
-				}
-			});
+	$(document).ready(function () {
+		var path = window.location.pathname;
+		$('a.list-group-item').each(function () {
+			if ($(this).attr('href') === path) {
+				$(this).addClass('active');
+			} else {
+				$(this).removeClass('active');
+			}
 		});
-	</script>
+	});
+</script>
 {{{_sections.js}}}
 
 </html>

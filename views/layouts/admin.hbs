@@ -40,18 +40,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
 	integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
 	crossorigin="anonymous"></script>
+
+{{! Sidebar active status }}
 <script>
-	$(document).ready(function () {
-		var path = window.location.pathname;
-		$('a.list-group-item').each(function () {
-			if ($(this).attr('href') === path) {
-				$(this).addClass('active');
-			} else {
-				$(this).removeClass('active');
-			}
-		});
-	});
+  document.querySelectorAll('a.list-group-item').forEach((a, index) => {
+	index ? 
+		(window.location.pathname == '/admin/area' || window.location.pathname == '/districts' ? 
+			a.classList.add('active') : (a.classList.contains('active') && a.classList.remove('active'))) : 
+		((window.location.pathname.includes('/admin/officer') || window.location.pathname == '/admin/createAccount') ?
+      		a.classList.add('active') : (a.classList.contains('active') && a.classList.remove('active')))
+  })
 </script>
+
 {{{_sections.jsDistricts}}}
 {{{_sections.jsWards}}}
 {{{_sections.js}}}

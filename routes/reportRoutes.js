@@ -84,7 +84,7 @@ router.get('/manage/:id', async (req, res) => {
 	const reportTypes = await reportTypeService.getAllReportTypes();
 	report.typeReport = await reportTypeService.getReportTypeById(report.typeReport);
 	report.typeReportName = "report.typeReport.name"
-	const statusReports = ['Chưa xử lý', 'Đã xử lý'];
+	const statusReports = ['Đã tiếp nhận', 'Đã xử lý'];
 
 	const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${report.coordinate.lat},${report.coordinate.lng}&key=${apiKey}`);
 	const data = await response.json();
@@ -106,13 +106,9 @@ router.get('/manage/:id', async (req, res) => {
 
 router.post('/manage/:id', authNotDepartmentRole, async (req, res) => {
 	const id = req.params.id;
-	const { typeReport, statusReport, resolvedContent } = req.body;
+	const { address, statusReport, resolvedContent } = req.body;
 
 	var report = await reportService.findReportById(id);
-
-	if (typeReport) {
-		report.typeReport = await reportTypeService.getReportTypeById(typeReport);
-	}
 
 	if (statusReport) {
 		report.type = statusReport;
@@ -141,16 +137,20 @@ router.post('/manage/:id', authNotDepartmentRole, async (req, res) => {
                 <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">JCXDC team</a> \
             </div> \
             <p style="font-size:1.1em">Xin chào,</p> \
-            <p>Báo cáo của bạn đã thay đổi sang tình trạng</p> \
+            <p>Báo cáo của bạn tại địa chỉ <strong>' + address + '</strong> đã được chuyển sang trạng thái</p> \
             <h2 style="background: #00466a;margin: auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">'
 			+
-			report.resolvedContent + '</h2> \
-            <p style="font-size:0.9em;">Trân trọng,<br />JCXDC team</p> \
-            <hr style="border:none;border-top:1px solid #eee" /> \
-            <div style="float:right;color:#aaa;font-size:0.8em;line-height:1;font-weight:300"> \
-                <p>JCXDC team</p> \
-                <p>HCM City</p> \
-            </div>'
+			statusReport + '</h2> \
+			<p>Phương pháp xử lý như sau:</p> \
+			'+ resolvedContent + '\
+			<p>Chúng tôi sẽ tiếp tục cập nhật về tiến trình xử lý báo cáo của bạn. Nếu bạn không thực hiện báo cáo trên, vui lòng bỏ qua email này.</p> \
+			<p style="font-size: 0.9em;"> Trân trọng,<br /> JCXDC team</p> ' +
+			'<hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />' +
+			'<div style="font-size: 0.8em; color: #aaa; line-height: 1.5; font-weight: 300;">' +
+			'<p>JCXDC team</p>' +
+			'<p>HCM City</p>' +
+			'</div>' +
+			'</div>'
 	}
 	transporter.sendMail(mainOptions, (err, info) => {
 		if (err) console.log(err);

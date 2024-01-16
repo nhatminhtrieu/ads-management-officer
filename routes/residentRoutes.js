@@ -64,8 +64,8 @@ router.post("/report/create", async (req, res) => {
 	const wardService = new WardService();
 	const districtService = new DistrictService();
 
-	const wardId = await wardService.findWardId({ ward });
 	const districtId = await districtService.findDistrictId({ district });
+	const wardId = await wardService.findWardId({ ward, district: districtId });
 	const typeReportID = new mongoose.Types.ObjectId(typeReport);
 
 	const report = {
